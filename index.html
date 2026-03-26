@@ -71,6 +71,8 @@ input[type=file]{display:none}
 .btn:hover{border-color:var(--acc);color:var(--acc)}
 .btn.ghost{border-color:var(--b);color:var(--txt3)}
 .btn.ghost:hover{border-color:var(--b2);color:var(--txt2)}
+.btn-acc{background:var(--acc-a)!important;border:1px solid var(--acc-b)!important;border-radius:8px;color:var(--acc)!important;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.03em;padding:9px 18px;transition:.15s}
+.btn-acc:hover{background:rgba(45,106,79,.16)!important}
 .fc-res{display:none;font-size:12px;font-weight:500;padding:10px 14px;border-radius:8px;margin-top:12px;line-height:1.65;font-family:var(--mono)}
 .fc-res.ok{display:block;background:var(--acc-a);color:var(--acc);border:1px solid var(--acc-b)}
 .fc-res.bad{display:block;background:var(--red-a);color:var(--red);border:1px solid var(--red-b)}
@@ -158,34 +160,42 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
   <span style="font-size:11px;font-family:var(--mono);color:var(--txt3);letter-spacing:.08em">DVB-T · CNAF</span>
 </nav>
 
-<div class="hero">
-  <h1>Frecuencias TDT en España</h1>
-  <p class="hero-desc">Canales UHF ocupados por TDT por demarcación · Coordinación de microfonía inalámbrica y RF en directo · DVB-T · UHF IV/V · 8 MHz/canal · Central ± 4 MHz</p>
-</div>
-
-<div class="stats">
-  <div class="stat"><span class="sv" id="sRows">—</span><span class="sl">Entradas</span></div>
-  <div class="stat"><span class="sv" id="sCAs">—</span><span class="sl">CC.AA.</span></div>
-  <div class="stat"><span class="sv" id="sProvs">—</span><span class="sl">Provincias</span></div>
-  <div class="stat"><span class="sv" id="sDems">—</span><span class="sl">Demarcaciones</span></div>
-  <div class="stat"><span class="sv" id="sChs">—</span><span class="sl">Canales UHF</span></div>
-  <div class="stat"><span class="sv" id="sVis">—</span><span class="sl">Vista actual</span></div>
+<!-- HERO compacto -->
+<div style="background:var(--card);border-bottom:1px solid var(--b);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <p style="font-size:12px;color:var(--txt3);line-height:1.5;margin:0">Canales UHF ocupados por TDT · Microfonía inalámbrica · DVB-T · 8 MHz/canal · Central ± 4 MHz</p>
+  <!-- Stats en línea -->
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
+    <div style="display:flex;align-items:baseline;gap:5px">
+      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sRows">—</span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Entradas</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:5px">
+      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sCAs">—</span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">CC.AA.</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:5px">
+      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sProvs">—</span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Provincias</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:5px">
+      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sDems">—</span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Demarcaciones</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:5px">
+      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sChs">—</span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Canales</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:5px;padding-left:14px;border-left:1px solid var(--b)">
+      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sVis">—</span>
+      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Vista actual</span>
+    </div>
+  </div>
 </div>
 
 <main>
 
-  <!-- Loader: visible solo si fetch falla -->
-  <div id="loader"
-    ondragover="event.preventDefault();this.classList.add('over')"
-    ondragleave="this.classList.remove('over')"
-    ondrop="onDrop(event)">
-    <p>No se encontró <strong>tdt.csv</strong> automáticamente.<br>Arrástralo aquí o selecciónalo manualmente.</p>
-    <input type="file" id="csvFile" accept=".csv,.tsv,.txt">
-    <label class="file-btn" for="csvFile">Seleccionar archivo</label>
-  </div>
-
-  <!-- Herramientas: visibles tras cargar datos -->
-  <div class="tools" id="tools">
+  <!-- Herramientas: siempre visibles -->
+  <div class="tools visible" id="tools">
 
     <div class="card">
       <div class="card-kicker">Verificar frecuencia de micrófono</div>
@@ -202,18 +212,33 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
 
     <div class="card">
       <div class="card-kicker">Espectro UHF · canales activos en la selección</div>
-      <div class="spec-scroll">
-        <div class="spec-track" id="specBar"></div>
-        <div class="spec-labels" id="specLbl"></div>
+      <div id="specEmpty" style="text-align:center;padding:18px 0;font-size:13px;color:var(--txt3)">
+        Selecciona una provincia o demarcación para ver el espectro de canales
       </div>
-      <div class="spec-legend">
-        <span class="leg"><span class="leg-dot" style="background:var(--acc);opacity:.4"></span>Canal TDT ocupado</span>
-        <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
+      <div id="specContent" style="display:none">
+        <div class="spec-scroll">
+          <div class="spec-track" id="specBar"></div>
+          <div class="spec-labels" id="specLbl"></div>
+        </div>
+        <div class="spec-legend">
+          <span class="leg"><span class="leg-dot" style="background:var(--acc);opacity:.4"></span>Canal TDT ocupado</span>
+          <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
+        </div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-kicker">Filtros</div>
+      <!-- Aviso CSV inline — solo visible si no hay datos -->
+      <div id="csvNotice"
+        style="display:none;background:var(--bg);border:1px dashed var(--b2);border-radius:8px;padding:16px 20px;margin-bottom:16px;text-align:center"
+        ondragover="event.preventDefault();this.style.borderColor='var(--acc)'"
+        ondragleave="this.style.borderColor=''"
+        ondrop="onDrop(event)">
+        <p style="font-size:13px;color:var(--txt3);margin-bottom:10px">Arrastra <strong style="color:var(--txt2)">tdt.csv</strong> aquí o selecciónalo</p>
+        <input type="file" id="csvFile" accept=".csv,.tsv,.txt">
+        <label class="file-btn" for="csvFile" style="font-size:12px;padding:7px 14px">Seleccionar archivo</label>
+      </div>
       <div class="fgrid">
         <div class="fg"><label>Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
         <div class="fg"><label>Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
@@ -229,7 +254,7 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
     <div class="twrap">
       <div class="tbar">
         <div class="tcount"><strong id="cVis">0</strong><span style="margin:0 4px">de</span><strong id="cTot">0</strong> entradas</div>
-        <span class="thint">clic en cabecera para ordenar</span>
+        <span class="thint" id="tblHint">clic en cabecera para ordenar</span>
       </div>
       <!-- Vista colapsada -->
       <div class="tbl-collapsed" id="tblCollapsed">
@@ -243,7 +268,7 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
       <div id="tblExpanded" style="display:none">
         <div class="tscroll">
           <table>
-            <thead><tr>
+            <thead><tr id="theadRow">
               <th onclick="sortBy('ca')">Comunidad Autónoma</th>
               <th onclick="sortBy('provincia')">Provincia</th>
               <th onclick="sortBy('demarcacion')">Demarcación</th>
@@ -263,6 +288,17 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
         </div>
       </div>
     </div>
+
+  <!-- Aviso bandas reservadas -->
+  <div style="background:#fffbeb;border:1px solid #f5c842;border-radius:var(--r2);padding:14px 20px;display:flex;gap:12px;align-items:flex-start">
+    <svg style="flex-shrink:0;margin-top:1px" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#b45309" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
+    <p style="font-size:12px;color:#92400e;line-height:1.75;margin:0">
+      <strong style="font-weight:700">Bandas reservadas — no utilizar para microfonía inalámbrica:</strong>
+      la banda de <strong style="font-weight:700">700 MHz</strong> (a partir de 694 MHz) está asignada al <strong style="font-weight:700">5G</strong>,
+      y la banda de <strong style="font-weight:700">800 MHz</strong> (a partir de 790 MHz) está asignada al <strong style="font-weight:700">4G LTE</strong>.
+      Trabajar en estas frecuencias provoca interferencias graves y su uso no está permitido.
+    </p>
+  </div>
 
   </div><!-- /tools -->
 </main>
@@ -356,8 +392,7 @@ function v(id) { return document.getElementById(id).value; }
 function loadData(txt) {
   ALL = parse(txt);
   if (!ALL.length) { alert('No se pudieron leer datos. Comprueba el formato CSV.'); return; }
-  document.getElementById('loader').classList.remove('visible');
-  document.getElementById('tools').classList.add('visible');
+  document.getElementById('csvNotice').style.display = 'none';
   document.getElementById('sRows').textContent  = ALL.length.toLocaleString('es');
   document.getElementById('sCAs').textContent   = uniq('ca').length;
   document.getElementById('sProvs').textContent = uniq('provincia').length;
@@ -374,7 +409,10 @@ function loadData(txt) {
 fetch('tdt.csv')
   .then(r => { if (!r.ok) throw 0; return r.text(); })
   .then(t => loadData(t))
-  .catch(() => document.getElementById('loader').classList.add('visible'));
+  .catch(() => {
+    // Mostrar aviso CSV inline en el panel de filtros
+    document.getElementById('csvNotice').style.display = 'block';
+  });
 
 // Input manual
 document.getElementById('csvFile').addEventListener('change', e => {
@@ -452,6 +490,11 @@ document.getElementById('fcInp').addEventListener('keydown', e => { if (e.key ==
 const SMIN = 470, SMAX = 694, LBLS = [470, 510, 550, 590, 630, 670, 694];
 
 function renderSpectrum() {
+  const hasFilter = v('fCA') !== '' || v('fProv') !== '' || v('fDem') !== '' || v('fAmb') !== '';
+  document.getElementById('specEmpty').style.display  = hasFilter ? 'none'  : 'block';
+  document.getElementById('specContent').style.display = hasFilter ? 'block' : 'none';
+  if (!hasFilter) return;
+
   const bar = document.getElementById('specBar'), span = SMAX - SMIN, chMap = {};
   FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
   bar.innerHTML = Object.values(chMap).map(r => {
@@ -528,15 +571,51 @@ function render(resetPage = true) {
 }
 
 function renderRows() {
+  // Detectar si hay ubicación concreta seleccionada (CA + al menos provincia)
+  const hasLocation = v('fCA') !== '' || v('fProv') !== '' || v('fDem') !== '' || v('fAmb') !== '';
+  const isDetailed  = v('fDem') !== '' || v('fAmb') !== '' || v('fProv') !== '';
+
+  // Ajustar cabeceras
+  const thead = document.getElementById('theadRow');
+  const hint  = document.getElementById('tblHint');
+  if (isDetailed) {
+    thead.innerHTML = `
+      <th onclick="sortBy('demarcacion')">Demarcación</th>
+      <th onclick="sortBy('canal')">Canal</th>
+      <th onclick="sortBy('frecuencia')">Frec. Central</th>
+      <th onclick="sortBy('lo')">Rango ocupado</th>`;
+    hint.textContent = 'Vista compacta · filtra por demarcación para mayor detalle';
+  } else {
+    thead.innerHTML = `
+      <th onclick="sortBy('ca')">Comunidad Autónoma</th>
+      <th onclick="sortBy('provincia')">Provincia</th>
+      <th onclick="sortBy('demarcacion')">Demarcación</th>
+      <th>Ámbito de Cobertura</th>
+      <th onclick="sortBy('canal')">Canal</th>
+      <th onclick="sortBy('frecuencia')">Frec. Central</th>
+      <th onclick="sortBy('lo')">Rango del Canal</th>`;
+    hint.textContent = 'clic en cabecera para ordenar';
+  }
+
   const tbody = document.getElementById('tbody');
   if (!FILT.length) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-t">Sin resultados</div><div class="empty-s">Prueba otros filtros</div></div></td></tr>`;
+    const cols = isDetailed ? 4 : 7;
+    tbody.innerHTML = `<tr><td colspan="${cols}"><div class="empty"><div class="empty-t">Sin resultados</div><div class="empty-s">Prueba otros filtros</div></div></td></tr>`;
     document.getElementById('loadMore').style.display = 'none';
     return;
   }
+
   const slice = FILT.slice(0, visibleRows);
   tbody.innerHTML = slice.map(r => {
     const c = probe !== null && probe >= r.lo && probe <= r.hi;
+    if (isDetailed) {
+      return `<tr>
+        <td><strong>${r.demarcacion}</strong></td>
+        <td><span class="ch-pill${c?' conflict':''}">${r.canal}</span></td>
+        <td><span class="fmhz">${r.frecuencia.toFixed(2)}</span><span class="funit">MHz</span></td>
+        <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c?' conflict':''}"></div></div></td>
+      </tr>`;
+    }
     return `<tr>
       <td>${r.ca}</td><td>${r.provincia}</td>
       <td><strong>${r.demarcacion}</strong></td>
@@ -546,6 +625,7 @@ function renderRows() {
       <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c?' conflict':''}"></div></div></td>
     </tr>`;
   }).join('');
+
   const btn = document.getElementById('loadMore');
   if (FILT.length > visibleRows) {
     btn.style.display = 'block';
@@ -560,14 +640,7 @@ function loadMore() {
   renderRows();
 }
 
-// ── EXPORT ─────────────────────────────────────────────────────────────────
-function exportCSV() {
-  const h = 'CA,Provincia,Demarcación,Ámbito,Canal,Frec.(MHz),Lo,Hi';
-  const rows = FILT.map(r => [r.ca, r.provincia, r.demarcacion, `"${r.ambito}"`, r.canal, r.frecuencia, r.lo, r.hi].join(','));
-  const blob = new Blob([h + '\n' + rows.join('\n')], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'TDT_RF_Frecuencias.csv'; a.click();
-}
+
 </script>
 </body>
 </html>
