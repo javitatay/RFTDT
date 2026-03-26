@@ -155,15 +155,8 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
 </nav>
 
 <div class="hero">
-  <p class="hero-kicker">Microfonía inalámbrica · Directo · RF</p>
-  <h1>Frecuencias TDT<br>en España</h1>
-  <p class="hero-desc">Consulta qué canales UHF ocupa la TDT en cada demarcación. Herramienta para coordinación de frecuencias de microfonía inalámbrica y sistemas RF en producciones en directo.</p>
-  <div class="hero-tags">
-    <span class="htag">DVB-T</span>
-    <span class="htag">UHF IV / V</span>
-    <span class="htag">8 MHz / canal</span>
-    <span class="htag">Central ± 4 MHz</span>
-  </div>
+  <h1>Frecuencias TDT en España</h1>
+  <p class="hero-desc">Canales UHF ocupados por TDT por demarcación · Coordinación de microfonía inalámbrica y RF en directo · DVB-T · UHF IV/V · 8 MHz/canal · Central ± 4 MHz</p>
 </div>
 
 <div class="stats">
@@ -248,10 +241,56 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
           <tbody id="tbody"></tbody>
         </table>
       </div>
+      <div id="loadMore" style="display:none;padding:16px 22px;border-top:1px solid var(--b);text-align:center">
+        <button class="btn ghost" style="width:100%;justify-content:center" onclick="loadMore()"></button>
+      </div>
     </div>
 
   </div><!-- /tools -->
 </main>
+
+<!-- CRÉDITOS -->
+<div style="max-width:1700px;margin:0 auto;padding:0 40px 40px;display:flex;flex-direction:column;gap:10px">
+
+  <div style="background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:36px;height:36px;border-radius:8px;background:var(--acc-a);border:1px solid var(--acc-b);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--acc)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 7h6M5 10h4"/></svg>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-bottom:3px">Herramienta · Información</div>
+        <div style="font-size:14px;font-weight:600;color:var(--txt)">RF · TDT España &nbsp;·&nbsp; Consulta de frecuencias UHF para técnicos de directo</div>
+      </div>
+    </div>
+    <a href="https://github.com/javitatay/RFTDT" target="_blank"
+      style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-size:12px;font-weight:600;padding:8px 14px;text-decoration:none;transition:.15s;white-space:nowrap"
+      onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'"
+      onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt2)'">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      Ver en GitHub
+    </a>
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:36px;height:36px;border-radius:8px;background:var(--acc-a);border:1px solid var(--acc-b);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--acc)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-bottom:3px">Autor · Contacto</div>
+        <div style="font-size:14px;font-weight:600;color:var(--txt)">Javier Tatay Rubio</div>
+      </div>
+    </div>
+    <a href="mailto:j.tatayrubio@edu.gva.es"
+      style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-size:12px;font-weight:600;padding:8px 14px;text-decoration:none;transition:.15s;white-space:nowrap"
+      onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'"
+      onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt2)'">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
+      j.tatayrubio@edu.gva.es
+    </a>
+  </div>
+
+</div>
 
 <footer>
   <span>RF · TDT España &nbsp;·&nbsp; DVB-T · UHF 470–694 MHz &nbsp;·&nbsp; Fuente: CNAF / MINETUR</span>
@@ -427,7 +466,11 @@ function getFiltered() {
 }
 
 // ── RENDER ─────────────────────────────────────────────────────────────────
-function render() {
+const PAGE = 30;
+let visibleRows = PAGE;
+
+function render(resetPage = true) {
+  if (resetPage) visibleRows = PAGE;
   FILT = getFiltered();
   FILT.sort((a,b) => {
     let va = a[sCol], vb = b[sCol];
@@ -441,9 +484,11 @@ function render() {
   const tbody = document.getElementById('tbody');
   if (!FILT.length) {
     tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-t">Sin resultados</div><div class="empty-s">Prueba otros filtros</div></div></td></tr>`;
+    document.getElementById('loadMore').style.display = 'none';
     return;
   }
-  tbody.innerHTML = FILT.map(r => {
+  const slice = FILT.slice(0, visibleRows);
+  tbody.innerHTML = slice.map(r => {
     const c = probe !== null && probe >= r.lo && probe <= r.hi;
     return `<tr>
       <td>${r.ca}</td><td>${r.provincia}</td>
@@ -454,6 +499,18 @@ function render() {
       <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c?' conflict':''}"></div></div></td>
     </tr>`;
   }).join('');
+  const btn = document.getElementById('loadMore');
+  if (FILT.length > visibleRows) {
+    btn.style.display = 'block';
+    btn.textContent = `Ver más · ${FILT.length - visibleRows} entradas restantes`;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function loadMore() {
+  visibleRows += PAGE;
+  render(false);
 }
 
 // ── EXPORT ─────────────────────────────────────────────────────────────────
