@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>RF · TDT España</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#eeeee8;--card:#ffffff;--card2:#f7f7f3;
+  --b:#ddddd6;--b2:#c8c8c0;
+  --txt:#1c1c1a;--txt2:#6b6b63;--txt3:#9b9b92;
+  --acc:#2d6a4f;--acc-a:rgba(45,106,79,.08);--acc-b:rgba(45,106,79,.22);
+  --red:#b5432a;--red-a:rgba(181,67,42,.07);--red-b:rgba(181,67,42,.2);
+  --warn-a:rgba(160,100,0,.07);
+  --sans:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:16px;--r2:12px;
+}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;min-height:100vh;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+/* ── NAV ── */
+nav{background:var(--card);border-bottom:1px solid var(--b);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-icon{width:30px;height:30px;border-radius:8px;background:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.nav-title{font-size:14px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
+.nav-badge{font-size:11px;color:var(--txt3);font-family:var(--mono);letter-spacing:.04em}
+
+/* ── HERO ── */
+.hero{padding:52px 40px 40px;max-width:1700px;margin:0 auto}
+.hero-kicker{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:14px}
+.hero h1{font-size:clamp(28px,4vw,52px);font-weight:700;color:var(--txt);letter-spacing:-.035em;line-height:1.05;margin-bottom:10px}
+.hero-desc{font-size:14px;color:var(--txt2);max-width:560px;line-height:1.75;margin-bottom:22px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:6px}
+.htag{background:var(--card);border:1px solid var(--b);border-radius:20px;color:var(--txt3);font-size:11px;font-family:var(--mono);letter-spacing:.06em;padding:4px 11px;text-transform:uppercase}
+
+/* ── STATS ── */
+.stats{display:flex;flex-wrap:wrap;gap:10px;padding:0 40px 28px;max-width:1700px;margin:0 auto}
+.stat{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:14px 20px;display:flex;flex-direction:column;gap:3px;flex:1;min-width:110px}
+.sv{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--acc);letter-spacing:-.02em}
+.sl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
+
+/* ── MAIN ── */
+main{max-width:1700px;margin:0 auto;padding:0 40px 80px;display:flex;flex-direction:column;gap:12px}
+
+/* ── LOADER ── */
+#loader{background:var(--card);border:2px dashed var(--b);border-radius:var(--r);padding:56px 40px;text-align:center;cursor:pointer;transition:.2s;display:none}
+#loader.visible{display:block}
+#loader.over{border-color:var(--acc);background:var(--acc-a)}
+#loader p{font-size:14px;color:var(--txt3);margin-bottom:20px;line-height:1.8}
+#loader p strong{color:var(--txt2)}
+input[type=file]{display:none}
+.file-btn{display:inline-block;cursor:pointer;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 18px;transition:.15s}
+.file-btn:hover{border-color:var(--acc);color:var(--acc)}
+
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:24px 28px}
+.card-kicker{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card-kicker::after{content:'';flex:1;height:1px;background:var(--b)}
+
+/* ── CHECKER ── */
+.fc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fc-lbl{font-size:12px;font-weight:600;color:var(--txt2);white-space:nowrap}
+.fc-inp{background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:19px;font-weight:500;padding:8px 13px;outline:none;width:130px;transition:.15s}
+.fc-inp:focus{border-color:var(--acc);background:var(--card)}
+.fc-unit{font-family:var(--mono);font-size:12px;color:var(--txt3);margin-left:-4px}
+.fc-note{font-size:12px;color:var(--txt3);margin-top:10px;line-height:1.65}
+.btn{background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 16px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.ghost{border-color:var(--b);color:var(--txt3)}
+.btn.ghost:hover{border-color:var(--b2);color:var(--txt2)}
+.fc-res{display:none;font-size:12px;font-weight:500;padding:10px 14px;border-radius:8px;margin-top:12px;line-height:1.65;font-family:var(--mono)}
+.fc-res.ok{display:block;background:var(--acc-a);color:var(--acc);border:1px solid var(--acc-b)}
+.fc-res.bad{display:block;background:var(--red-a);color:var(--red);border:1px solid var(--red-b)}
+.fc-res.warn{display:block;background:var(--warn-a);color:#7a5000;border:1px solid rgba(160,100,0,.2)}
+
+/* ── FILTERS ── */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;align-items:end}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
+select{background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--txt);font-family:var(--sans);font-size:14px;padding:9px 32px 9px 11px;outline:none;cursor:pointer;transition:.15s;width:100%;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9b92' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:calc(100% - 11px) center}
+select:hover,select:focus{border-color:var(--acc)}
+.f-actions{display:flex;gap:8px;align-items:flex-end;padding-top:14px}
+
+/* ── SPECTRUM ── */
+.spec-scroll{overflow-x:auto;padding-bottom:4px}
+.spec-track{position:relative;height:22px;background:var(--bg);border-radius:8px;min-width:600px;overflow:visible;border:1px solid var(--b)}
+.spec-ch{position:absolute;top:0;height:100%;border-right:1px solid rgba(255,255,255,.7);cursor:default;transition:opacity .1s}
+.spec-ch.free{background:var(--acc);opacity:.3}
+.spec-ch.probed{background:var(--red);opacity:.85}
+.spec-ch:hover{opacity:1;z-index:3}
+.spec-ch:hover .spec-tip{opacity:1}
+.spec-tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--txt);color:#fff;border-radius:7px;font-family:var(--mono);font-size:10px;padding:5px 10px;white-space:nowrap;pointer-events:none;opacity:0;transition:.12s;z-index:20}
+.spec-probe{position:absolute;top:-3px;height:calc(100% + 6px);width:2px;background:var(--red);z-index:5;pointer-events:none;border-radius:1px}
+.spec-labels{display:flex;justify-content:space-between;margin-top:5px;font-family:var(--mono);font-size:10px;color:var(--txt3);min-width:600px}
+.spec-legend{display:flex;gap:14px;margin-top:9px}
+.leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt3)}
+.leg-dot{width:9px;height:9px;border-radius:2px}
+
+/* ── TABLE ── */
+.twrap{background:var(--card);border:1px solid var(--b);border-radius:var(--r);overflow:hidden}
+.tbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--b);flex-wrap:wrap;gap:8px}
+.tcount{font-size:13px;color:var(--txt3)}
+.tcount strong{color:var(--acc);font-family:var(--mono);font-size:14px}
+.thint{font-size:11px;color:var(--txt3);font-family:var(--mono)}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--card2);color:var(--txt3);font-size:10px;font-weight:700;letter-spacing:.1em;text-align:left;text-transform:uppercase;padding:11px 18px;border-bottom:1px solid var(--b);cursor:pointer;user-select:none;white-space:nowrap;transition:.12s}
+thead th:hover{color:var(--acc)}
+thead th.asc::after{content:' ↑';color:var(--acc)}
+thead th.desc::after{content:' ↓';color:var(--acc)}
+tbody tr{border-bottom:1px solid var(--b);transition:.1s}
+tbody tr:hover{background:var(--acc-a)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:11px 18px;font-size:13px;vertical-align:middle;white-space:nowrap}
+tbody td.wrap{white-space:normal;min-width:180px;max-width:300px;font-size:12px;color:var(--txt2);line-height:1.5}
+.ch-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:600;min-width:48px;padding:3px 9px;background:var(--acc-a);border:1px solid var(--acc-b);color:var(--acc)}
+.ch-pill.conflict{background:var(--red-a);border-color:var(--red-b);color:var(--red)}
+.fmhz{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--txt)}
+.funit{font-family:var(--mono);font-size:11px;color:var(--txt3);margin-left:2px}
+.rng-row{display:flex;align-items:center;gap:8px}
+.rng-txt{font-family:var(--mono);font-size:11px;color:var(--txt2);white-space:nowrap}
+.rng-bar{height:3px;width:48px;border-radius:2px;background:var(--acc);opacity:.3;flex-shrink:0}
+.rng-bar.conflict{background:var(--red);opacity:.5}
+.empty{text-align:center;padding:64px 20px;color:var(--txt3)}
+.empty-t{font-size:16px;font-weight:600;color:var(--txt2);margin-bottom:4px}
+.empty-s{font-size:13px}
+
+/* ── TOOLS (hidden until data loads) ── */
+.tools{display:none;flex-direction:column;gap:12px}
+.tools.visible{display:flex}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;color:var(--txt3);font-size:12px;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+
+@media(max-width:900px){nav,.hero,.stats,main,footer{padding-left:16px;padding-right:16px}.hero{padding-top:32px}}
+@media(max-width:580px){.stats{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-icon">
+      <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/><path d="M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M11.1 4.9l-1.4 1.4M4.9 11.1l-1.4 1.4" stroke-width="1.5"/></svg>
+    </div>
+    <div>
+      <div class="nav-title">RF · TDT España</div>
+      <div class="nav-badge">Frecuencias UHF · 470–694 MHz</div>
+    </div>
+  </div>
+  <span style="font-size:11px;font-family:var(--mono);color:var(--txt3);letter-spacing:.08em">DVB-T · CNAF</span>
+</nav>
+
+<div class="hero">
+  <p class="hero-kicker">Microfonía inalámbrica · Directo · RF</p>
+  <h1>Frecuencias TDT<br>en España</h1>
+  <p class="hero-desc">Consulta qué canales UHF ocupa la TDT en cada demarcación. Herramienta para coordinación de frecuencias de microfonía inalámbrica y sistemas RF en producciones en directo.</p>
+  <div class="hero-tags">
+    <span class="htag">DVB-T</span>
+    <span class="htag">UHF IV / V</span>
+    <span class="htag">8 MHz / canal</span>
+    <span class="htag">Central ± 4 MHz</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><span class="sv" id="sRows">—</span><span class="sl">Entradas</span></div>
+  <div class="stat"><span class="sv" id="sCAs">—</span><span class="sl">CC.AA.</span></div>
+  <div class="stat"><span class="sv" id="sProvs">—</span><span class="sl">Provincias</span></div>
+  <div class="stat"><span class="sv" id="sDems">—</span><span class="sl">Demarcaciones</span></div>
+  <div class="stat"><span class="sv" id="sChs">—</span><span class="sl">Canales UHF</span></div>
+  <div class="stat"><span class="sv" id="sVis">—</span><span class="sl">Vista actual</span></div>
+</div>
+
+<main>
+
+  <!-- Loader: visible solo si fetch falla -->
+  <div id="loader"
+    ondragover="event.preventDefault();this.classList.add('over')"
+    ondragleave="this.classList.remove('over')"
+    ondrop="onDrop(event)">
+    <p>No se encontró <strong>tdt.csv</strong> automáticamente.<br>Arrástralo aquí o selecciónalo manualmente.</p>
+    <input type="file" id="csvFile" accept=".csv,.tsv,.txt">
+    <label class="file-btn" for="csvFile">Seleccionar archivo</label>
+  </div>
+
+  <!-- Herramientas: visibles tras cargar datos -->
+  <div class="tools" id="tools">
+
+    <div class="card">
+      <div class="card-kicker">Verificar frecuencia de micrófono</div>
+      <div class="fc-row">
+        <span class="fc-lbl">Frecuencia</span>
+        <input class="fc-inp" type="number" id="fcInp" placeholder="546" min="400" max="750" step="0.025">
+        <span class="fc-unit">MHz</span>
+        <button class="btn" onclick="checkFreq()">Comprobar</button>
+        <button class="btn ghost" onclick="clearCheck()">Limpiar</button>
+      </div>
+      <div id="fcRes" class="fc-res"></div>
+      <p class="fc-note">Comprueba si la frecuencia cae en el rango (±4 MHz) de algún canal TDT activo en la selección. Pulsa Enter para confirmar.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-kicker">Espectro UHF · canales activos en la selección</div>
+      <div class="spec-scroll">
+        <div class="spec-track" id="specBar"></div>
+        <div class="spec-labels" id="specLbl"></div>
+      </div>
+      <div class="spec-legend">
+        <span class="leg"><span class="leg-dot" style="background:var(--acc);opacity:.4"></span>Canal TDT ocupado</span>
+        <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-kicker">Filtros</div>
+      <div class="fgrid">
+        <div class="fg"><label>Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
+        <div class="fg"><label>Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
+        <div class="fg"><label>Demarcación</label><select id="fDem"><option value="">Todas</option></select></div>
+        <div class="fg"><label>Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
+        <div class="f-actions">
+          <button class="btn ghost" onclick="resetF()">↺ Limpiar</button>
+          <button class="btn ghost" onclick="exportCSV()">↓ Exportar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="twrap">
+      <div class="tbar">
+        <div class="tcount"><strong id="cVis">0</strong><span style="margin:0 4px">de</span><strong id="cTot">0</strong> entradas</div>
+        <span class="thint">clic en cabecera para ordenar</span>
+      </div>
+      <div class="tscroll">
+        <table>
+          <thead><tr>
+            <th onclick="sortBy('ca')">Comunidad Autónoma</th>
+            <th onclick="sortBy('provincia')">Provincia</th>
+            <th onclick="sortBy('demarcacion')">Demarcación</th>
+            <th>Ámbito de Cobertura</th>
+            <th onclick="sortBy('canal')">Canal</th>
+            <th onclick="sortBy('frecuencia')">Frec. Central</th>
+            <th onclick="sortBy('lo')">Rango del Canal</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /tools -->
+</main>
+
+<footer>
+  <span>RF · TDT España &nbsp;·&nbsp; DVB-T · UHF 470–694 MHz &nbsp;·&nbsp; Fuente: CNAF / MINETUR</span>
+  <span style="font-family:var(--mono)">v3.0</span>
+</footer>
+
+<script>
+// ── PARSE ──────────────────────────────────────────────────────────────────
+function parse(txt) {
+  const lines = txt.trim().split(/\r?\n/);
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const c = splitCSV(lines[i]);
+    if (c.length < 6) continue;
+    const ca = c[0].trim(), pv = c[1].trim(), dm = c[2].trim(), am = c[3].trim();
+    const chs  = c[4].split(',').map(s => parseInt(s)).filter(n => !isNaN(n));
+    const mhzs = c[5].split(',').map(s => parseFloat(s.replace(/[^\d.]/g, ''))).filter(f => !isNaN(f));
+    chs.forEach((ch, idx) => {
+      const f = mhzs[idx] ?? (306 + 8 * ch);
+      rows.push({ ca, provincia: pv, demarcacion: dm, ambito: am,
+        canal: ch, frecuencia: f, lo: +(f - 4).toFixed(2), hi: +(f + 4).toFixed(2) });
+    });
+  }
+  return rows;
+}
+
+function splitCSV(l) {
+  const r = []; let cur = '', q = false;
+  for (let i = 0; i < l.length; i++) {
+    if (l[i] === '"') { q = !q; continue; }
+    if (l[i] === ',' && !q) { r.push(cur); cur = ''; }
+    else cur += l[i];
+  }
+  r.push(cur); return r;
+}
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let ALL = [], FILT = [], sCol = 'frecuencia', sDir = 'asc', probe = null;
+
+function uniq(k, s) { return [...new Set((s||ALL).map(r => r[k]).filter(Boolean))].sort((a,b) => typeof a === 'number' ? a-b : a.localeCompare(b, 'es')); }
+function v(id) { return document.getElementById(id).value; }
+
+// ── LOAD ───────────────────────────────────────────────────────────────────
+function loadData(txt) {
+  ALL = parse(txt);
+  if (!ALL.length) { alert('No se pudieron leer datos. Comprueba el formato CSV.'); return; }
+  document.getElementById('loader').classList.remove('visible');
+  document.getElementById('tools').classList.add('visible');
+  document.getElementById('sRows').textContent  = ALL.length.toLocaleString('es');
+  document.getElementById('sCAs').textContent   = uniq('ca').length;
+  document.getElementById('sProvs').textContent = uniq('provincia').length;
+  document.getElementById('sDems').textContent  = uniq('demarcacion').length;
+  document.getElementById('sChs').textContent   = uniq('canal').length;
+  fill('fCA',   uniq('ca'));
+  fill('fProv', uniq('provincia'));
+  fill('fDem',  uniq('demarcacion'));
+  fill('fAmb',  uniq('ambito'));
+  render();
+}
+
+// Auto-fetch desde la misma carpeta (GitHub Pages)
+fetch('tdt.csv')
+  .then(r => { if (!r.ok) throw 0; return r.text(); })
+  .then(t => loadData(t))
+  .catch(() => document.getElementById('loader').classList.add('visible'));
+
+// Input manual
+document.getElementById('csvFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => loadData(ev.target.result);
+  r.readAsText(f, 'UTF-8');
+});
+
+// Drag & drop
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('loader').classList.remove('over');
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => loadData(ev.target.result);
+  r.readAsText(f, 'UTF-8');
+}
+
+// ── SELECTS ────────────────────────────────────────────────────────────────
+function fill(id, vals, cur) {
+  const el = document.getElementById(id);
+  const lbl = id === 'fAmb' ? 'Todos' : 'Todas';
+  el.innerHTML = `<option value="">${lbl}</option>` + vals.map(v => `<option${v == cur ? ' selected' : ''}>${v}</option>`).join('');
+}
+
+['fCA','fProv','fDem','fAmb'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    const ca=v('fCA'), pr=v('fProv'), dm=v('fDem'), am=v('fAmb');
+    let p = ALL;
+    if (ca) p = p.filter(r => r.ca === ca);
+    fill('fProv', uniq('provincia', p), pr);
+    if (pr) p = p.filter(r => r.provincia === pr);
+    fill('fDem', uniq('demarcacion', p), dm);
+    if (dm) p = p.filter(r => r.demarcacion === dm);
+    fill('fAmb', uniq('ambito', p), am);
+    render();
+  });
+});
+
+function resetF() {
+  ['fCA','fProv','fDem','fAmb'].forEach(id => document.getElementById(id).value = '');
+  fill('fCA', uniq('ca')); fill('fProv', uniq('provincia'));
+  fill('fDem', uniq('demarcacion')); fill('fAmb', uniq('ambito'));
+  render();
+}
+
+// ── CHECKER ────────────────────────────────────────────────────────────────
+function checkFreq() {
+  const f = parseFloat(document.getElementById('fcInp').value);
+  const res = document.getElementById('fcRes');
+  if (isNaN(f) || f < 400 || f > 750) { res.className = 'fc-res warn'; res.textContent = 'Introduce una frecuencia válida entre 470 y 700 MHz'; return; }
+  probe = f;
+  const hits = FILT.filter(r => f >= r.lo && f <= r.hi);
+  if (hits.length) {
+    const chs = [...new Set(hits.map(r => `CH${r.canal} (${r.lo}–${r.hi} MHz)`))].join(' · ');
+    res.className = 'fc-res bad';
+    res.innerHTML = `CONFLICTO — ${f} MHz está dentro del rango de: ${chs}`;
+  } else {
+    res.className = 'fc-res ok';
+    res.innerHTML = `LIBRE — ${f} MHz no coincide con ningún canal TDT en la selección actual`;
+  }
+  render();
+}
+function clearCheck() {
+  probe = null;
+  document.getElementById('fcRes').className = 'fc-res';
+  document.getElementById('fcRes').textContent = '';
+  document.getElementById('fcInp').value = '';
+  render();
+}
+document.getElementById('fcInp').addEventListener('keydown', e => { if (e.key === 'Enter') checkFreq(); });
+
+// ── SPECTRUM ───────────────────────────────────────────────────────────────
+const SMIN = 470, SMAX = 694, LBLS = [470, 510, 550, 590, 630, 670, 694];
+
+function renderSpectrum() {
+  const bar = document.getElementById('specBar'), span = SMAX - SMIN, chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  bar.innerHTML = Object.values(chMap).map(r => {
+    const l = ((r.lo - SMIN) / span * 100).toFixed(3), w = (8 / span * 100).toFixed(3);
+    const isP = probe !== null && probe >= r.lo && probe <= r.hi;
+    return `<div class="spec-ch ${isP ? 'probed' : 'free'}" style="left:${l}%;width:${w}%">
+      <div class="spec-tip">CH ${r.canal} · ${r.frecuencia} MHz · ${r.lo}–${r.hi} MHz</div></div>`;
+  }).join('') + (probe !== null ? `<div class="spec-probe" style="left:${((probe-SMIN)/span*100).toFixed(3)}%"></div>` : '');
+  document.getElementById('specLbl').innerHTML = LBLS.map(f => `<span>${f} MHz</span>`).join('');
+}
+
+// ── SORT & FILTER ──────────────────────────────────────────────────────────
+function sortBy(col) {
+  sDir = sCol === col ? (sDir === 'asc' ? 'desc' : 'asc') : 'asc'; sCol = col;
+  document.querySelectorAll('thead th').forEach(th => th.classList.remove('asc','desc'));
+  const ci = {ca:0,provincia:1,demarcacion:2,canal:4,frecuencia:5,lo:6};
+  const th = document.querySelectorAll('thead th')[ci[col]];
+  if (th) th.classList.add(sDir);
+  render();
+}
+
+function getFiltered() {
+  let r = ALL;
+  const ca=v('fCA'),pr=v('fProv'),dm=v('fDem'),am=v('fAmb');
+  if (ca) r = r.filter(x => x.ca === ca);
+  if (pr) r = r.filter(x => x.provincia === pr);
+  if (dm) r = r.filter(x => x.demarcacion === dm);
+  if (am) r = r.filter(x => x.ambito === am);
+  return r;
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function render() {
+  FILT = getFiltered();
+  FILT.sort((a,b) => {
+    let va = a[sCol], vb = b[sCol];
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    return sDir === 'asc' ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
+  });
+  document.getElementById('sVis').textContent = FILT.length.toLocaleString('es');
+  document.getElementById('cVis').textContent = FILT.length.toLocaleString('es');
+  document.getElementById('cTot').textContent = ALL.length.toLocaleString('es');
+  renderSpectrum();
+  const tbody = document.getElementById('tbody');
+  if (!FILT.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-t">Sin resultados</div><div class="empty-s">Prueba otros filtros</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = FILT.map(r => {
+    const c = probe !== null && probe >= r.lo && probe <= r.hi;
+    return `<tr>
+      <td>${r.ca}</td><td>${r.provincia}</td>
+      <td><strong>${r.demarcacion}</strong></td>
+      <td class="wrap">${r.ambito}</td>
+      <td><span class="ch-pill${c?' conflict':''}">${r.canal}</span></td>
+      <td><span class="fmhz">${r.frecuencia.toFixed(2)}</span><span class="funit">MHz</span></td>
+      <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c?' conflict':''}"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── EXPORT ─────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const h = 'CA,Provincia,Demarcación,Ámbito,Canal,Frec.(MHz),Lo,Hi';
+  const rows = FILT.map(r => [r.ca, r.provincia, r.demarcacion, `"${r.ambito}"`, r.canal, r.frecuencia, r.lo, r.hi].join(','));
+  const blob = new Blob([h + '\n' + rows.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'TDT_RF_Frecuencias.csv'; a.click();
+}
+</script>
+</body>
+</html>
