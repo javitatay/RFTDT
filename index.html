@@ -88,8 +88,9 @@ select:hover,select:focus{border-color:var(--acc)}
 
 /* ── SPECTRUM ── */
 .spec-scroll{overflow-x:auto;padding-bottom:4px}
-.spec-track{position:relative;height:22px;background:var(--bg);border-radius:8px;min-width:600px;overflow:visible;border:1px solid var(--b)}
-.spec-ch{position:absolute;top:0;height:100%;border-right:1px solid rgba(255,255,255,.7);cursor:default;transition:opacity .1s}
+.spec-track{position:relative;height:36px;background:var(--bg);border-radius:8px;min-width:600px;overflow:visible;border:1px solid var(--b)}
+.spec-ch{position:absolute;top:0;height:100%;border-right:1px solid rgba(255,255,255,.7);cursor:default;transition:opacity .1s;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.spec-ch .ch-num{font-family:var(--mono);font-size:9px;font-weight:600;color:#fff;opacity:.9;pointer-events:none;white-space:nowrap;line-height:1}
 .spec-ch.free{background:var(--acc);opacity:.3}
 .spec-ch.probed{background:var(--red);opacity:.85}
 .spec-ch:hover{opacity:1;z-index:3}
@@ -160,34 +161,21 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
   <span style="font-size:11px;font-family:var(--mono);color:var(--txt3);letter-spacing:.08em">DVB-T · CNAF</span>
 </nav>
 
-<!-- HERO compacto -->
-<div style="background:var(--card);border-bottom:1px solid var(--b);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-  <p style="font-size:12px;color:var(--txt3);line-height:1.5;margin:0">Canales UHF ocupados por TDT · Microfonía inalámbrica · DVB-T · 8 MHz/canal · Central ± 4 MHz</p>
-  <!-- Stats en línea -->
-  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
-    <div style="display:flex;align-items:baseline;gap:5px">
-      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sRows">—</span>
-      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Entradas</span>
+<!-- HERO -->
+<div style="background:var(--card);border-bottom:1px solid var(--b);padding:28px 40px 22px">
+  <p style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:10px">Microfonía inalámbrica · Directo · RF</p>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div>
+      <h1 style="font-size:clamp(22px,3vw,36px);font-weight:700;color:var(--txt);letter-spacing:-.03em;line-height:1;margin-bottom:6px">Frecuencias TDT en España</h1>
+      <p style="font-size:13px;color:var(--txt3);line-height:1.5">Canales UHF ocupados por demarcación · DVB-T · 8 MHz/canal · Central ± 4 MHz</p>
     </div>
-    <div style="display:flex;align-items:baseline;gap:5px">
-      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sCAs">—</span>
-      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">CC.AA.</span>
-    </div>
-    <div style="display:flex;align-items:baseline;gap:5px">
-      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sProvs">—</span>
-      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Provincias</span>
-    </div>
-    <div style="display:flex;align-items:baseline;gap:5px">
-      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sDems">—</span>
-      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Demarcaciones</span>
-    </div>
-    <div style="display:flex;align-items:baseline;gap:5px">
-      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sChs">—</span>
-      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Canales</span>
-    </div>
-    <div style="display:flex;align-items:baseline;gap:5px;padding-left:14px;border-left:1px solid var(--b)">
-      <span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sVis">—</span>
-      <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Vista actual</span>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:baseline;padding-bottom:2px">
+      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sRows">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Entradas</span></div>
+      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sCAs">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">CC.AA.</span></div>
+      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sProvs">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Provincias</span></div>
+      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sDems">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Demarcaciones</span></div>
+      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sChs">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Canales</span></div>
+      <div style="display:flex;align-items:baseline;gap:5px;padding-left:14px;border-left:1px solid var(--b)"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sVis">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Vista actual</span></div>
     </div>
   </div>
 </div>
@@ -501,6 +489,7 @@ function renderSpectrum() {
     const l = ((r.lo - SMIN) / span * 100).toFixed(3), w = (8 / span * 100).toFixed(3);
     const isP = probe !== null && probe >= r.lo && probe <= r.hi;
     return `<div class="spec-ch ${isP ? 'probed' : 'free'}" style="left:${l}%;width:${w}%">
+      <span class="ch-num">${r.canal}</span>
       <div class="spec-tip">CH ${r.canal} · ${r.frecuencia} MHz · ${r.lo}–${r.hi} MHz</div></div>`;
   }).join('') + (probe !== null ? `<div class="spec-probe" style="left:${((probe-SMIN)/span*100).toFixed(3)}%"></div>` : '');
   document.getElementById('specLbl').innerHTML = LBLS.map(f => `<span>${f} MHz</span>`).join('');
