@@ -101,6 +101,10 @@ select:hover,select:focus{border-color:var(--acc)}
 
 /* ── TABLE ── */
 .twrap{background:var(--card);border:1px solid var(--b);border-radius:var(--r);overflow:hidden}
+.tbl-collapsed{padding:32px 22px;text-align:center;border-top:1px solid var(--b)}
+.tbl-collapsed p{font-size:13px;color:var(--txt3);margin-bottom:14px}
+.expand-btn{display:inline-flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:600;padding:10px 20px;transition:.15s}
+.expand-btn:hover{border-color:var(--acc);color:var(--acc)}
 .tbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--b);flex-wrap:wrap;gap:8px}
 .tcount{font-size:13px;color:var(--txt3)}
 .tcount strong{color:var(--acc);font-family:var(--mono);font-size:14px}
@@ -227,22 +231,36 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
         <div class="tcount"><strong id="cVis">0</strong><span style="margin:0 4px">de</span><strong id="cTot">0</strong> entradas</div>
         <span class="thint">clic en cabecera para ordenar</span>
       </div>
-      <div class="tscroll">
-        <table>
-          <thead><tr>
-            <th onclick="sortBy('ca')">Comunidad Autónoma</th>
-            <th onclick="sortBy('provincia')">Provincia</th>
-            <th onclick="sortBy('demarcacion')">Demarcación</th>
-            <th>Ámbito de Cobertura</th>
-            <th onclick="sortBy('canal')">Canal</th>
-            <th onclick="sortBy('frecuencia')">Frec. Central</th>
-            <th onclick="sortBy('lo')">Rango del Canal</th>
-          </tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+      <!-- Vista colapsada -->
+      <div class="tbl-collapsed" id="tblCollapsed">
+        <p id="collapseHint">Aplica filtros o despliega para ver todas las entradas</p>
+        <button class="expand-btn" onclick="expandTable()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l5 5 5-5"/></svg>
+          <span id="expandLabel">Ver todas las entradas</span>
+        </button>
       </div>
-      <div id="loadMore" style="display:none;padding:16px 22px;border-top:1px solid var(--b);text-align:center">
-        <button class="btn ghost" style="width:100%;justify-content:center" onclick="loadMore()"></button>
+      <!-- Vista expandida -->
+      <div id="tblExpanded" style="display:none">
+        <div class="tscroll">
+          <table>
+            <thead><tr>
+              <th onclick="sortBy('ca')">Comunidad Autónoma</th>
+              <th onclick="sortBy('provincia')">Provincia</th>
+              <th onclick="sortBy('demarcacion')">Demarcación</th>
+              <th>Ámbito de Cobertura</th>
+              <th onclick="sortBy('canal')">Canal</th>
+              <th onclick="sortBy('frecuencia')">Frec. Central</th>
+              <th onclick="sortBy('lo')">Rango del Canal</th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div id="loadMore" style="display:none;padding:16px 22px;border-top:1px solid var(--b);text-align:center">
+          <button class="btn ghost" style="width:100%" onclick="loadMore()"></button>
+        </div>
+        <div style="padding:12px 22px;border-top:1px solid var(--b);text-align:center">
+          <button class="btn ghost" style="font-size:11px" onclick="collapseTable()">↑ Contraer tabla</button>
+        </div>
       </div>
     </div>
 
@@ -468,9 +486,22 @@ function getFiltered() {
 // ── RENDER ─────────────────────────────────────────────────────────────────
 const PAGE = 30;
 let visibleRows = PAGE;
+let tableExpanded = false;
+
+function expandTable() {
+  tableExpanded = true;
+  document.getElementById('tblCollapsed').style.display = 'none';
+  document.getElementById('tblExpanded').style.display = 'block';
+  renderRows();
+}
+function collapseTable() {
+  tableExpanded = false;
+  document.getElementById('tblCollapsed').style.display = 'block';
+  document.getElementById('tblExpanded').style.display = 'none';
+}
 
 function render(resetPage = true) {
-  if (resetPage) visibleRows = PAGE;
+  if (resetPage) { visibleRows = PAGE; }
   FILT = getFiltered();
   FILT.sort((a,b) => {
     let va = a[sCol], vb = b[sCol];
@@ -481,6 +512,22 @@ function render(resetPage = true) {
   document.getElementById('cVis').textContent = FILT.length.toLocaleString('es');
   document.getElementById('cTot').textContent = ALL.length.toLocaleString('es');
   renderSpectrum();
+
+  // Actualizar hint y label del botón según filtros activos
+  const filtered = FILT.length < ALL.length;
+  document.getElementById('collapseHint').textContent = filtered
+    ? `${FILT.length.toLocaleString('es')} entradas coinciden con los filtros`
+    : 'Aplica filtros o despliega para ver todas las entradas';
+  document.getElementById('expandLabel').textContent = filtered
+    ? `Ver ${FILT.length.toLocaleString('es')} entradas`
+    : `Ver todas las entradas`;
+
+  // Si hay filtros activos, auto-expandir
+  if (filtered && !tableExpanded) expandTable();
+  if (tableExpanded) renderRows();
+}
+
+function renderRows() {
   const tbody = document.getElementById('tbody');
   if (!FILT.length) {
     tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-t">Sin resultados</div><div class="empty-s">Prueba otros filtros</div></div></td></tr>`;
@@ -502,7 +549,7 @@ function render(resetPage = true) {
   const btn = document.getElementById('loadMore');
   if (FILT.length > visibleRows) {
     btn.style.display = 'block';
-    btn.textContent = `Ver más · ${FILT.length - visibleRows} entradas restantes`;
+    btn.querySelector('button').textContent = `Ver ${Math.min(PAGE, FILT.length - visibleRows).toLocaleString('es')} más · quedan ${(FILT.length - visibleRows).toLocaleString('es')}`;
   } else {
     btn.style.display = 'none';
   }
@@ -510,7 +557,7 @@ function render(resetPage = true) {
 
 function loadMore() {
   visibleRows += PAGE;
-  render(false);
+  renderRows();
 }
 
 // ── EXPORT ─────────────────────────────────────────────────────────────────
