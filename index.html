@@ -3,256 +3,591 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>RF · TDT España</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>RF · TDT España — Frecuencias UHF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-:root{
-  --bg:#eeeee8;--card:#ffffff;--card2:#f7f7f3;
-  --b:#ddddd6;--b2:#c8c8c0;
-  --txt:#1c1c1a;--txt2:#6b6b63;--txt3:#9b9b92;
-  --acc:#2d6a4f;--acc-a:rgba(45,106,79,.08);--acc-b:rgba(45,106,79,.22);
-  --red:#b5432a;--red-a:rgba(181,67,42,.07);--red-b:rgba(181,67,42,.2);
-  --warn-a:rgba(160,100,0,.07);
-  --sans:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
-  --r:16px;--r2:12px;
+/* ═══════════════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════════════ */
+:root {
+  --ink:      #111110;
+  --ink2:     #6b6860;
+  --ink3:     #a8a49e;
+  --paper:    #f7f6f2;
+  --paper2:   #efede8;
+  --paper3:   #e8e5de;
+  --line:     #dddad2;
+
+  --green:    #1a6b44;
+  --green-bg: #edf5f0;
+  --green-bd: #b6d9c6;
+
+  --red:      #c0392b;
+  --red-bg:   #fdf0ef;
+  --red-bd:   #f0b8b3;
+
+  --amber:    #92600a;
+  --amber-bg: #fdf6e3;
+  --amber-bd: #e8d092;
+
+  --sans:     'DM Sans', sans-serif;
+  --mono:     'DM Mono', monospace;
+
+  --r:  10px;
+  --r2: 6px;
+  --max: 1200px;
 }
-body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;min-height:100vh;line-height:1.55;-webkit-font-smoothing:antialiased}
 
-/* ── NAV ── */
-nav{background:var(--card);border-bottom:1px solid var(--b);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.nav-logo{display:flex;align-items:center;gap:10px}
-.nav-icon{width:30px;height:30px;border-radius:8px;background:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
-.nav-title{font-size:14px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
-.nav-badge{font-size:11px;color:var(--txt3);font-family:var(--mono);letter-spacing:.04em}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
 
-/* ── HERO ── */
-.hero{padding:52px 40px 40px;max-width:1700px;margin:0 auto}
-.hero-kicker{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:14px}
-.hero h1{font-size:clamp(28px,4vw,52px);font-weight:700;color:var(--txt);letter-spacing:-.035em;line-height:1.05;margin-bottom:10px}
-.hero-desc{font-size:14px;color:var(--txt2);max-width:560px;line-height:1.75;margin-bottom:22px}
-.hero-tags{display:flex;flex-wrap:wrap;gap:6px}
-.htag{background:var(--card);border:1px solid var(--b);border-radius:20px;color:var(--txt3);font-size:11px;font-family:var(--mono);letter-spacing:.06em;padding:4px 11px;text-transform:uppercase}
+/* ═══════════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════════ */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(16px, 4vw, 48px);
+  justify-content: space-between;
+  gap: 16px;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.nav-title { font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: .01em; }
+.nav-sub { font-size: 11px; color: var(--ink3); font-family: var(--mono); letter-spacing: .04em; }
+.nav-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.nav-kv { display: flex; align-items: baseline; gap: 4px; }
+.nav-kv-v { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--ink); }
+.nav-kv-k { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
+@media (max-width: 680px) { .nav-meta { display: none; } }
 
-/* ── STATS ── */
-.stats{display:flex;flex-wrap:wrap;gap:10px;padding:0 40px 28px;max-width:1700px;margin:0 auto}
-.stat{background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:14px 20px;display:flex;flex-direction:column;gap:3px;flex:1;min-width:110px}
-.sv{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--acc);letter-spacing:-.02em}
-.sl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
+/* ═══════════════════════════════════════════════════════
+   FILTROS
+═══════════════════════════════════════════════════════ */
+.filter-bar {
+  background: var(--paper2);
+  border-bottom: 1px solid var(--line);
+  padding: 14px clamp(16px, 4vw, 48px);
+}
+.filter-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fg { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; max-width: 210px; }
+.fg label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); }
+select {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 7px 28px 7px 10px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8a49e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 10px) center;
+}
+select:focus, select:hover { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-bg); }
+.filter-actions { display: flex; align-items: flex-end; gap: 8px; padding-bottom: 1px; }
+.btn {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  color: var(--ink2);
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 13px;
+  transition: .15s;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink3); color: var(--ink); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--ink3); }
+.btn-ghost:hover { background: var(--paper2); border-color: var(--line); color: var(--ink2); }
 
-/* ── MAIN ── */
-main{max-width:1700px;margin:0 auto;padding:0 40px 80px;display:flex;flex-direction:column;gap:12px}
+/* CSV notice */
+.csv-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: var(--r2);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--amber);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+input[type=file] { display: none; }
+.file-btn {
+  display: inline-block;
+  cursor: pointer;
+  background: var(--paper);
+  border: 1px solid var(--amber-bd);
+  border-radius: var(--r2);
+  color: var(--amber);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 11px;
+  transition: .15s;
+  white-space: nowrap;
+}
+.file-btn:hover { background: var(--amber-bg); }
 
-/* ── LOADER ── */
-#loader{background:var(--card);border:2px dashed var(--b);border-radius:var(--r);padding:56px 40px;text-align:center;cursor:pointer;transition:.2s;display:none}
-#loader.visible{display:block}
-#loader.over{border-color:var(--acc);background:var(--acc-a)}
-#loader p{font-size:14px;color:var(--txt3);margin-bottom:20px;line-height:1.8}
-#loader p strong{color:var(--txt2)}
-input[type=file]{display:none}
-.file-btn{display:inline-block;cursor:pointer;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 18px;transition:.15s}
-.file-btn:hover{border-color:var(--acc);color:var(--acc)}
+/* ═══════════════════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════════════════ */
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 48px) 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
 
-/* ── CARD ── */
-.card{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:24px 28px}
-.card-kicker{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.card-kicker::after{content:'';flex:1;height:1px;background:var(--b)}
+.sh {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sh::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
-/* ── CHECKER ── */
-.fc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.fc-lbl{font-size:12px;font-weight:600;color:var(--txt2);white-space:nowrap}
-.fc-inp{background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:19px;font-weight:500;padding:8px 13px;outline:none;width:130px;transition:.15s}
-.fc-inp:focus{border-color:var(--acc);background:var(--card)}
-.fc-unit{font-family:var(--mono);font-size:12px;color:var(--txt3);margin-left:-4px}
-.fc-note{font-size:12px;color:var(--txt3);margin-top:10px;line-height:1.65}
-.btn{background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 16px;transition:.15s;white-space:nowrap}
-.btn:hover{border-color:var(--acc);color:var(--acc)}
-.btn.ghost{border-color:var(--b);color:var(--txt3)}
-.btn.ghost:hover{border-color:var(--b2);color:var(--txt2)}
-.btn-acc{background:var(--acc-a)!important;border:1px solid var(--acc-b)!important;border-radius:8px;color:var(--acc)!important;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.03em;padding:9px 18px;transition:.15s}
-.btn-acc:hover{background:rgba(45,106,79,.16)!important}
-.fc-res{display:none;font-size:12px;font-weight:500;padding:10px 14px;border-radius:8px;margin-top:12px;line-height:1.65;font-family:var(--mono)}
-.fc-res.ok{display:block;background:var(--acc-a);color:var(--acc);border:1px solid var(--acc-b)}
-.fc-res.bad{display:block;background:var(--red-a);color:var(--red);border:1px solid var(--red-b)}
-.fc-res.warn{display:block;background:var(--warn-a);color:#7a5000;border:1px solid rgba(160,100,0,.2)}
+/* ═══════════════════════════════════════════════════════
+   CHANNEL TILES
+═══════════════════════════════════════════════════════ */
+.ch-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.ch-count { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1; }
+.ch-count-label { font-size: 13px; color: var(--ink2); }
+.ch-range-hint { font-size: 12px; color: var(--ink3); font-family: var(--mono); margin-left: auto; }
 
-/* ── FILTERS ── */
-.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;align-items:end}
-.fg{display:flex;flex-direction:column;gap:5px}
-.fg label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
-select{background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--txt);font-family:var(--sans);font-size:14px;padding:9px 32px 9px 11px;outline:none;cursor:pointer;transition:.15s;width:100%;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9b92' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:calc(100% - 11px) center}
-select:hover,select:focus{border-color:var(--acc)}
-.f-actions{display:flex;gap:8px;align-items:flex-end;padding-top:14px}
+.ch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+.ch-tile {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 12px 14px 10px;
+  cursor: default;
+  transition: border-color .15s, box-shadow .15s;
+  position: relative;
+  overflow: hidden;
+}
+.ch-tile::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--green);
+  opacity: .45;
+  transition: opacity .15s;
+}
+.ch-tile:hover { border-color: var(--green-bd); box-shadow: 0 2px 8px rgba(26,107,68,.08); }
+.ch-tile:hover::before { opacity: 1; }
+.ch-tile.conflict { background: var(--red-bg); border-color: var(--red-bd); }
+.ch-tile.conflict::before { background: var(--red); opacity: 1; }
 
-/* ── SPECTRUM ── */
-.spec-scroll{overflow-x:auto;padding-bottom:4px}
-.spec-track{position:relative;height:36px;background:var(--bg);border-radius:8px;min-width:600px;overflow:visible;border:1px solid var(--b)}
-.spec-ch{position:absolute;top:0;height:100%;border-right:1px solid rgba(255,255,255,.7);cursor:default;transition:opacity .1s;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.spec-ch .ch-num{font-family:var(--mono);font-size:9px;font-weight:600;color:#fff;opacity:.9;pointer-events:none;white-space:nowrap;line-height:1}
-.spec-ch.free{background:var(--acc);opacity:.3}
-.spec-ch.probed{background:var(--red);opacity:.85}
-.spec-ch:hover{opacity:1;z-index:3}
-.spec-ch:hover .spec-tip{opacity:1}
-.spec-tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--txt);color:#fff;border-radius:7px;font-family:var(--mono);font-size:10px;padding:5px 10px;white-space:nowrap;pointer-events:none;opacity:0;transition:.12s;z-index:20}
-.spec-probe{position:absolute;top:-3px;height:calc(100% + 6px);width:2px;background:var(--red);z-index:5;pointer-events:none;border-radius:1px}
-.spec-labels{display:flex;justify-content:space-between;margin-top:5px;font-family:var(--mono);font-size:10px;color:var(--txt3);min-width:600px}
-.spec-legend{display:flex;gap:14px;margin-top:9px}
-.leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt3)}
-.leg-dot{width:9px;height:9px;border-radius:2px}
+.ch-tile-num { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.ch-tile.conflict .ch-tile-num { color: var(--red); }
+.ch-tile-freq { font-family: var(--mono); font-size: 11px; color: var(--ink2); line-height: 1; }
+.ch-tile-range { font-family: var(--mono); font-size: 9px; color: var(--ink3); margin-top: 3px; line-height: 1; }
 
-/* ── TABLE ── */
-.twrap{background:var(--card);border:1px solid var(--b);border-radius:var(--r);overflow:hidden}
-.tbl-collapsed{padding:32px 22px;text-align:center;border-top:1px solid var(--b)}
-.tbl-collapsed p{font-size:13px;color:var(--txt3);margin-bottom:14px}
-.expand-btn{display:inline-flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:600;padding:10px 20px;transition:.15s}
-.expand-btn:hover{border-color:var(--acc);color:var(--acc)}
-.tbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--b);flex-wrap:wrap;gap:8px}
-.tcount{font-size:13px;color:var(--txt3)}
-.tcount strong{color:var(--acc);font-family:var(--mono);font-size:14px}
-.thint{font-size:11px;color:var(--txt3);font-family:var(--mono)}
-.tscroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-thead th{background:var(--card2);color:var(--txt3);font-size:10px;font-weight:700;letter-spacing:.1em;text-align:left;text-transform:uppercase;padding:11px 18px;border-bottom:1px solid var(--b);cursor:pointer;user-select:none;white-space:nowrap;transition:.12s}
-thead th:hover{color:var(--acc)}
-thead th.asc::after{content:' ↑';color:var(--acc)}
-thead th.desc::after{content:' ↓';color:var(--acc)}
-tbody tr{border-bottom:1px solid var(--b);transition:.1s}
-tbody tr:hover{background:var(--acc-a)}
-tbody tr:last-child{border-bottom:none}
-tbody td{padding:11px 18px;font-size:13px;vertical-align:middle;white-space:nowrap}
-tbody td.wrap{white-space:normal;min-width:180px;max-width:300px;font-size:12px;color:var(--txt2);line-height:1.5}
-.ch-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:600;min-width:48px;padding:3px 9px;background:var(--acc-a);border:1px solid var(--acc-b);color:var(--acc)}
-.ch-pill.conflict{background:var(--red-a);border-color:var(--red-b);color:var(--red)}
-.fmhz{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--txt)}
-.funit{font-family:var(--mono);font-size:11px;color:var(--txt3);margin-left:2px}
-.rng-row{display:flex;align-items:center;gap:8px}
-.rng-txt{font-family:var(--mono);font-size:11px;color:var(--txt2);white-space:nowrap}
-.rng-bar{height:3px;width:48px;border-radius:2px;background:var(--acc);opacity:.3;flex-shrink:0}
-.rng-bar.conflict{background:var(--red);opacity:.5}
-.empty{text-align:center;padding:64px 20px;color:var(--txt3)}
-.empty-t{font-size:16px;font-weight:600;color:var(--txt2);margin-bottom:4px}
-.empty-s{font-size:13px}
+.ch-tile-bar-wrap { margin-top: 8px; height: 3px; background: var(--paper3); border-radius: 2px; overflow: hidden; }
+.ch-tile-bar-fill { height: 100%; background: var(--green); opacity: .45; border-radius: 2px; transition: opacity .15s; }
+.ch-tile:hover .ch-tile-bar-fill { opacity: 1; }
+.ch-tile.conflict .ch-tile-bar-fill { background: var(--red); opacity: .7; }
 
-/* ── TOOLS (hidden until data loads) ── */
-.tools{display:none;flex-direction:column;gap:12px}
-.tools.visible{display:flex}
+.ch-tile-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 9px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+  z-index: 50;
+}
+.ch-tile:hover .ch-tile-tip { opacity: 1; }
+.ch-grid-empty { font-size: 14px; color: var(--ink3); padding: 20px 0; font-style: italic; }
 
-/* ── FOOTER ── */
-footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;color:var(--txt3);font-size:12px;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+/* ═══════════════════════════════════════════════════════
+   ESPECTRO
+═══════════════════════════════════════════════════════ */
+.spec-scroll { overflow-x: auto; padding-bottom: 4px; }
+.spec-track {
+  position: relative;
+  height: 64px;
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  min-width: 640px;
+  overflow: visible;
+}
+.spec-ch {
+  position: absolute;
+  top: 6px;
+  height: calc(100% - 12px);
+  border-radius: 4px;
+  cursor: default;
+  transition: opacity .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.spec-ch .ch-num { font-family: var(--mono); font-size: 9px; font-weight: 500; color: #fff; pointer-events: none; white-space: nowrap; line-height: 1; }
+.spec-ch.free { background: var(--green); opacity: .35; }
+.spec-ch.probed { background: var(--red); opacity: .85; }
+.spec-ch:hover { opacity: 1; z-index: 3; }
+.spec-ch:hover .spec-tip { opacity: 1; }
+.spec-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 5px 10px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: .12s;
+  z-index: 20;
+}
+.spec-probe {
+  position: absolute; top: 0; height: 100%; width: 2px;
+  background: var(--red); z-index: 5; pointer-events: none; border-radius: 1px;
+  box-shadow: 0 0 6px rgba(192,57,43,.35);
+}
+.spec-labels {
+  display: flex; justify-content: space-between; margin-top: 6px;
+  font-family: var(--mono); font-size: 10px; color: var(--ink3); min-width: 640px;
+}
+.spec-legend { display: flex; gap: 18px; margin-top: 10px; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink3); }
+.leg-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+.spec-empty { font-size: 13px; color: var(--ink3); padding: 20px 0; font-style: italic; }
 
-@media(max-width:900px){nav,.hero,.stats,main,footer{padding-left:16px;padding-right:16px}.hero{padding-top:32px}}
-@media(max-width:580px){.stats{flex-direction:column}}
+/* ═══════════════════════════════════════════════════════
+   VERIFICADOR
+═══════════════════════════════════════════════════════ */
+.checker-inner {
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px 20px;
+}
+.fc-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fc-lbl { font-size: 12px; font-weight: 500; color: var(--ink2); white-space: nowrap; }
+.fc-inp {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 500;
+  padding: 7px 11px;
+  outline: none;
+  width: 115px;
+  transition: .15s;
+}
+.fc-inp:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-bg); }
+.fc-unit { font-family: var(--mono); font-size: 12px; color: var(--ink3); }
+.btn-check {
+  background: var(--green-bg); border: 1px solid var(--green-bd);
+  border-radius: var(--r2); color: var(--green); cursor: pointer;
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  padding: 8px 16px; transition: .15s; letter-spacing: .02em;
+}
+.btn-check:hover { background: #d9ede5; border-color: #8ec9a9; }
+.fc-res {
+  display: none; font-size: 12px; font-weight: 500;
+  padding: 9px 13px; border-radius: var(--r2); margin-top: 10px;
+  line-height: 1.65; font-family: var(--mono);
+}
+.fc-res.ok   { display: block; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+.fc-res.bad  { display: block; background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd); }
+.fc-res.warn { display: block; background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+.fc-note { font-size: 11px; color: var(--ink3); margin-top: 8px; line-height: 1.7; }
+
+/* ═══════════════════════════════════════════════════════
+   TABLA
+═══════════════════════════════════════════════════════ */
+.twrap { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--paper); }
+.tbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 18px; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap; gap: 8px; background: var(--paper2);
+}
+.tcount { font-size: 13px; color: var(--ink2); }
+.tcount strong { color: var(--ink); font-family: var(--mono); font-size: 14px; }
+.thint { font-size: 11px; color: var(--ink3); font-family: var(--mono); }
+.tbl-collapsed { padding: 22px 18px; text-align: center; }
+.tbl-collapsed p { font-size: 13px; color: var(--ink3); margin-bottom: 12px; }
+.expand-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--paper2); border: 1px solid var(--line); border-radius: var(--r2);
+  color: var(--ink2); cursor: pointer; font-family: var(--sans); font-size: 12px;
+  font-weight: 500; padding: 8px 16px; transition: .15s;
+}
+.expand-btn:hover { border-color: var(--ink3); color: var(--ink); }
+.tscroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--paper2); color: var(--ink3); font-size: 10px; font-weight: 600;
+  letter-spacing: .1em; text-align: left; text-transform: uppercase;
+  padding: 10px 16px; border-bottom: 1px solid var(--line);
+  cursor: pointer; user-select: none; white-space: nowrap; transition: color .12s;
+}
+thead th:hover { color: var(--ink); }
+thead th.asc::after  { content: ' ↑'; color: var(--green); }
+thead th.desc::after { content: ' ↓'; color: var(--green); }
+tbody tr { border-bottom: 1px solid var(--line); transition: background .1s; }
+tbody tr:hover { background: var(--green-bg); }
+tbody tr:last-child { border-bottom: none; }
+tbody td { padding: 10px 16px; font-size: 13px; vertical-align: middle; white-space: nowrap; color: var(--ink); }
+tbody td.wrap { white-space: normal; min-width: 160px; max-width: 260px; font-size: 12px; color: var(--ink2); line-height: 1.5; }
+.ch-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 4px; font-family: var(--mono); font-size: 11px; font-weight: 500;
+  min-width: 40px; padding: 2px 8px;
+  background: var(--green-bg); border: 1px solid var(--green-bd); color: var(--green);
+}
+.ch-pill.conflict { background: var(--red-bg); border-color: var(--red-bd); color: var(--red); }
+.fmhz { font-family: var(--mono); font-size: 14px; font-weight: 500; }
+.funit { font-family: var(--mono); font-size: 10px; color: var(--ink3); margin-left: 2px; }
+.rng-row { display: flex; align-items: center; gap: 8px; }
+.rng-txt { font-family: var(--mono); font-size: 11px; color: var(--ink2); white-space: nowrap; }
+.rng-bar { height: 3px; width: 40px; border-radius: 2px; background: var(--green); opacity: .3; flex-shrink: 0; }
+.rng-bar.conflict { background: var(--red); opacity: .5; }
+.empty { text-align: center; padding: 48px 20px; color: var(--ink3); }
+.empty-t { font-size: 15px; font-weight: 500; color: var(--ink2); margin-bottom: 4px; }
+.empty-s { font-size: 13px; }
+
+/* ═══════════════════════════════════════════════════════
+   AVISO BANDAS
+═══════════════════════════════════════════════════════ */
+.bands-warning {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--amber-bg); border: 1px solid var(--amber-bd);
+  border-radius: var(--r); padding: 12px 16px;
+}
+.bands-warning p { font-size: 12px; color: var(--amber); line-height: 1.75; }
+.bands-warning strong { font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+.footer-credits {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px) 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.credit-row {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--line); border-radius: var(--r2);
+  background: var(--paper);
+}
+.credit-left { display: flex; align-items: center; gap: 12px; }
+.credit-label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 2px; }
+.credit-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.credit-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--paper2); border: 1px solid var(--line); border-radius: var(--r2);
+  color: var(--ink2); font-size: 11px; font-weight: 500;
+  padding: 6px 12px; text-decoration: none; transition: .15s; white-space: nowrap;
+}
+.credit-link:hover { border-color: var(--green-bd); color: var(--green); background: var(--green-bg); }
+
+footer {
+  border-top: 1px solid var(--line);
+  background: var(--paper2);
+  padding: 14px clamp(16px, 4vw, 48px);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+  font-size: 11px; font-family: var(--mono); color: var(--ink3);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 580px) {
+  .fg { min-width: 130px; }
+  .ch-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+  .fc-inp { width: 100px; font-size: 15px; }
+}
 </style>
 </head>
 <body>
 
+<!-- ════════════════════ NAV ════════════════════ -->
 <nav>
-  <div class="nav-logo">
-    <div class="nav-icon">
-      <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/><path d="M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M11.1 4.9l-1.4 1.4M4.9 11.1l-1.4 1.4" stroke-width="1.5"/></svg>
-    </div>
-    <div>
-      <div class="nav-title">RF · TDT España</div>
-      <div class="nav-badge">Frecuencias UHF · 470–694 MHz</div>
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    <div class="nav-title">RF · TDT España</div>
+    <span class="nav-sub">UHF 470–694 MHz</span>
+  </div>
+  <div class="nav-meta">
+    <div class="nav-kv"><span class="nav-kv-v" id="sRows">—</span><span class="nav-kv-k">Entradas</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sCAs">—</span><span class="nav-kv-k">CC.AA.</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sProvs">—</span><span class="nav-kv-k">Provincias</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sDems">—</span><span class="nav-kv-k">Demarcaciones</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sChs">—</span><span class="nav-kv-k">Canales</span></div>
+    <div class="nav-kv" style="padding-left:14px;border-left:1px solid var(--line)">
+      <span class="nav-kv-v" id="sVis">—</span><span class="nav-kv-k">Vista</span>
     </div>
   </div>
-  <span style="font-size:11px;font-family:var(--mono);color:var(--txt3);letter-spacing:.08em">DVB-T · CNAF</span>
 </nav>
 
-<!-- HERO -->
-<div style="background:var(--card);border-bottom:1px solid var(--b);padding:28px 40px 22px">
-  <p style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:10px">Microfonía inalámbrica · Directo · RF</p>
-  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
-    <div>
-      <h1 style="font-size:clamp(22px,3vw,36px);font-weight:700;color:var(--txt);letter-spacing:-.03em;line-height:1;margin-bottom:6px">Frecuencias TDT en España</h1>
-      <p style="font-size:13px;color:var(--txt3);line-height:1.5">Canales UHF ocupados por demarcación · DVB-T · 8 MHz/canal · Central ± 4 MHz</p>
+<!-- ════════════════════ FILTROS ════════════════════ -->
+<div class="filter-bar">
+  <div class="filter-inner">
+
+    <div id="csvNotice" style="display:none"
+      class="csv-notice"
+      ondragover="event.preventDefault();this.style.borderColor='var(--green)'"
+      ondragleave="this.style.borderColor=''"
+      ondrop="onDrop(event)">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M5 8h6M5 5h3M5 11h4"/></svg>
+      Arrastra <strong style="font-weight:600">tdt.csv</strong> aquí o selecciónalo para cargar los datos
+      <input type="file" id="csvFile" accept=".csv,.tsv,.txt">
+      <label class="file-btn" for="csvFile">Seleccionar CSV</label>
     </div>
-    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:baseline;padding-bottom:2px">
-      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sRows">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Entradas</span></div>
-      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sCAs">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">CC.AA.</span></div>
-      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sProvs">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Provincias</span></div>
-      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sDems">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Demarcaciones</span></div>
-      <div style="display:flex;align-items:baseline;gap:5px"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sChs">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Canales</span></div>
-      <div style="display:flex;align-items:baseline;gap:5px;padding-left:14px;border-left:1px solid var(--b)"><span style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--acc)" id="sVis">—</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)">Vista actual</span></div>
+
+    <div class="fg"><label>Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
+    <div class="fg"><label>Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
+    <div class="fg"><label>Demarcación</label><select id="fDem"><option value="">Todas</option></select></div>
+    <div class="fg"><label>Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
+    <div class="filter-actions">
+      <button class="btn btn-ghost" onclick="resetF()">↺ Limpiar</button>
     </div>
+
   </div>
 </div>
 
+<!-- ════════════════════ MAIN ════════════════════ -->
 <main>
 
-  <!-- Herramientas: siempre visibles -->
-  <div class="tools visible" id="tools">
+  <!-- 1 · CANALES — protagonista -->
+  <section>
+    <div class="sh">Canales UHF activos en la selección</div>
+    <div class="ch-summary">
+      <span class="ch-count" id="chCount">—</span>
+      <span class="ch-count-label">canales ocupados</span>
+      <span class="ch-range-hint" id="chRangeHint"></span>
+    </div>
+    <div id="chGrid" class="ch-grid">
+      <p class="ch-grid-empty">Selecciona una localización para ver los canales</p>
+    </div>
+  </section>
 
-    <div class="card">
-      <div class="card-kicker">Verificar frecuencia de micrófono</div>
+  <!-- 2 · ESPECTRO -->
+  <section>
+    <div class="sh">Mapa de espectro · 470–694 MHz</div>
+    <div id="specEmpty" class="spec-empty">Selecciona una provincia o demarcación para visualizar el espectro</div>
+    <div id="specContent" style="display:none">
+      <div class="spec-scroll">
+        <div class="spec-track" id="specBar"></div>
+        <div class="spec-labels" id="specLbl"></div>
+      </div>
+      <div class="spec-legend">
+        <span class="leg"><span class="leg-dot" style="background:var(--green);opacity:.5"></span>Canal TDT activo</span>
+        <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
+        <span class="leg" style="margin-left:auto;font-size:10px;font-family:var(--mono)">Pasa el cursor sobre un canal para ver detalles</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · VERIFICADOR -->
+  <section>
+    <div class="sh">Verificar frecuencia de micrófono</div>
+    <div class="checker-inner">
       <div class="fc-row">
         <span class="fc-lbl">Frecuencia</span>
         <input class="fc-inp" type="number" id="fcInp" placeholder="546" min="400" max="750" step="0.025">
         <span class="fc-unit">MHz</span>
-        <button class="btn" onclick="checkFreq()">Comprobar</button>
-        <button class="btn ghost" onclick="clearCheck()">Limpiar</button>
+        <button class="btn-check" onclick="checkFreq()">Comprobar</button>
+        <button class="btn btn-ghost" onclick="clearCheck()">Limpiar</button>
       </div>
       <div id="fcRes" class="fc-res"></div>
-      <p class="fc-note">Comprueba si la frecuencia cae en el rango (±4 MHz) de algún canal TDT activo en la selección. Pulsa Enter para confirmar.</p>
+      <p class="fc-note">Comprueba si la frecuencia cae en el rango ±4 MHz de algún canal TDT activo en la demarcación seleccionada. Pulsa Enter para confirmar.</p>
     </div>
+  </section>
 
-    <div class="card">
-      <div class="card-kicker">Espectro UHF · canales activos en la selección</div>
-      <div id="specEmpty" style="text-align:center;padding:18px 0;font-size:13px;color:var(--txt3)">
-        Selecciona una provincia o demarcación para ver el espectro de canales
-      </div>
-      <div id="specContent" style="display:none">
-        <div class="spec-scroll">
-          <div class="spec-track" id="specBar"></div>
-          <div class="spec-labels" id="specLbl"></div>
-        </div>
-        <div class="spec-legend">
-          <span class="leg"><span class="leg-dot" style="background:var(--acc);opacity:.4"></span>Canal TDT ocupado</span>
-          <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-kicker">Filtros</div>
-      <!-- Aviso CSV inline — solo visible si no hay datos -->
-      <div id="csvNotice"
-        style="display:none;background:var(--bg);border:1px dashed var(--b2);border-radius:8px;padding:16px 20px;margin-bottom:16px;text-align:center"
-        ondragover="event.preventDefault();this.style.borderColor='var(--acc)'"
-        ondragleave="this.style.borderColor=''"
-        ondrop="onDrop(event)">
-        <p style="font-size:13px;color:var(--txt3);margin-bottom:10px">Arrastra <strong style="color:var(--txt2)">tdt.csv</strong> aquí o selecciónalo</p>
-        <input type="file" id="csvFile" accept=".csv,.tsv,.txt">
-        <label class="file-btn" for="csvFile" style="font-size:12px;padding:7px 14px">Seleccionar archivo</label>
-      </div>
-      <div class="fgrid">
-        <div class="fg"><label>Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
-        <div class="fg"><label>Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
-        <div class="fg"><label>Demarcación</label><select id="fDem"><option value="">Todas</option></select></div>
-        <div class="fg"><label>Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
-        <div class="f-actions">
-          <button class="btn ghost" onclick="resetF()">↺ Limpiar</button>
-  
-        </div>
-      </div>
-    </div>
-
+  <!-- 4 · TABLA -->
+  <section>
+    <div class="sh">Tabla de frecuencias</div>
     <div class="twrap">
       <div class="tbar">
         <div class="tcount"><strong id="cVis">0</strong><span style="margin:0 4px">de</span><strong id="cTot">0</strong> entradas</div>
         <span class="thint" id="tblHint">clic en cabecera para ordenar</span>
       </div>
-      <!-- Vista colapsada -->
       <div class="tbl-collapsed" id="tblCollapsed">
         <p id="collapseHint">Aplica filtros o despliega para ver todas las entradas</p>
         <button class="expand-btn" onclick="expandTable()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l5 5 5-5"/></svg>
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l5 5 5-5"/></svg>
           <span id="expandLabel">Ver todas las entradas</span>
         </button>
       </div>
-      <!-- Vista expandida -->
       <div id="tblExpanded" style="display:none">
         <div class="tscroll">
           <table>
@@ -268,75 +603,60 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
             <tbody id="tbody"></tbody>
           </table>
         </div>
-        <div id="loadMore" style="display:none;padding:16px 22px;border-top:1px solid var(--b);text-align:center">
-          <button class="btn ghost" style="width:100%" onclick="loadMore()"></button>
+        <div id="loadMore" style="display:none;padding:14px 18px;border-top:1px solid var(--line);text-align:center">
+          <button class="btn" style="width:100%" onclick="loadMore()"></button>
         </div>
-        <div style="padding:12px 22px;border-top:1px solid var(--b);text-align:center">
-          <button class="btn ghost" style="font-size:11px" onclick="collapseTable()">↑ Contraer tabla</button>
+        <div style="padding:10px 18px;border-top:1px solid var(--line);text-align:center">
+          <button class="btn btn-ghost" style="font-size:11px" onclick="collapseTable()">↑ Contraer tabla</button>
         </div>
       </div>
     </div>
+  </section>
 
   <!-- Aviso bandas reservadas -->
-  <div style="background:#fffbeb;border:1px solid #f5c842;border-radius:var(--r2);padding:14px 20px;display:flex;gap:12px;align-items:flex-start">
-    <svg style="flex-shrink:0;margin-top:1px" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#b45309" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
-    <p style="font-size:12px;color:#92400e;line-height:1.75;margin:0">
-      <strong style="font-weight:700">Bandas reservadas — no utilizar para microfonía inalámbrica:</strong>
-      la banda de <strong style="font-weight:700">700 MHz</strong> (a partir de 694 MHz) está asignada al <strong style="font-weight:700">5G</strong>,
-      y la banda de <strong style="font-weight:700">800 MHz</strong> (a partir de 790 MHz) está asignada al <strong style="font-weight:700">4G LTE</strong>.
-      Trabajar en estas frecuencias provoca interferencias graves y su uso no está permitido.
+  <div class="bands-warning">
+    <svg style="flex-shrink:0;margin-top:2px" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
+    <p>
+      <strong>Bandas reservadas — no utilizar para microfonía inalámbrica:</strong>
+      la banda de <strong>700 MHz</strong> (a partir de 694 MHz) está asignada al <strong>5G</strong>,
+      y la banda de <strong>800 MHz</strong> (a partir de 790 MHz) al <strong>4G LTE</strong>.
+      Trabajar en estas frecuencias provoca interferencias graves y no está permitido.
     </p>
   </div>
 
-  </div><!-- /tools -->
 </main>
 
 <!-- CRÉDITOS -->
-<div style="max-width:1700px;margin:0 auto;padding:0 40px 40px;display:flex;flex-direction:column;gap:10px">
-
-  <div style="background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-    <div style="display:flex;align-items:center;gap:14px">
-      <div style="width:36px;height:36px;border-radius:8px;background:var(--acc-a);border:1px solid var(--acc-b);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--acc)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 7h6M5 10h4"/></svg>
-      </div>
+<div class="footer-credits">
+  <div class="credit-row">
+    <div class="credit-left">
       <div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-bottom:3px">Herramienta · Información</div>
-        <div style="font-size:14px;font-weight:600;color:var(--txt)">RF · TDT España &nbsp;·&nbsp; Consulta de frecuencias UHF para técnicos de directo</div>
+        <div class="credit-label">Herramienta</div>
+        <div class="credit-name">RF · TDT España &nbsp;·&nbsp; Consulta de frecuencias UHF para técnicos de directo</div>
       </div>
     </div>
-    <a href="https://github.com/javitatay/RFTDT" target="_blank"
-      style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-size:12px;font-weight:600;padding:8px 14px;text-decoration:none;transition:.15s;white-space:nowrap"
-      onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'"
-      onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt2)'">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    <a href="https://github.com/javitatay/RFTDT" target="_blank" class="credit-link">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
       Ver en GitHub
     </a>
   </div>
-
-  <div style="background:var(--card);border:1px solid var(--b);border-radius:var(--r2);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-    <div style="display:flex;align-items:center;gap:14px">
-      <div style="width:36px;height:36px;border-radius:8px;background:var(--acc-a);border:1px solid var(--acc-b);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--acc)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
-      </div>
+  <div class="credit-row">
+    <div class="credit-left">
       <div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-bottom:3px">Autor · Contacto</div>
-        <div style="font-size:14px;font-weight:600;color:var(--txt)">Javier Tatay Rubio</div>
+        <div class="credit-label">Autor · Contacto</div>
+        <div class="credit-name">Javier Tatay Rubio</div>
       </div>
     </div>
-    <a href="mailto:j.tatayrubio@edu.gva.es"
-      style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-size:12px;font-weight:600;padding:8px 14px;text-decoration:none;transition:.15s;white-space:nowrap"
-      onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'"
-      onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt2)'">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
+    <a href="mailto:j.tatayrubio@edu.gva.es" class="credit-link">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
       j.tatayrubio@edu.gva.es
     </a>
   </div>
-
 </div>
 
 <footer>
   <span>RF · TDT España &nbsp;·&nbsp; DVB-T · UHF 470–694 MHz &nbsp;·&nbsp; Fuente: CNAF / MINETUR</span>
-  <span style="font-family:var(--mono)">v3.0</span>
+  <span>v3.1</span>
 </footer>
 
 <script>
@@ -373,7 +693,10 @@ function splitCSV(l) {
 // ── STATE ──────────────────────────────────────────────────────────────────
 let ALL = [], FILT = [], sCol = 'frecuencia', sDir = 'asc', probe = null;
 
-function uniq(k, s) { return [...new Set((s||ALL).map(r => r[k]).filter(Boolean))].sort((a,b) => typeof a === 'number' ? a-b : a.localeCompare(b, 'es')); }
+function uniq(k, s) {
+  return [...new Set((s || ALL).map(r => r[k]).filter(Boolean))]
+    .sort((a, b) => typeof a === 'number' ? a - b : a.localeCompare(b, 'es'));
+}
 function v(id) { return document.getElementById(id).value; }
 
 // ── LOAD ───────────────────────────────────────────────────────────────────
@@ -393,16 +716,11 @@ function loadData(txt) {
   render();
 }
 
-// Auto-fetch desde la misma carpeta (GitHub Pages)
 fetch('tdt.csv')
   .then(r => { if (!r.ok) throw 0; return r.text(); })
   .then(t => loadData(t))
-  .catch(() => {
-    // Mostrar aviso CSV inline en el panel de filtros
-    document.getElementById('csvNotice').style.display = 'block';
-  });
+  .catch(() => { document.getElementById('csvNotice').style.display = 'flex'; });
 
-// Input manual
 document.getElementById('csvFile').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
   const r = new FileReader();
@@ -410,10 +728,8 @@ document.getElementById('csvFile').addEventListener('change', e => {
   r.readAsText(f, 'UTF-8');
 });
 
-// Drag & drop
 function onDrop(e) {
   e.preventDefault();
-  document.getElementById('loader').classList.remove('over');
   const f = e.dataTransfer.files[0]; if (!f) return;
   const r = new FileReader();
   r.onload = ev => loadData(ev.target.result);
@@ -424,12 +740,13 @@ function onDrop(e) {
 function fill(id, vals, cur) {
   const el = document.getElementById(id);
   const lbl = id === 'fAmb' ? 'Todos' : 'Todas';
-  el.innerHTML = `<option value="">${lbl}</option>` + vals.map(v => `<option${v == cur ? ' selected' : ''}>${v}</option>`).join('');
+  el.innerHTML = `<option value="">${lbl}</option>` +
+    vals.map(v => `<option${v == cur ? ' selected' : ''}>${v}</option>`).join('');
 }
 
 ['fCA','fProv','fDem','fAmb'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => {
-    const ca=v('fCA'), pr=v('fProv'), dm=v('fDem'), am=v('fAmb');
+    const ca = v('fCA'), pr = v('fProv'), dm = v('fDem'), am = v('fAmb');
     let p = ALL;
     if (ca) p = p.filter(r => r.ca === ca);
     fill('fProv', uniq('provincia', p), pr);
@@ -452,7 +769,11 @@ function resetF() {
 function checkFreq() {
   const f = parseFloat(document.getElementById('fcInp').value);
   const res = document.getElementById('fcRes');
-  if (isNaN(f) || f < 400 || f > 750) { res.className = 'fc-res warn'; res.textContent = 'Introduce una frecuencia válida entre 470 y 700 MHz'; return; }
+  if (isNaN(f) || f < 400 || f > 750) {
+    res.className = 'fc-res warn';
+    res.textContent = 'Introduce una frecuencia válida entre 470 y 700 MHz';
+    return;
+  }
   probe = f;
   const hits = FILT.filter(r => f >= r.lo && f <= r.hi);
   if (hits.length) {
@@ -472,34 +793,84 @@ function clearCheck() {
   document.getElementById('fcInp').value = '';
   render();
 }
-document.getElementById('fcInp').addEventListener('keydown', e => { if (e.key === 'Enter') checkFreq(); });
+document.getElementById('fcInp').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkFreq();
+});
 
 // ── SPECTRUM ───────────────────────────────────────────────────────────────
 const SMIN = 470, SMAX = 694, LBLS = [470, 510, 550, 590, 630, 670, 694];
 
 function renderSpectrum() {
   const hasFilter = v('fCA') !== '' || v('fProv') !== '' || v('fDem') !== '' || v('fAmb') !== '';
-  document.getElementById('specEmpty').style.display  = hasFilter ? 'none'  : 'block';
+  document.getElementById('specEmpty').style.display   = hasFilter ? 'none'  : 'block';
   document.getElementById('specContent').style.display = hasFilter ? 'block' : 'none';
   if (!hasFilter) return;
 
-  const bar = document.getElementById('specBar'), span = SMAX - SMIN, chMap = {};
+  const bar = document.getElementById('specBar');
+  const span = SMAX - SMIN;
+  const chMap = {};
   FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+
   bar.innerHTML = Object.values(chMap).map(r => {
-    const l = ((r.lo - SMIN) / span * 100).toFixed(3), w = (8 / span * 100).toFixed(3);
+    const l  = ((r.lo - SMIN) / span * 100).toFixed(3);
+    const w  = (8 / span * 100).toFixed(3);
     const isP = probe !== null && probe >= r.lo && probe <= r.hi;
     return `<div class="spec-ch ${isP ? 'probed' : 'free'}" style="left:${l}%;width:${w}%">
       <span class="ch-num">${r.canal}</span>
-      <div class="spec-tip">CH ${r.canal} · ${r.frecuencia} MHz · ${r.lo}–${r.hi} MHz</div></div>`;
-  }).join('') + (probe !== null ? `<div class="spec-probe" style="left:${((probe-SMIN)/span*100).toFixed(3)}%"></div>` : '');
+      <div class="spec-tip">CH ${r.canal} · ${r.frecuencia} MHz · ${r.lo}–${r.hi} MHz</div>
+    </div>`;
+  }).join('') + (probe !== null
+    ? `<div class="spec-probe" style="left:${((probe - SMIN) / span * 100).toFixed(3)}%"></div>`
+    : '');
+
   document.getElementById('specLbl').innerHTML = LBLS.map(f => `<span>${f} MHz</span>`).join('');
+}
+
+// ── CHANNEL GRID ───────────────────────────────────────────────────────────
+function renderChGrid() {
+  const grid    = document.getElementById('chGrid');
+  const countEl = document.getElementById('chCount');
+  const hintEl  = document.getElementById('chRangeHint');
+
+  if (!FILT.length) {
+    grid.innerHTML = '<p class="ch-grid-empty">Selecciona una localización para ver los canales</p>';
+    countEl.textContent = '—';
+    hintEl.textContent = '';
+    return;
+  }
+
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const channels = Object.values(chMap).sort((a, b) => a.canal - b.canal);
+
+  countEl.textContent = channels.length;
+  const minF = Math.min(...channels.map(c => c.lo));
+  const maxF = Math.max(...channels.map(c => c.hi));
+  hintEl.textContent = `${minF}–${maxF} MHz`;
+
+  const span = SMAX - SMIN;
+  grid.innerHTML = channels.map(r => {
+    const conflict = probe !== null && probe >= r.lo && probe <= r.hi;
+    // Mini-barra: posición relativa de la frecuencia central en el espectro
+    const pct = ((r.frecuencia - SMIN) / span * 100).toFixed(1);
+    return `<div class="ch-tile${conflict ? ' conflict' : ''}">
+      <div class="ch-tile-num">${r.canal}</div>
+      <div class="ch-tile-freq">${r.frecuencia} MHz</div>
+      <div class="ch-tile-range">${r.lo}–${r.hi}</div>
+      <div class="ch-tile-bar-wrap">
+        <div class="ch-tile-bar-fill" style="width:${Math.min(100, parseFloat(pct))}%"></div>
+      </div>
+      <div class="ch-tile-tip">CH ${r.canal} · ${r.lo}–${r.hi} MHz</div>
+    </div>`;
+  }).join('');
 }
 
 // ── SORT & FILTER ──────────────────────────────────────────────────────────
 function sortBy(col) {
-  sDir = sCol === col ? (sDir === 'asc' ? 'desc' : 'asc') : 'asc'; sCol = col;
+  sDir = sCol === col ? (sDir === 'asc' ? 'desc' : 'asc') : 'asc';
+  sCol = col;
   document.querySelectorAll('thead th').forEach(th => th.classList.remove('asc','desc'));
-  const ci = {ca:0,provincia:1,demarcacion:2,canal:4,frecuencia:5,lo:6};
+  const ci = { ca:0, provincia:1, demarcacion:2, canal:4, frecuencia:5, lo:6 };
   const th = document.querySelectorAll('thead th')[ci[col]];
   if (th) th.classList.add(sDir);
   render();
@@ -507,7 +878,7 @@ function sortBy(col) {
 
 function getFiltered() {
   let r = ALL;
-  const ca=v('fCA'),pr=v('fProv'),dm=v('fDem'),am=v('fAmb');
+  const ca = v('fCA'), pr = v('fProv'), dm = v('fDem'), am = v('fAmb');
   if (ca) r = r.filter(x => x.ca === ca);
   if (pr) r = r.filter(x => x.provincia === pr);
   if (dm) r = r.filter(x => x.demarcacion === dm);
@@ -535,45 +906,43 @@ function collapseTable() {
 function render(resetPage = true) {
   if (resetPage) { visibleRows = PAGE; }
   FILT = getFiltered();
-  FILT.sort((a,b) => {
+  FILT.sort((a, b) => {
     let va = a[sCol], vb = b[sCol];
     if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
     return sDir === 'asc' ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
   });
+
   document.getElementById('sVis').textContent = FILT.length.toLocaleString('es');
   document.getElementById('cVis').textContent = FILT.length.toLocaleString('es');
   document.getElementById('cTot').textContent = ALL.length.toLocaleString('es');
-  renderSpectrum();
 
-  // Actualizar hint y label del botón según filtros activos
+  renderSpectrum();
+  renderChGrid();
+
   const filtered = FILT.length < ALL.length;
   document.getElementById('collapseHint').textContent = filtered
     ? `${FILT.length.toLocaleString('es')} entradas coinciden con los filtros`
     : 'Aplica filtros o despliega para ver todas las entradas';
   document.getElementById('expandLabel').textContent = filtered
     ? `Ver ${FILT.length.toLocaleString('es')} entradas`
-    : `Ver todas las entradas`;
+    : 'Ver todas las entradas';
 
-  // Si hay filtros activos, auto-expandir
   if (filtered && !tableExpanded) expandTable();
   if (tableExpanded) renderRows();
 }
 
 function renderRows() {
-  // Detectar si hay ubicación concreta seleccionada (CA + al menos provincia)
-  const hasLocation = v('fCA') !== '' || v('fProv') !== '' || v('fDem') !== '' || v('fAmb') !== '';
-  const isDetailed  = v('fDem') !== '' || v('fAmb') !== '' || v('fProv') !== '';
-
-  // Ajustar cabeceras
+  const isDetailed = v('fDem') !== '' || v('fAmb') !== '' || v('fProv') !== '';
   const thead = document.getElementById('theadRow');
   const hint  = document.getElementById('tblHint');
+
   if (isDetailed) {
     thead.innerHTML = `
       <th onclick="sortBy('demarcacion')">Demarcación</th>
       <th onclick="sortBy('canal')">Canal</th>
       <th onclick="sortBy('frecuencia')">Frec. Central</th>
       <th onclick="sortBy('lo')">Rango ocupado</th>`;
-    hint.textContent = 'Vista compacta · filtra por demarcación para mayor detalle';
+    hint.textContent = 'Vista compacta';
   } else {
     thead.innerHTML = `
       <th onclick="sortBy('ca')">Comunidad Autónoma</th>
@@ -589,7 +958,10 @@ function renderRows() {
   const tbody = document.getElementById('tbody');
   if (!FILT.length) {
     const cols = isDetailed ? 4 : 7;
-    tbody.innerHTML = `<tr><td colspan="${cols}"><div class="empty"><div class="empty-t">Sin resultados</div><div class="empty-s">Prueba otros filtros</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${cols}"><div class="empty">
+      <div class="empty-t">Sin resultados</div>
+      <div class="empty-s">Prueba otros filtros</div>
+    </div></td></tr>`;
     document.getElementById('loadMore').style.display = 'none';
     return;
   }
@@ -600,25 +972,27 @@ function renderRows() {
     if (isDetailed) {
       return `<tr>
         <td><strong>${r.demarcacion}</strong></td>
-        <td><span class="ch-pill${c?' conflict':''}">${r.canal}</span></td>
+        <td><span class="ch-pill${c ? ' conflict' : ''}">${r.canal}</span></td>
         <td><span class="fmhz">${r.frecuencia.toFixed(2)}</span><span class="funit">MHz</span></td>
-        <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c?' conflict':''}"></div></div></td>
+        <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c ? ' conflict' : ''}"></div></div></td>
       </tr>`;
     }
     return `<tr>
-      <td>${r.ca}</td><td>${r.provincia}</td>
+      <td>${r.ca}</td>
+      <td>${r.provincia}</td>
       <td><strong>${r.demarcacion}</strong></td>
       <td class="wrap">${r.ambito}</td>
-      <td><span class="ch-pill${c?' conflict':''}">${r.canal}</span></td>
+      <td><span class="ch-pill${c ? ' conflict' : ''}">${r.canal}</span></td>
       <td><span class="fmhz">${r.frecuencia.toFixed(2)}</span><span class="funit">MHz</span></td>
-      <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c?' conflict':''}"></div></div></td>
+      <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c ? ' conflict' : ''}"></div></div></td>
     </tr>`;
   }).join('');
 
   const btn = document.getElementById('loadMore');
   if (FILT.length > visibleRows) {
     btn.style.display = 'block';
-    btn.querySelector('button').textContent = `Ver ${Math.min(PAGE, FILT.length - visibleRows).toLocaleString('es')} más · quedan ${(FILT.length - visibleRows).toLocaleString('es')}`;
+    btn.querySelector('button').textContent =
+      `Ver ${Math.min(PAGE, FILT.length - visibleRows)} más de ${FILT.length.toLocaleString('es')}`;
   } else {
     btn.style.display = 'none';
   }
@@ -626,10 +1000,8 @@ function renderRows() {
 
 function loadMore() {
   visibleRows += PAGE;
-  renderRows();
+  render(false);
 }
-
-
 </script>
 </body>
 </html>
