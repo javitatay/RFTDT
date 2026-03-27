@@ -234,7 +234,6 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
         <div class="fg"><label>Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
         <div class="f-actions">
           <button class="btn ghost" onclick="resetF()">↺ Limpiar</button>
-          <button class="btn ghost" onclick="exportCSV()">↓ Exportar</button>
         </div>
       </div>
     </div>
@@ -323,12 +322,9 @@ footer{border-top:1px solid var(--b);background:var(--card);padding:18px 40px;co
         <div style="font-size:14px;font-weight:600;color:var(--txt)">Javier Tatay Rubio</div>
       </div>
     </div>
-    <a href="mailto:j.tatayrubio@edu.gva.es"
-      style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-size:12px;font-weight:600;padding:8px 14px;text-decoration:none;transition:.15s;white-space:nowrap"
-      onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'"
-      onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt2)'">
+    <a href="mailto:j.tatayrubio@edu.gva.es" style="display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--b2);border-radius:8px;color:var(--txt2);font-size:12px;font-weight:600;padding:8px 14px;text-decoration:none;transition:.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'" onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt2)'">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
-      j.tatayrubio@edu.gva.es
+      <span>j.tatayrubio@edu.gva.es</span>
     </a>
   </div>
 
@@ -618,18 +614,4 @@ function renderRows() {
   const btn = document.getElementById('loadMore');
   if (FILT.length > visibleRows) {
     btn.style.display = 'block';
-    btn.querySelector('button').textContent = `Ver ${Math.min(PAGE, FILT.length - visibleRows).toLocaleString('es')} más · quedan ${(FILT.length - visibleRows).toLocaleString('es')}`;
-  } else {
-    btn.style.display = 'none';
-  }
-}
-
-function loadMore() {
-  visibleRows += PAGE;
-  renderRows();
-}
-
-
-</script>
-</body>
-</html>
+    btn.querySelector('button').textContent = `Ver ${Math.min(PAGE, FILT.length - visibleRows)
