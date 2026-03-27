@@ -1,4 +1,4 @@
-# <img src="icon.png" alt="RF TDT España" width="60" align="left" style="margin-right: 15px"> RF · TDT España — Frecuencias UHF
+# RF · TDT España — Frecuencias UHF
 
 **Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con verificador de conflictos y visualizador de espectro interactivo.
 
@@ -49,7 +49,6 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 ```
 RFTDT/
 ├── index.html    → interfaz web completa (diseño + lógica)
-├── icon.png      → icono de la herramienta
 ├── tdt.csv       → base de datos de frecuencias por demarcación
 ├── .nojekyll     → desactiva Jekyll en GitHub Pages
 └── README.md
