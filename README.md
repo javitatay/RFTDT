@@ -8,7 +8,7 @@
 
 ### Badges
 
-![version](https://img.shields.io/badge/version-3.0.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
+![version](https://img.shields.io/badge/version-3.1.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
 
 ---
 
@@ -22,11 +22,11 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 
 ## Funcionalidades
 
-- **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba al instante si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
-- **Visualizador de espectro** — representación gráfica del espectro UHF 470–694 MHz con los canales TDT activos y la frecuencia del micrófono superpuesta
+- **Vista de canales activos** — grid visual con número de canal, frecuencia central y rango ocupado para la demarcación seleccionada; los conflictos con el micrófono se marcan en rojo al instante
+- **Mapa de espectro** — representación gráfica del espectro UHF 470–694 MHz con los canales TDT activos y la frecuencia del micrófono superpuesta
 - **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura
+- **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
 - **Tabla ordenable** — ordena los resultados por cualquier columna (canal, frecuencia, rango, demarcación...)
-- **Exportar CSV** — descarga la selección filtrada como archivo CSV para usar en coordinadores RF externos
 
 ---
 
@@ -95,4 +95,4 @@ Los campos Canal y Frecuencia admiten múltiples valores separados por comas (en
 
 *Herramienta de uso libre para técnicos audiovisuales · 2026*
 
-**Version:** 3.0.0 | **Built with:** Claude AI
+**Version:** 3.1.0 | **Built with:** Claude AI
