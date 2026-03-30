@@ -1,6 +1,6 @@
 # RF · TDT España — Frecuencias UHF
 
-**Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con verificador de conflictos, visualizador de espectro interactivo y calculadora de intermodulación.
+**Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con mapa interactivo de selección gradual, verificador de conflictos, visualizador de espectro y calculadora de intermodulación.
 
 🌐 **[javitatay.github.io/RFTDT](https://javitatay.github.io/RFTDT/)**
 
@@ -14,7 +14,7 @@
 
 ## Descripción
 
-Cuando se trabaja con microfonía inalámbrica en un evento o producción en directo, es imprescindible conocer qué frecuencias UHF están ocupadas por la TDT en la zona de trabajo para evitar interferencias. Esta herramienta centraliza esa información y permite consultarla, filtrarla y verificar frecuencias en tiempo real.
+Cuando se trabaja con microfonía inalámbrica en un evento o producción en directo, es imprescindible conocer qué frecuencias UHF están ocupadas por la TDT en la zona de trabajo para evitar interferencias. Esta herramienta centraliza esa información y permite consultarla de forma visual e intuitiva, con selección por mapa, filtros en cascada y verificación de conflictos en tiempo real.
 
 El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente en el navegador.
 
@@ -25,6 +25,7 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 - **Geolocalización automática** — detecta la ubicación del dispositivo y preselecciona automáticamente la Comunidad Autónoma y provincia
 - **Vista de canales activos** — grid visual con número de canal, frecuencia central y rango ocupado para la demarcación seleccionada; los conflictos con el micrófono se marcan en rojo al instante
 - **Mapa de espectro** — representación gráfica del espectro UHF 470–694 MHz con los canales TDT activos y la frecuencia del micrófono superpuesta
+- **Mapa interactivo** — selección gradual por mapa en 4 pasos: Comunidad Autónoma → Provincia → Demarcación → Ámbito; sincronizado con los desplegables
 - **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura
 - **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
 - **Tabla ordenable** — ordena los resultados por cualquier columna (canal, frecuencia, rango, demarcación...)
@@ -86,6 +87,12 @@ Comunidad Autónoma, Provincia, Demarcación, Ámbito de Cobertura, Canal, Frecu
 ```
 
 Los campos Canal y Frecuencia admiten múltiples valores separados por comas (entre comillas si el campo contiene comas). El HTML parsea y expande automáticamente cada fila en entradas individuales por canal.
+
+---
+
+## Aviso
+
+> Esta información puede no estar actualizada en el momento de su uso. Se recomienda realizar un escaneo completo de frecuencias del espacio en el que se desarrollará el show para el conocimiento exacto de las interferencias presentes.
 
 ---
 
