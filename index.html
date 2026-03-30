@@ -715,7 +715,7 @@ footer {
         <div class="credit-name">Javier Tatay Rubio</div>
       </div>
     </div>
-    <a href="/cdn-cgi/l/email-protection#e882c69c899c89919a9d8a8187cecbdedcd38d8c9dc68f9e89c68d9b" class="credit-link">
+    <a href="mailto:j.tatayrubio&#64;edu.gva.es" class="credit-link">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
       j.tatayrubio&#64;edu.gva.es
     </a>
@@ -1172,4 +1172,12 @@ function geoMatch(rawCA, rawProvince) {
   // Filter provinces by matched CA
   const provs = uniq('provincia', ALL.filter(r => r.ca === ca));
   const provincia = provs.find(p => norm(p) === norm(rawProvince)) ||
-                    provs.find(p => norm(rawProvince).includes(norm(p)) || norm(p).includes(norm(rawP
+                    provs.find(p => norm(rawProvince).includes(norm(p)) || norm(p).includes(norm(rawProvince)));
+  return { ca, provincia: provincia || null };
+}
+</script>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
