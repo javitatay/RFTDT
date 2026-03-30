@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Calculadora de Intermodulación · RF Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #0f0e0d;
+  --ink2:     #4a4744;
+  --ink3:     #7a7570;
+  --paper:    #f7f6f2;
+  --paper2:   #efede8;
+  --paper3:   #e2dfd7;
+  --line:     #ccc9c0;
+  --green:    #165c3a;
+  --green-bg: #e6f2ec;
+  --green-bd: #8dc4a8;
+  --red:      #a8291d;
+  --red-bg:   #fcecea;
+  --red-bd:   #e8948d;
+  --amber:    #7a4e08;
+  --amber-bg: #fdf3d6;
+  --amber-bd: #d4aa50;
+  --sans:  'DM Sans', sans-serif;
+  --mono:  'DM Mono', monospace;
+  --r: 10px; --r2: 6px;
+  --max: 900px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  height: 50px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(16px,4vw,48px); gap: 16px;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); }
+.nav-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.nav-sub { font-size: 12px; color: var(--ink3); font-family: var(--mono); }
+.nav-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--paper2); border: 1px solid var(--line);
+  border-radius: var(--r2); color: var(--ink2);
+  font-size: 12px; font-weight: 500; padding: 6px 12px;
+  text-decoration: none; transition: .15s;
+}
+.nav-back:hover { border-color: var(--ink3); color: var(--ink); }
+
+/* ── MAIN ── */
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px clamp(16px,4vw,48px) 80px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.sh {
+  font-size: 11px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink2);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sh::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* ── INFO CARD ── */
+.info-card {
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--amber);
+  line-height: 1.75;
+}
+.info-card strong { font-weight: 700; }
+
+/* ── FREQUENCY INPUTS ── */
+.freqs-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 20px 24px;
+}
+.freqs-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.freq-count {
+  font-family: var(--mono); font-size: 24px; font-weight: 500;
+  color: var(--ink); line-height: 1;
+}
+.freq-count-label { font-size: 13px; color: var(--ink2); }
+.freq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.freq-row {
+  display: flex; align-items: center; gap: 0;
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+.freq-row:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px var(--green-bg);
+}
+.freq-row.conflict {
+  border-color: var(--red-bd);
+  background: var(--red-bg);
+}
+.freq-row.conflict:focus-within {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-bg);
+}
+.freq-num {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  color: var(--ink3); padding: 0 8px; min-width: 24px; text-align: center;
+  border-right: 1px solid var(--line); background: var(--paper3);
+  align-self: stretch; display: flex; align-items: center;
+}
+.freq-row.conflict .freq-num { background: var(--red-bd); color: #fff; border-color: var(--red-bd); }
+.freq-inp {
+  background: transparent; border: none; outline: none;
+  color: var(--ink); font-family: var(--mono); font-size: 15px; font-weight: 500;
+  padding: 8px 6px; width: 100%; min-width: 0;
+}
+.freq-inp::placeholder { color: var(--ink3); font-weight: 400; }
+.freq-unit {
+  font-family: var(--mono); font-size: 10px; color: var(--ink3);
+  padding-right: 8px; white-space: nowrap; flex-shrink: 0;
+}
+.freq-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--ink3); padding: 0 8px; font-size: 16px; line-height: 1;
+  transition: color .12s; align-self: stretch; display: flex; align-items: center;
+  border-left: 1px solid var(--line);
+}
+.freq-del:hover { color: var(--red); }
+
+.freq-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  background: var(--paper2); border: 1px solid var(--line);
+  border-radius: var(--r2); color: var(--ink2);
+  cursor: pointer; font-family: var(--sans); font-size: 13px;
+  font-weight: 500; padding: 8px 14px; transition: .15s; white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink3); color: var(--ink); }
+.btn-add {
+  background: var(--green-bg); border-color: var(--green-bd);
+  color: var(--green); font-weight: 600;
+}
+.btn-add:hover { background: #d2ebe1; border-color: #6db492; }
+.btn-calc {
+  background: var(--green); border-color: var(--green);
+  color: #fff; font-weight: 700; font-size: 13px;
+  padding: 9px 22px; letter-spacing: .02em;
+  margin-left: auto;
+}
+.btn-calc:hover { background: #1a7048; border-color: #1a7048; color: #fff; }
+.btn-clear { color: var(--ink3); border-color: transparent; background: transparent; }
+.btn-clear:hover { background: var(--paper2); border-color: var(--line); color: var(--ink2); }
+
+/* ── RESULTS ── */
+.results-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.results-ok {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 24px;
+  background: var(--green-bg); border-bottom: 1px solid var(--green-bd);
+}
+.results-ok-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--green); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.results-ok-icon svg { stroke: #fff; }
+.results-ok-title { font-size: 14px; font-weight: 700; color: var(--green); }
+.results-ok-sub { font-size: 12px; color: var(--green); opacity: .8; font-family: var(--mono); }
+
+.results-conflict-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 24px;
+  background: var(--red-bg); border-bottom: 1px solid var(--red-bd);
+}
+.results-conflict-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--red); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.results-conflict-icon svg { stroke: #fff; }
+.results-conflict-title { font-size: 14px; font-weight: 700; color: var(--red); }
+.results-conflict-sub { font-size: 12px; color: var(--red); opacity: .8; font-family: var(--mono); }
+
+.conflict-list { padding: 0; }
+.conflict-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.conflict-item:last-child { border-bottom: none; }
+.conflict-badge {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  background: var(--red-bg); border: 1px solid var(--red-bd); color: var(--red);
+  border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0;
+  margin-top: 1px;
+}
+.conflict-detail { color: var(--ink2); line-height: 1.6; }
+.conflict-detail strong { color: var(--ink); font-weight: 600; }
+.conflict-formula {
+  font-family: var(--mono); font-size: 11px; color: var(--ink3);
+  margin-top: 2px;
+}
+
+/* ── SPECTRUM PREVIEW ── */
+.spectrum-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 20px 24px;
+}
+.spec-scroll { overflow-x: auto; padding-bottom: 4px; }
+.spec-track {
+  position: relative; height: 72px;
+  background: var(--paper2); border: 1px solid var(--line);
+  border-radius: var(--r); min-width: 600px; overflow: visible;
+}
+.spec-pin {
+  position: absolute; top: 6px; height: calc(100% - 12px);
+  width: 8px; border-radius: 3px;
+  transform: translateX(-50%);
+  cursor: default; transition: opacity .1s;
+  display: flex; align-items: center; justify-content: center;
+}
+.spec-pin.ok { background: var(--green); opacity: .7; }
+.spec-pin.im { background: var(--amber); opacity: .6; }
+.spec-pin.conflict-freq { background: var(--red); opacity: .9; }
+.spec-pin:hover { opacity: 1 !important; z-index: 5; }
+.spec-pin:hover .spec-tip { opacity: 1; }
+.spec-tip {
+  position: absolute; bottom: calc(100% + 7px); left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink); color: #fff; border-radius: 5px;
+  font-family: var(--mono); font-size: 10px; padding: 4px 9px;
+  white-space: nowrap; pointer-events: none; opacity: 0; transition: .12s; z-index: 20;
+}
+.spec-labels {
+  display: flex; justify-content: space-between; margin-top: 7px;
+  font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 600px;
+}
+.spec-legend { display: flex; gap: 18px; margin-top: 11px; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2); }
+.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.spec-empty { font-size: 14px; color: var(--ink3); padding: 16px 0; font-style: italic; }
+
+/* ── IM TABLE ── */
+.im-table-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.im-tscroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--paper2); color: var(--ink2);
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-align: center; text-transform: uppercase;
+  padding: 10px 12px; border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+thead th:first-child { text-align: left; }
+tbody tr { border-bottom: 1px solid var(--line); }
+tbody tr:last-child { border-bottom: none; }
+tbody td {
+  padding: 9px 12px; font-size: 12px;
+  font-family: var(--mono); text-align: center; color: var(--ink2);
+  vertical-align: middle;
+}
+tbody td:first-child { text-align: left; color: var(--ink); font-weight: 500; }
+.td-ok { background: var(--green-bg); color: var(--green); border-radius: 3px; font-size: 11px; padding: 1px 6px; display: inline-block; }
+.td-conflict { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd); border-radius: 3px; font-size: 11px; padding: 1px 6px; display: inline-block; font-weight: 600; }
+.td-im { color: var(--amber); font-size: 11px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--line); background: var(--paper2);
+  padding: 14px clamp(16px,4vw,48px);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+  font-size: 12px; font-family: var(--mono); color: var(--ink3);
+}
+
+@media (max-width: 580px) {
+  .freq-grid { grid-template-columns: 1fr 1fr; }
+  .btn-calc { margin-left: 0; width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    <div class="nav-title">Calculadora de Intermodulación</div>
+    <span class="nav-sub">3er Orden · UHF</span>
+  </div>
+  <a href="index.html" class="nav-back">
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2L4 7l5 5"/></svg>
+    Volver a TDT España
+  </a>
+</nav>
+
+<main>
+
+  <div class="info-card">
+    <strong>¿Qué es la intermodulación de 3er orden?</strong> Cuando dos transmisores emiten simultáneamente en frecuencias Fa y Fb,
+    generan productos de intermodulación en <strong>2·Fa − Fb</strong> y <strong>2·Fb − Fa</strong>.
+    Si alguna de esas frecuencias coincide con otro micrófono del sistema, aparece interferencia.
+    Introduce las frecuencias de tus dispositivos y comprueba si existe conflicto.
+  </div>
+
+  <!-- FRECUENCIAS -->
+  <div class="freqs-card">
+    <div class="sh">Frecuencias del sistema</div>
+    <div class="freqs-header">
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span class="freq-count" id="freqCount">0</span>
+        <span class="freq-count-label">dispositivos</span>
+      </div>
+    </div>
+    <div class="freq-grid" id="freqGrid"></div>
+    <div class="freq-actions">
+      <button class="btn btn-add" onclick="addFreq()">+ Añadir frecuencia</button>
+      <button class="btn btn-clear" onclick="clearAll()">Limpiar todo</button>
+      <button class="btn btn-calc" onclick="calculate()">Calcular intermodulación</button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="resultsWrap" style="display:none"></div>
+
+  <!-- ESPECTRO -->
+  <div class="spectrum-card" id="specCard" style="display:none">
+    <div class="sh">Visualización de espectro</div>
+    <div class="spec-scroll">
+      <div class="spec-track" id="specBar"></div>
+      <div class="spec-labels" id="specLbl"></div>
+    </div>
+    <div class="spec-legend">
+      <span class="leg"><span class="leg-dot" style="background:var(--green);opacity:.7"></span>Frecuencia activa</span>
+      <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia con conflicto IM</span>
+      <span class="leg"><span class="leg-dot" style="background:var(--amber);opacity:.7"></span>Producto IM calculado</span>
+    </div>
+  </div>
+
+  <!-- TABLA DETALLADA -->
+  <div class="im-table-card" id="tableCard" style="display:none">
+    <div style="padding:16px 24px 0"><div class="sh">Tabla de productos IM por par de frecuencias</div></div>
+    <div class="im-tscroll">
+      <table id="imTable"></table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>RF · TDT España &nbsp;·&nbsp; Calculadora de Intermodulación IM3</span>
+  <span>v1.0</span>
+</footer>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let freqs = [null, null, null]; // start with 3 empty slots
+const TOLERANCE = 0.025; // MHz — typical step for UHF wireless
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+renderInputs();
+
+function renderInputs() {
+  const grid = document.getElementById('freqGrid');
+  grid.innerHTML = freqs.map((f, i) => `
+    <div class="freq-row" id="row_${i}">
+      <span class="freq-num">${i + 1}</span>
+      <input class="freq-inp" type="number" id="f_${i}"
+        value="${f !== null ? f : ''}"
+        placeholder="546.000"
+        min="400" max="800" step="0.025"
+        onchange="freqChanged(${i}, this.value)"
+        oninput="freqChanged(${i}, this.value)"
+        onkeydown="if(event.key==='Enter') calculate()">
+      <span class="freq-unit">MHz</span>
+      <button class="freq-del" onclick="removeFreq(${i})" title="Eliminar">×</button>
+    </div>`).join('');
+  document.getElementById('freqCount').textContent = freqs.filter(f => f !== null && f !== '').length;
+}
+
+function freqChanged(i, val) {
+  freqs[i] = val === '' ? null : parseFloat(val);
+  document.getElementById('freqCount').textContent = freqs.filter(f => f !== null && !isNaN(f)).length;
+}
+
+function addFreq() {
+  if (freqs.length >= 30) return;
+  freqs.push(null);
+  renderInputs();
+  // Focus new input
+  setTimeout(() => {
+    const inp = document.getElementById(`f_${freqs.length - 1}`);
+    if (inp) inp.focus();
+  }, 50);
+}
+
+function removeFreq(i) {
+  freqs.splice(i, 1);
+  renderInputs();
+}
+
+function clearAll() {
+  freqs = [null, null, null];
+  renderInputs();
+  document.getElementById('resultsWrap').style.display = 'none';
+  document.getElementById('specCard').style.display = 'none';
+  document.getElementById('tableCard').style.display = 'none';
+  // reset conflict highlights
+  document.querySelectorAll('.freq-row').forEach(r => r.classList.remove('conflict'));
+}
+
+// ── CALCULATE ──────────────────────────────────────────────────────────────
+function calculate() {
+  // Get valid frequencies
+  const active = freqs
+    .map((f, i) => ({ f: parseFloat(f), i }))
+    .filter(x => !isNaN(x.f) && x.f > 0);
+
+  if (active.length < 2) {
+    alert('Introduce al menos 2 frecuencias para calcular la intermodulación.');
+    return;
+  }
+
+  const fValues = active.map(x => x.f);
+  const conflictFreqs = new Set();
+  const imProducts = []; // { fa, fb, im, conflictsWith }
+
+  // Compute all IM3 products: 2·Fa - Fb and 2·Fb - Fa
+  for (let i = 0; i < active.length; i++) {
+    for (let j = 0; j < active.length; j++) {
+      if (i === j) continue;
+      const fa = active[i].f;
+      const fb = active[j].f;
+      const im = 2 * fa - fb;
+      if (im <= 0) continue;
+
+      // Check if IM product lands on any active frequency
+      const hits = active
+        .filter(x => Math.abs(x.f - im) <= TOLERANCE)
+        .map(x => x.f);
+
+      imProducts.push({ fa, fb, im: parseFloat(im.toFixed(3)), hits });
+
+      if (hits.length > 0) {
+        conflictFreqs.add(fa);
+        conflictFreqs.add(fb);
+        hits.forEach(h => conflictFreqs.add(h));
+      }
+    }
+  }
+
+  // Unique IM products with conflicts
+  const conflicts = imProducts.filter(p => p.hits.length > 0);
+
+  // Highlight conflict rows
+  renderInputs();
+  active.forEach(x => {
+    const row = document.getElementById(`row_${x.i}`);
+    if (row && conflictFreqs.has(x.f)) row.classList.add('conflict');
+  });
+
+  // Show results
+  showResults(conflicts, active, imProducts);
+  showSpectrum(active, conflicts, imProducts);
+  showTable(active, imProducts);
+}
+
+function showResults(conflicts, active, imProducts) {
+  const wrap = document.getElementById('resultsWrap');
+  wrap.style.display = 'block';
+
+  if (conflicts.length === 0) {
+    wrap.innerHTML = `
+      <div class="results-card">
+        <div class="results-ok">
+          <div class="results-ok-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 4.5"/></svg>
+          </div>
+          <div>
+            <div class="results-ok-title">Sin conflictos de intermodulación</div>
+            <div class="results-ok-sub">${active.length} frecuencias · ${imProducts.length} productos IM calculados · ninguno coincide</div>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Deduplicate conflicts for display
+  const seen = new Set();
+  const unique = conflicts.filter(c => {
+    const key = `${Math.min(c.fa,c.fb)}-${Math.max(c.fa,c.fb)}-${c.im}`;
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+
+  wrap.innerHTML = `
+    <div class="results-card">
+      <div class="results-conflict-header">
+        <div class="results-conflict-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
+        </div>
+        <div>
+          <div class="results-conflict-title">${unique.length} conflicto${unique.length > 1 ? 's' : ''} de intermodulación detectado${unique.length > 1 ? 's' : ''}</div>
+          <div class="results-conflict-sub">${active.length} frecuencias · cambia las frecuencias afectadas</div>
+        </div>
+      </div>
+      <div class="conflict-list">
+        ${unique.map(c => `
+          <div class="conflict-item">
+            <span class="conflict-badge">${c.im.toFixed(3)} MHz</span>
+            <div>
+              <div class="conflict-detail">
+                Producto IM cae sobre <strong>${c.hits.map(h => h.toFixed(3)+' MHz').join(', ')}</strong>
+              </div>
+              <div class="conflict-formula">2 × ${c.fa.toFixed(3)} − ${c.fb.toFixed(3)} = ${c.im.toFixed(3)} MHz</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function showSpectrum(active, conflicts, imProducts) {
+  const card = document.getElementById('specCard');
+  card.style.display = 'block';
+
+  const allFreqs = [
+    ...active.map(x => x.f),
+    ...imProducts.filter(p => p.hits.length > 0).map(p => p.im)
+  ].filter(f => f > 0);
+
+  if (!allFreqs.length) return;
+
+  const conflictSet = new Set(conflicts.flatMap(c => [...c.hits, c.fa, c.fb]));
+  const imSet = new Set(imProducts.filter(p => p.hits.length > 0).map(p => p.im));
+
+  const min = Math.max(Math.min(...allFreqs) - 10, 400);
+  const max = Math.min(Math.max(...allFreqs) + 10, 800);
+  const span = max - min;
+
+  const bar = document.getElementById('specBar');
+
+  // Active frequencies
+  const activeHTML = active.map(x => {
+    const pct = ((x.f - min) / span * 100).toFixed(2);
+    const cls = conflictSet.has(x.f) ? 'conflict-freq' : 'ok';
+    return `<div class="spec-pin ${cls}" style="left:${pct}%">
+      <div class="spec-tip">${x.f.toFixed(3)} MHz · Mic ${x.i + 1}</div>
+    </div>`;
+  }).join('');
+
+  // IM products (only those causing conflicts)
+  const imHTML = imProducts
+    .filter(p => p.hits.length > 0)
+    .filter(p => p.im >= min && p.im <= max)
+    .map(p => {
+      const pct = ((p.im - min) / span * 100).toFixed(2);
+      return `<div class="spec-pin im" style="left:${pct}%">
+        <div class="spec-tip">IM: ${p.im.toFixed(3)} MHz = 2×${p.fa}−${p.fb}</div>
+      </div>`;
+    }).join('');
+
+  bar.innerHTML = activeHTML + imHTML;
+
+  // Labels
+  const step = span > 100 ? 50 : span > 40 ? 20 : 10;
+  const lblStart = Math.ceil(min / step) * step;
+  let lbls = '';
+  for (let f = lblStart; f <= max; f += step) {
+    const pct = ((f - min) / span * 100).toFixed(1);
+    lbls += `<span style="position:absolute;left:${pct}%;transform:translateX(-50%)">${f}</span>`;
+  }
+  document.getElementById('specLbl').style.position = 'relative';
+  document.getElementById('specLbl').innerHTML = lbls;
+}
+
+function showTable(active, imProducts) {
+  const card = document.getElementById('tableCard');
+  card.style.display = 'block';
+  const table = document.getElementById('imTable');
+
+  if (active.length < 2) { card.style.display = 'none'; return; }
+
+  const fVals = active.map(x => x.f);
+
+  // Header
+  let thead = '<thead><tr><th>2Fa − Fb</th>';
+  active.forEach(x => { thead += `<th>${x.f.toFixed(2)}</th>`; });
+  thead += '</tr></thead>';
+
+  // Body: for each Fa row, show IM for each Fb col
+  let tbody = '<tbody>';
+  active.forEach(rowX => {
+    tbody += `<tr><td>${rowX.f.toFixed(2)} MHz</td>`;
+    active.forEach(colX => {
+      if (rowX.i === colX.i) {
+        tbody += `<td style="color:var(--line)">—</td>`;
+      } else {
+        const im = parseFloat((2 * rowX.f - colX.f).toFixed(3));
+        const isConflict = fVals.some(f => Math.abs(f - im) <= TOLERANCE);
+        if (im <= 0) {
+          tbody += `<td style="color:var(--line)">−</td>`;
+        } else if (isConflict) {
+          tbody += `<td><span class="td-conflict">${im.toFixed(2)}</span></td>`;
+        } else {
+          tbody += `<td class="td-im">${im.toFixed(2)}</td>`;
+        }
+      }
+    });
+    tbody += '</tr>';
+  });
+  tbody += '</tbody>';
+
+  table.innerHTML = thead + tbody;
+}
+</script>
+</body>
+</html>

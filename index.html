@@ -299,7 +299,7 @@ main {
   color: #fff;
   border-radius: 5px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   padding: 5px 10px;
   white-space: nowrap;
   pointer-events: none;
@@ -362,7 +362,7 @@ main {
 .fc-res.ok   { display: block; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
 .fc-res.bad  { display: block; background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd); }
 .fc-res.warn { display: block; background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
-.fc-note { font-size: 12px; color: var(--ink3); margin-top: 9px; line-height: 1.7; }
+.fc-note { font-size: 12px; color: var(--ink3); margin-top: 8px; line-height: 1.7; }
 
 /* ═══════════════════════════════════════════════════════
    TABLA
@@ -370,7 +370,7 @@ main {
 .twrap { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--paper); }
 .tbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px; border-bottom: 1px solid var(--line);
+  padding: 11px 18px; border-bottom: 1px solid var(--line);
   flex-wrap: wrap; gap: 8px; background: var(--paper2);
 }
 .tcount { font-size: 13px; color: var(--ink2); }
@@ -381,7 +381,7 @@ main {
 .expand-btn {
   display: inline-flex; align-items: center; gap: 7px;
   background: var(--paper2); border: 1px solid var(--line); border-radius: var(--r2);
-  color: var(--ink2); cursor: pointer; font-family: var(--sans); font-size: 13px;
+  color: var(--ink2); cursor: pointer; font-family: var(--sans); font-size: 12px;
   font-weight: 500; padding: 8px 16px; transition: .15s;
 }
 .expand-btn:hover { border-color: var(--ink3); color: var(--ink); }
@@ -475,6 +475,36 @@ footer {
   .ch-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
   .fc-inp { width: 100px; font-size: 15px; }
 }
+
+/* ── GEOLOCATION ── */
+.geo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-bd);
+  border-radius: var(--r2);
+  color: var(--green);
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  transition: .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.geo-btn:hover { background: #d2ebe1; border-color: #6db492; }
+.geo-btn:disabled { opacity: .5; cursor: default; }
+.geo-btn svg { flex-shrink: 0; }
+.geo-status {
+  font-size: 12px;
+  color: var(--ink3);
+  font-family: var(--mono);
+  padding: 2px 0;
+  min-width: 0;
+}
+
 </style>
 </head>
 <body>
@@ -511,6 +541,18 @@ footer {
       Arrastra <strong style="font-weight:600">tdt.csv</strong> aquí o selecciónalo para cargar los datos
       <input type="file" id="csvFile" accept=".csv,.tsv,.txt">
       <label class="file-btn" for="csvFile">Seleccionar CSV</label>
+    </div>
+
+
+    <!-- Geolocalización automática -->
+    <div style="display:flex;align-items:flex-end;gap:8px;padding-bottom:1px">
+      <button class="geo-btn" id="geoBtn" onclick="geoLocate()" title="Detectar ubicación automáticamente">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/>
+        </svg>
+        Mi ubicación
+      </button>
+      <span class="geo-status" id="geoStatus"></span>
     </div>
 
     <div class="fg"><label>Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
@@ -627,6 +669,20 @@ footer {
 </main>
 
 <!-- CRÉDITOS -->
+
+<!-- Enlace a calculadora de intermodulación -->
+<div style="max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 8px">
+  <a href="intermodulacion.html" style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:10px;text-decoration:none;transition:.15s" onmouseover="this.style.background='#f5e9b8'" onmouseout="this.style.background='var(--amber-bg)'">
+    <div style="width:36px;height:36px;border-radius:8px;background:var(--amber-bd);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-bottom:2px">Herramienta adicional</div>
+      <div style="font-size:13px;font-weight:600;color:var(--amber)">Calculadora de Intermodulación IM3 →</div>
+    </div>
+  </a>
+</div>
+
 <div class="footer-credits">
   <div class="credit-row">
     <div class="credit-left">
@@ -1002,6 +1058,115 @@ function loadMore() {
   visibleRows += PAGE;
   render(false);
 }
+
+// ── GEOLOCALIZACIÓN ────────────────────────────────────────────────────────
+function geoLocate() {
+  const btn = document.getElementById('geoBtn');
+  const status = document.getElementById('geoStatus');
+
+  if (!navigator.geolocation) {
+    status.textContent = 'Geolocalización no disponible';
+    status.style.color = 'var(--red)';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .8s linear infinite"><path d="M14 8A6 6 0 1 1 8 2"/></svg> Buscando…`;
+  status.textContent = '';
+
+  navigator.geolocation.getCurrentPosition(
+    pos => geoReverse(pos.coords.latitude, pos.coords.longitude),
+    err => {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
+      status.textContent = err.code === 1 ? 'Permiso denegado' : 'Error de ubicación';
+      status.style.color = 'var(--red)';
+    },
+    { timeout: 8000, maximumAge: 60000 }
+  );
+}
+
+function geoReverse(lat, lon) {
+  const btn = document.getElementById('geoBtn');
+  const status = document.getElementById('geoStatus');
+
+  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es`)
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
+
+      const addr = data.address || {};
+      // Extract province name — Nominatim uses state for CCAA and province for provincia
+      const rawProvince = addr.province || addr.county || addr.state_district || '';
+      const rawCA = addr.state || '';
+
+      // Normalise: try to match against loaded data
+      const match = geoMatch(rawCA, rawProvince);
+      if (match.ca) {
+        // Set CA
+        const fCA = document.getElementById('fCA');
+        fCA.value = match.ca;
+        fCA.dispatchEvent(new Event('change'));
+
+        // After CA change repopulates provinces, set province
+        if (match.provincia) {
+          setTimeout(() => {
+            const fProv = document.getElementById('fProv');
+            // Find best matching option
+            const opts = [...fProv.options].map(o => o.value);
+            const best = opts.find(o => norm(o) === norm(match.provincia)) ||
+                         opts.find(o => norm(o).includes(norm(match.provincia)) || norm(match.provincia).includes(norm(o)));
+            if (best) {
+              fProv.value = best;
+              fProv.dispatchEvent(new Event('change'));
+              status.textContent = `📍 ${best}`;
+              status.style.color = 'var(--green)';
+            } else {
+              status.textContent = `📍 ${match.ca}`;
+              status.style.color = 'var(--green)';
+            }
+          }, 50);
+        } else {
+          status.textContent = `📍 ${match.ca}`;
+          status.style.color = 'var(--green)';
+        }
+      } else {
+        status.textContent = 'Ubic. no reconocida — filtra manualmente';
+        status.style.color = 'var(--amber)';
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
+      status.textContent = 'Error al obtener ubicación';
+      status.style.color = 'var(--red)';
+    });
+}
+
+function norm(s) {
+  return (s || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, '').trim();
+}
+
+function geoMatch(rawCA, rawProvince) {
+  const cas = uniq('ca');
+  const ca = cas.find(c => norm(c) === norm(rawCA)) ||
+             cas.find(c => norm(rawCA).includes(norm(c)) || norm(c).includes(norm(rawCA)));
+
+  if (!ca) return {};
+
+  // Filter provinces by matched CA
+  const provs = uniq('provincia', ALL.filter(r => r.ca === ca));
+  const provincia = provs.find(p => norm(p) === norm(rawProvince)) ||
+                    provs.find(p => norm(rawProvince).includes(norm(p)) || norm(p).includes(norm(rawProvince)));
+
+  return { ca, provincia: provincia || null };
+}
 </script>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 </body>
 </html>
