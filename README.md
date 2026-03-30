@@ -1,6 +1,6 @@
 # RF · TDT España — Frecuencias UHF
 
-**Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con verificador de conflictos y visualizador de espectro interactivo.
+**Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con verificador de conflictos, visualizador de espectro interactivo y calculadora de intermodulación.
 
 🌐 **[javitatay.github.io/RFTDT](https://javitatay.github.io/RFTDT/)**
 
@@ -8,7 +8,7 @@
 
 ### Badges
 
-![version](https://img.shields.io/badge/version-3.1.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
+![version](https://img.shields.io/badge/version-3.2.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
 
 ---
 
@@ -22,11 +22,13 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 
 ## Funcionalidades
 
+- **Geolocalización automática** — detecta la ubicación del dispositivo y preselecciona automáticamente la Comunidad Autónoma y provincia
 - **Vista de canales activos** — grid visual con número de canal, frecuencia central y rango ocupado para la demarcación seleccionada; los conflictos con el micrófono se marcan en rojo al instante
 - **Mapa de espectro** — representación gráfica del espectro UHF 470–694 MHz con los canales TDT activos y la frecuencia del micrófono superpuesta
 - **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura
 - **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
 - **Tabla ordenable** — ordena los resultados por cualquier columna (canal, frecuencia, rango, demarcación...)
+- **Calculadora de intermodulación IM3** — herramienta independiente para comprobar si las frecuencias de un sistema de micrófonos generan productos de intermodulación de tercer orden entre sí
 
 ---
 
@@ -48,9 +50,10 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 
 ```
 RFTDT/
-├── index.html    → interfaz web completa (diseño + lógica)
-├── tdt.csv       → base de datos de frecuencias por demarcación
-├── .nojekyll     → desactiva Jekyll en GitHub Pages
+├── index.html            → interfaz principal (diseño + lógica)
+├── intermodulacion.html  → calculadora de intermodulación IM3
+├── tdt.csv               → base de datos de frecuencias por demarcación
+├── .nojekyll             → desactiva Jekyll en GitHub Pages
 └── README.md
 ```
 
@@ -95,4 +98,4 @@ Los campos Canal y Frecuencia admiten múltiples valores separados por comas (en
 
 *Herramienta de uso libre para técnicos audiovisuales · 2026*
 
-**Version:** 3.1.0 | **Built with:** Claude AI
+**Version:** 3.2.0 | **Built with:** Claude AI
