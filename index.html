@@ -6,7 +6,9 @@
 <title>RF · TDT España — Frecuencias UHF</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
+
 /* ═══════════════════════════════════════════════════════
    TOKENS
 ═══════════════════════════════════════════════════════ */
@@ -30,10 +32,6 @@
   --amber:    #7a4e08;
   --amber-bg: #fdf3d6;
   --amber-bd: #d4aa50;
-
-  --teal:     #1a6672;
-  --teal-bg:  #e6f4f6;
-  --teal-bd:  #8ccad4;
 
   --sans:     'DM Sans', sans-serif;
   --mono:     'DM Mono', monospace;
@@ -64,7 +62,7 @@ nav {
   z-index: 200;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
-  height: 56px;
+  height: 50px;
   display: flex;
   align-items: center;
   padding: 0 clamp(16px, 4vw, 48px);
@@ -480,53 +478,95 @@ footer {
   .fc-inp { width: 100px; font-size: 15px; }
 }
 
-/* ── GEOLOCATION ── */
-.geo-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--green-bg);
-  border: 1px solid var(--green-bd);
-  border-radius: var(--r2);
-  color: var(--green);
-  cursor: pointer;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 14px;
-  transition: .15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.geo-btn:hover { background: #d2ebe1; border-color: #6db492; }
-.geo-btn:disabled { opacity: .5; cursor: default; }
-.geo-btn svg { flex-shrink: 0; }
-.geo-status {
-  font-size: 12px;
-  color: var(--ink3);
-  font-family: var(--mono);
-  padding: 2px 0;
-  min-width: 0;
+/* ── NEW TOKENS ── */
+:root {
+  --teal:    #1a6672; --teal-bg: #e6f4f6; --teal-bd: #8ccad4;
+  --blue:    #1a4d8c; --blue-bg: #e6eef8; --blue-bd: #8ab0d8;
 }
 
-.nav-im-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--teal-bg);
-  border: 1px solid var(--teal-bd);
-  border-radius: var(--r2);
-  color: var(--teal);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 15px;
-  text-decoration: none;
-  transition: .15s;
-  white-space: nowrap;
-  flex-shrink: 0;
+/* ── ACTION BUTTONS IN FILTER BAR ── */
+.geo-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--green-bg); border:1px solid var(--green-bd); border-radius:var(--r2);
+  color:var(--green); cursor:pointer; font-family:var(--sans); font-size:13px; font-weight:600;
+  padding:8px 14px; transition:.15s; white-space:nowrap; flex-shrink:0;
 }
-.nav-im-link:hover { background: #cce8ec; border-color: #5aaab8; color: #124d57; }
+.geo-btn:hover { background:#d2ebe1; border-color:#6db492; }
+.geo-btn:disabled { opacity:.5; cursor:default; }
+.geo-status { font-size:12px; color:var(--ink3); font-family:var(--mono); }
+
+.im-link {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--teal-bg); border:1px solid var(--teal-bd); border-radius:var(--r2);
+  color:var(--teal); font-size:13px; font-weight:600; padding:8px 15px;
+  text-decoration:none; transition:.15s; white-space:nowrap; flex-shrink:0;
+}
+.im-link:hover { background:#cce8ec; border-color:#5aaab8; color:#124d57; }
+
+.map-toggle-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--blue-bg); border:1px solid var(--blue-bd); border-radius:var(--r2);
+  color:var(--blue); cursor:pointer; font-family:var(--sans); font-size:13px; font-weight:600;
+  padding:8px 14px; transition:.15s; white-space:nowrap; flex-shrink:0;
+}
+.map-toggle-btn:hover { background:#ccdaf0; border-color:#5a88c0; color:#12336a; }
+.map-toggle-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+
+/* ── MAP SECTION ── */
+.map-wrap {
+  display:flex; gap:16px; align-items:flex-start; padding:4px 0 6px;
+}
+#map {
+  height:400px; flex:1; min-width:0; border-radius:var(--r2);
+  border:1px solid var(--line); background:var(--paper3);
+}
+.map-side {
+  width:210px; flex-shrink:0; display:flex; flex-direction:column; gap:9px;
+}
+.map-side-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2); }
+.map-step { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink3); line-height:1.5; }
+.map-step-num {
+  width:18px; height:18px; border-radius:50%; background:var(--line); color:var(--ink2);
+  font-size:10px; font-weight:700; flex-shrink:0; margin-top:1px;
+  display:flex; align-items:center; justify-content:center; transition:background .2s, color .2s;
+}
+.map-step-num.done { background:var(--green); color:#fff; }
+.map-sel-box {
+  background:var(--paper2); border:1px solid var(--line); border-radius:var(--r2);
+  padding:10px 12px; font-size:12px; color:var(--ink2); line-height:1.7; min-height:56px;
+}
+.map-sel-box strong { color:var(--ink); font-weight:600; }
+.map-list-item {
+  padding:5px 9px; font-size:12px; color:var(--ink2); border-radius:var(--r2);
+  cursor:pointer; transition:background .12s, color .12s; line-height:1.4;
+}
+.map-list-item:hover { background:var(--blue-bg); color:var(--blue); }
+.map-list-item.selected { background:var(--blue-bg); color:var(--blue); font-weight:600; border-left:2px solid var(--blue); padding-left:7px; }
+.map-side-scroll { max-height:180px; overflow-y:auto; }
+.btn-reset-map {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px; width:100%;
+  background:var(--red-bg); border:1px solid var(--red-bd); border-radius:var(--r2);
+  color:var(--red); cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:600;
+  padding:8px 13px; transition:.15s; margin-top:2px;
+}
+.btn-reset-map:hover { background:#f8d5d2; border-color:#d4655c; }
+.map-tooltip {
+  background:var(--ink) !important; color:#fff !important; border:none !important;
+  border-radius:4px !important; font-family:var(--mono) !important; font-size:11px !important;
+  padding:3px 8px !important; box-shadow:none !important;
+}
+@media(max-width:700px){
+  .map-wrap { flex-direction:column; }
+  .map-side { width:100%; }
+  #map { height:260px; width:100%; }
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+</head>
+<body>
+
 </head>
 <body>
 
@@ -564,19 +604,20 @@ footer {
       <label class="file-btn" for="csvFile">Seleccionar CSV</label>
     </div>
 
-
-    <!-- Geolocalización automática -->
-    <div style="display:flex;align-items:flex-end;gap:8px;padding-bottom:1px">
-      <button class="geo-btn" id="geoBtn" onclick="geoLocate()" title="Detectar ubicación automáticamente">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/>
-        </svg>
+    <!-- Botones de acción rápida -->
+    <div style="display:flex;align-items:flex-end;gap:8px;padding-bottom:1px;flex-wrap:wrap">
+      <button class="geo-btn" id="geoBtn" onclick="geoLocate()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>
         Mi ubicación
       </button>
-      <a href="intermodulacion.html" class="nav-im-link">
+      <a href="intermodulacion.html" class="im-link">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5h2M9 5h2M5 8h2M9 8h2M5 11h2M9 11h2"/></svg>
         Calculadora de intermodulación
       </a>
+      <button class="map-toggle-btn" id="mapToggle" onclick="toggleMap()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4l5 2 4-2 5 2v8l-5-2-4 2-5-2V4z"/><path d="M6 6v8M10 4v8"/></svg>
+        Mapa interactivo
+      </button>
       <span class="geo-status" id="geoStatus"></span>
     </div>
 
@@ -623,6 +664,24 @@ footer {
       </div>
     </div>
   </section>
+
+  <!-- MAPA INTERACTIVO -->
+  <section id="mapSection" style="display:none">
+    <div class="sh">Mapa interactivo · Selección gradual</div>
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-side">
+        <div class="map-side-title">Pasos</div>
+        <div class="map-step"><span class="map-step-num" id="mapStep1">1</span><span>Clic → <strong>Com. Autónoma</strong></span></div>
+        <div class="map-step"><span class="map-step-num" id="mapStep2">2</span><span>Clic en provincia → <strong>Provincia</strong></span></div>
+        <div class="map-step"><span class="map-step-num" id="mapStep3">3</span><span>Lista → <strong>Demarcación</strong></span></div>
+        <div class="map-step"><span class="map-step-num" id="mapStep4">4</span><span>Lista → <strong>Ámbito</strong></span></div>
+        <div class="map-sel-box" id="mapSelBox">Haz clic en el mapa para comenzar</div>
+        <button class="btn-reset-map" onclick="resetMapSel()">↺ Limpiar selección</button>
+      </div>
+    </div>
+  </section>
+
 
   <!-- 3 · VERIFICADOR -->
   <section>
@@ -694,40 +753,38 @@ footer {
 </main>
 
 <!-- CRÉDITOS -->
-
 <div class="footer-credits">
   <div class="credit-row">
     <div class="credit-left">
       <div>
-        <div class="credit-label">Herramienta</div>
-        <div class="credit-name">RF · TDT España &nbsp;·&nbsp; Consulta de frecuencias UHF para técnicos de directo</div>
+        <div class="credit-label">RF · TDT España &nbsp;·&nbsp; Autor · Contacto</div>
+        <div class="credit-name">Javier Tatay Rubio &nbsp;·&nbsp; Consulta de frecuencias UHF para técnicos de directo</div>
       </div>
     </div>
-    <a href="https://github.com/javitatay/RFTDT" target="_blank" class="credit-link">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-      Ver en GitHub
-    </a>
-  </div>
-  <div class="credit-row">
-    <div class="credit-left">
-      <div>
-        <div class="credit-label">Autor · Contacto</div>
-        <div class="credit-name">Javier Tatay Rubio</div>
-      </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <a href="https://github.com/javitatay/RFTDT" target="_blank" class="credit-link">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Ver en GitHub
+      </a>
+      <a href="mailto:j.tatayrubio&#64;edu.gva.es" class="credit-link">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
+        j.tatayrubio&#64;edu.gva.es
+      </a>
     </div>
-    <a href="mailto:j.tatayrubio&#64;edu.gva.es" class="credit-link">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
-      j.tatayrubio&#64;edu.gva.es
-    </a>
   </div>
 </div>
 
 <footer>
-  <span>RF · TDT España &nbsp;·&nbsp; DVB-T · UHF 470–694 MHz &nbsp;·&nbsp; Fuente: CNAF / MINETUR</span>
-  <span>v3.1</span>
+  <div style="flex:1;min-width:0">
+    <span>RF · TDT España &nbsp;·&nbsp; DVB-T · UHF 470–694 MHz &nbsp;·&nbsp; Fuente: CNAF / MINETUR &nbsp;·&nbsp; v3.2</span>
+    <div style="margin-top:5px;font-size:11px;color:var(--ink3);line-height:1.6">
+      ⚠︎ Esta información puede no estar actualizada en el momento de su uso. Se recomienda realizar un escaneo completo de frecuencias del espacio en el que se desarrollará el show para el conocimiento exacto de las interferencias presentes.
+    </div>
+  </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
+
 // ── PARSE ──────────────────────────────────────────────────────────────────
 function parse(txt) {
   const lines = txt.trim().split(/\r?\n/);
@@ -995,7 +1052,7 @@ function render(resetPage = true) {
     ? `Ver ${FILT.length.toLocaleString('es')} entradas`
     : 'Ver todas las entradas';
 
-  if (filtered && !tableExpanded) expandTable();
+  if (filtered && !tableExpanded && !mapUpdating) expandTable();
   if (tableExpanded) renderRows();
 }
 
@@ -1074,110 +1131,257 @@ function loadMore() {
 // ── GEOLOCALIZACIÓN ────────────────────────────────────────────────────────
 function geoLocate() {
   const btn = document.getElementById('geoBtn');
-  const status = document.getElementById('geoStatus');
-
-  if (!navigator.geolocation) {
-    status.textContent = 'Geolocalización no disponible';
-    status.style.color = 'var(--red)';
-    return;
-  }
-
+  const st  = document.getElementById('geoStatus');
+  if (!navigator.geolocation) { st.textContent='No disponible'; st.style.color='var(--red)'; return; }
   btn.disabled = true;
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .8s linear infinite"><path d="M14 8A6 6 0 1 1 8 2"/></svg> Buscando…`;
-  status.textContent = '';
-
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="animation:spin .8s linear infinite"><path d="M14 8A6 6 0 1 1 8 2"/></svg> Buscando…`;
   navigator.geolocation.getCurrentPosition(
     pos => geoReverse(pos.coords.latitude, pos.coords.longitude),
     err => {
       btn.disabled = false;
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
-      status.textContent = err.code === 1 ? 'Permiso denegado' : 'Error de ubicación';
-      status.style.color = 'var(--red)';
-    },
-    { timeout: 8000, maximumAge: 60000 }
+      btn.innerHTML = geoBtnHTML();
+      st.textContent = err.code===1 ? 'Permiso denegado' : 'Error';
+      st.style.color = 'var(--red)';
+    }, { timeout:8000, maximumAge:60000 }
   );
 }
-
+function geoBtnHTML() {
+  return `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
+}
 function geoReverse(lat, lon) {
   const btn = document.getElementById('geoBtn');
-  const status = document.getElementById('geoStatus');
-
+  const st  = document.getElementById('geoStatus');
   fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es`)
     .then(r => r.json())
     .then(data => {
-      btn.disabled = false;
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
-
+      btn.disabled = false; btn.innerHTML = geoBtnHTML();
       const addr = data.address || {};
-      // Extract province name — Nominatim uses state for CCAA and province for provincia
-      const rawProvince = addr.province || addr.county || addr.state_district || '';
-      const rawCA = addr.state || '';
-
-      // Normalise: try to match against loaded data
-      const match = geoMatch(rawCA, rawProvince);
-      if (match.ca) {
-        // Set CA
-        const fCA = document.getElementById('fCA');
-        fCA.value = match.ca;
-        fCA.dispatchEvent(new Event('change'));
-
-        // After CA change repopulates provinces, set province
-        if (match.provincia) {
+      const m = geoMatch(addr.state || '', addr.province || addr.county || '');
+      if (m.ca) {
+        document.getElementById('fCA').value = m.ca;
+        document.getElementById('fCA').dispatchEvent(new Event('change'));
+        if (m.provincia) {
           setTimeout(() => {
-            const fProv = document.getElementById('fProv');
-            // Find best matching option
-            const opts = [...fProv.options].map(o => o.value);
-            const best = opts.find(o => norm(o) === norm(match.provincia)) ||
-                         opts.find(o => norm(o).includes(norm(match.provincia)) || norm(match.provincia).includes(norm(o)));
-            if (best) {
-              fProv.value = best;
-              fProv.dispatchEvent(new Event('change'));
-              status.textContent = `📍 ${best}`;
-              status.style.color = 'var(--green)';
-            } else {
-              status.textContent = `📍 ${match.ca}`;
-              status.style.color = 'var(--green)';
-            }
-          }, 50);
-        } else {
-          status.textContent = `📍 ${match.ca}`;
-          status.style.color = 'var(--green)';
-        }
-      } else {
-        status.textContent = 'Ubic. no reconocida — filtra manualmente';
-        status.style.color = 'var(--amber)';
-      }
+            const fp = document.getElementById('fProv');
+            const best = [...fp.options].map(o => o.value)
+              .find(o => norm(o) === norm(m.provincia) || norm(o).includes(norm(m.provincia)));
+            if (best) { fp.value = best; fp.dispatchEvent(new Event('change')); }
+            st.textContent = '📍 ' + (fp.value || m.ca);
+            st.style.color = 'var(--green)';
+          }, 80);
+        } else { st.textContent = '📍 ' + m.ca; st.style.color = 'var(--green)'; }
+      } else { st.textContent = 'Selecciona manualmente'; st.style.color = 'var(--amber)'; }
     })
-    .catch(() => {
-      btn.disabled = false;
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
-      status.textContent = 'Error al obtener ubicación';
-      status.style.color = 'var(--red)';
-    });
+    .catch(() => { btn.disabled = false; btn.innerHTML = geoBtnHTML(); });
 }
-
 function norm(s) {
-  return (s || '').toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s]/g, '').trim();
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim();
 }
-
-function geoMatch(rawCA, rawProvince) {
+function geoMatch(rawCA, rawProv) {
   const cas = uniq('ca');
-  const ca = cas.find(c => norm(c) === norm(rawCA)) ||
-             cas.find(c => norm(rawCA).includes(norm(c)) || norm(c).includes(norm(rawCA)));
-
+  const ca = cas.find(c => norm(c) === norm(rawCA)) || cas.find(c => norm(rawCA).includes(norm(c)) || norm(c).includes(norm(rawCA)));
   if (!ca) return {};
-
-  // Filter provinces by matched CA
   const provs = uniq('provincia', ALL.filter(r => r.ca === ca));
-  const provincia = provs.find(p => norm(p) === norm(rawProvince)) ||
-                    provs.find(p => norm(rawProvince).includes(norm(p)) || norm(p).includes(norm(rawProvince)));
-  return { ca, provincia: provincia || null };
+  const prov = provs.find(p => norm(p) === norm(rawProv)) || provs.find(p => norm(rawProv).includes(norm(p)) || norm(p).includes(norm(rawProv)));
+  return { ca, provincia: prov || null };
 }
+
+// ── MAPA INTERACTIVO ───────────────────────────────────────────────────────
+let mapLeaflet = null, mapInited = false, mapGeoLayer = null;
+let mapUpdating = false;
+let mapStep = 0;  // 0=none 1=CA 2=prov 3=dem 4=amb
+let mapSelCA = '', mapSelProv = '', mapSelDem = '', mapSelAmb = '';
+
+const PROV_NORM = {
+  'A Coruña':'A Coruña','Álava':'Álava','Albacete':'Albacete','Alicante':'Alicante',
+  'Almería':'Almería','Asturias':'Asturias','Ávila':'Ávila','Badajoz':'Badajoz',
+  'Islas Baleares':'Baleares','Illes Balears':'Baleares','Baleares':'Baleares',
+  'Barcelona':'Barcelona','Burgos':'Burgos','Cáceres':'Cáceres','Cádiz':'Cádiz',
+  'Cantabria':'Cantabria','Castellón':'Castellón','Castellón/Castelló':'Castellón',
+  'Castelló':'Castellón','Ciudad Real':'Ciudad Real','Córdoba':'Córdoba',
+  'Cuenca':'Cuenca','Girona':'Girona','Granada':'Granada','Guadalajara':'Guadalajara',
+  'Guipúzcoa':'Guipúzcoa','Gipuzkoa':'Guipúzcoa','Huelva':'Huelva','Huesca':'Huesca',
+  'Jaén':'Jaén','La Rioja':'La Rioja','Las Palmas':'Las Palmas','León':'León',
+  'Lleida':'Lleida','Lugo':'Lugo','Madrid':'Madrid','Málaga':'Málaga',
+  'Melilla':'Melilla','Ceuta':'Ceuta','Murcia':'Murcia','Navarra':'Navarra',
+  'Ourense':'Ourense','Palencia':'Palencia','Pontevedra':'Pontevedra',
+  'Salamanca':'Salamanca','Santa Cruz de Tenerife':'Santa Cruz de Tenerife',
+  'Segovia':'Segovia','Sevilla':'Sevilla','Soria':'Soria','Tarragona':'Tarragona',
+  'Teruel':'Teruel','Toledo':'Toledo','Valencia':'Valencia','Valladolid':'Valladolid',
+  'Vizcaya':'Vizcaya','Bizkaia':'Vizcaya','Zamora':'Zamora','Zaragoza':'Zaragoza',
+};
+
+const sOff  = { fillColor:'#c8dfc8', fillOpacity:.5,  color:'#7aad7a', weight:1   };
+const sHov  = { fillColor:'#8dc4a8', fillOpacity:.85, color:'#165c3a', weight:1.5 };
+const sCA   = { fillColor:'#8dc4a8', fillOpacity:.65, color:'#165c3a', weight:1.5 };
+const sProv = { fillColor:'#165c3a', fillOpacity:.82, color:'#0d3d22', weight:2   };
+const sDim  = { fillColor:'#d8d5ce', fillOpacity:.35, color:'#b0aca4', weight:.7  };
+
+function toggleMap() {
+  const sec = document.getElementById('mapSection');
+  const btn = document.getElementById('mapToggle');
+  const open = sec.style.display === 'none' || sec.style.display === '';
+  sec.style.display = open ? 'block' : 'none';
+  btn.classList.toggle('active', open);
+  if (open && !mapInited) {
+    setTimeout(initLeafletMap, 50);  // slight delay ensures div is visible before init
+  } else if (open && mapLeaflet) {
+    setTimeout(() => mapLeaflet.invalidateSize(), 200);
+  }
+}
+
+function initLeafletMap() {
+  mapInited = true;
+  mapLeaflet = L.map('map', {
+    center:[40.2,-3.5], zoom:5, zoomControl:true, attributionControl:true,
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom:18, subdomains:'abcd', attribution:'© <a href="https://carto.com">CARTO</a>',
+  }).addTo(mapLeaflet);
+
+  // Load Spain provinces GeoJSON — try two sources
+  tryLoad([
+    'https://cdn.jsdelivr.net/gh/codeforamerica/click_that_hood@master/public/data/spain-provinces.geojson',
+    'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/spain-provinces.geojson',
+  ], 0);
+}
+
+function tryLoad(urls, i) {
+  if (i >= urls.length) {
+    document.getElementById('mapSelBox').textContent = 'No se pudo cargar el mapa — usa los desplegables.';
+    return;
+  }
+  fetch(urls[i])
+    .then(r => { if (!r.ok) throw 0; return r.json(); })
+    .then(geojson => {
+      mapGeoLayer = L.geoJSON(geojson, {
+        style: () => ({ ...sOff }),
+        onEachFeature(feat, layer) {
+          const raw = feat.properties.name || '';
+          layer._cp = PROV_NORM[raw] || mapResolve(raw);
+          layer._cc = layer._cp ? mapCA(layer._cp) : '';
+          layer.on({
+            mouseover(e) { mapHov(e.target, true);  },
+            mouseout(e)  { mapHov(e.target, false); },
+            click(e)     { L.DomEvent.stopPropagation(e); mapClic(e.target); },
+          });
+          layer.bindTooltip(raw, { sticky:true, className:'map-tooltip', offset:[0,-4] });
+        },
+      }).addTo(mapLeaflet);
+      mapLeaflet.invalidateSize();
+    })
+    .catch(() => tryLoad(urls, i + 1));
+}
+
+function mapCA(csvProv) {
+  if (!ALL.length) return '';
+  const r = ALL.find(x => x.provincia === csvProv);
+  return r ? r.ca : '';
+}
+function mapResolve(str) {
+  const n = norm(str);
+  const k = Object.keys(PROV_NORM).find(k => norm(k) === n)
+         || Object.keys(PROV_NORM).find(k => norm(k).includes(n) || n.includes(norm(k)));
+  return k ? PROV_NORM[k] : null;
+}
+function mapHov(layer, on) {
+  if (!on) { mapPaint(); return; }
+  if (mapStep === 0 || (mapStep === 1 && layer._cc === mapSelCA)) {
+    layer.setStyle({ ...sHov }); layer.bringToFront();
+  }
+}
+function mapClic(layer) {
+  if (!layer._cp || !layer._cc) return;
+  if (mapStep === 0 || (mapStep >= 2 && layer._cc !== mapSelCA)) {
+    // Step 1 — select CA
+    mapSelCA = layer._cc; mapSelProv = ''; mapSelDem = ''; mapSelAmb = ''; mapStep = 1;
+    mapPaint();
+    mapUpdating = true;
+    const fCA = document.getElementById('fCA');
+    fCA.value = mapSelCA; fCA.dispatchEvent(new Event('change'));
+    mapUpdating = false;
+    mapInfo();
+  } else if (mapStep === 1 && layer._cc === mapSelCA) {
+    // Step 2 — select province
+    mapSelProv = layer._cp; mapSelDem = ''; mapSelAmb = ''; mapStep = 2;
+    mapPaint();
+    mapUpdating = true;
+    const fP = document.getElementById('fProv');
+    const m = [...fP.options].map(o => o.value).find(o => o === mapSelProv || norm(o) === norm(mapSelProv));
+    if (m) { fP.value = m; fP.dispatchEvent(new Event('change')); }
+    setTimeout(() => { mapUpdating = false; mapInfo(); }, 150);
+  }
+}
+function mapPaint() {
+  if (!mapGeoLayer) return;
+  mapGeoLayer.eachLayer(l => {
+    if      (mapStep === 0)          l.setStyle({ ...sOff });
+    else if (mapStep === 1)          l.setStyle(l._cc === mapSelCA ? { ...sCA } : { ...sDim });
+    else if (l._cp === mapSelProv)   l.setStyle({ ...sProv });
+    else if (l._cc === mapSelCA)     l.setStyle({ ...sCA });
+    else                             l.setStyle({ ...sDim });
+  });
+}
+function mapInfo() {
+  ['mapStep1','mapStep2','mapStep3','mapStep4'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('done', mapStep > i);
+  });
+  const box = document.getElementById('mapSelBox');
+  if (mapStep === 1) {
+    box.innerHTML = `<strong>${mapSelCA}</strong><br><span style="font-size:11px;color:var(--ink3)">Haz clic en una provincia</span>`;
+  } else if (mapStep === 2) {
+    const dems = uniq('demarcacion', ALL.filter(r => r.provincia === mapSelProv));
+    box.innerHTML = `<strong>${mapSelProv}</strong> <span style="font-size:11px;color:var(--ink3)">${mapSelCA}</span>
+      <div style="font-size:11px;color:var(--ink3);margin:5px 0 3px">Selecciona demarcación:</div>
+      <div class="map-side-scroll">${dems.map(d => `<div class="map-list-item${d===mapSelDem?' selected':''}" onclick="mapDem(this,'${d.replace(/'/g,"\\'")}')">  ${d}</div>`).join('')}</div>`;
+  } else if (mapStep === 3) {
+    const ambs = uniq('ambito', ALL.filter(r => r.provincia === mapSelProv && r.demarcacion === mapSelDem));
+    if (ambs.length === 1) { mapAmb(null, ambs[0]); return; }
+    box.innerHTML = `<strong>${mapSelDem}</strong><br><span style="font-size:11px;color:var(--ink3)">${mapSelProv}</span>
+      <div style="font-size:11px;color:var(--ink3);margin:5px 0 3px">Selecciona ámbito:</div>
+      <div class="map-side-scroll">${ambs.map(a => `<div class="map-list-item${a===mapSelAmb?' selected':''}" onclick="mapAmb(this,'${a.replace(/'/g,"\\'")}')">  ${a}</div>`).join('')}</div>`;
+  } else if (mapStep === 4) {
+    box.innerHTML = `<strong>${mapSelDem}</strong><br>
+      <span style="font-size:11px;color:var(--ink3)">${mapSelProv} · ${mapSelCA}</span><br>
+      <span style="font-size:11px;color:var(--ink3)">${mapSelAmb}</span><br>
+      <span style="font-size:12px;color:var(--green);font-weight:600">✓ Selección completa</span>`;
+  }
+}
+function mapDem(el, dem) {
+  mapSelDem = dem; mapSelAmb = ''; mapStep = 3;
+  document.querySelectorAll('#mapSelBox .map-list-item').forEach(i => i.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  mapUpdating = true;
+  setTimeout(() => {
+    const fd = document.getElementById('fDem');
+    const m = [...fd.options].map(o => o.value).find(o => o === dem || norm(o) === norm(dem));
+    if (m) { fd.value = m; fd.dispatchEvent(new Event('change')); }
+    setTimeout(() => { mapUpdating = false; mapInfo(); }, 100);
+  }, 60);
+}
+function mapAmb(el, amb) {
+  mapSelAmb = amb; mapStep = 4;
+  document.querySelectorAll('#mapSelBox .map-list-item').forEach(i => i.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  mapUpdating = true;
+  setTimeout(() => {
+    const fa = document.getElementById('fAmb');
+    const m = [...fa.options].map(o => o.value).find(o => o === amb || norm(o) === norm(amb));
+    if (m) { fa.value = m; fa.dispatchEvent(new Event('change')); }
+    setTimeout(() => { mapUpdating = false; mapInfo(); }, 100);
+  }, 60);
+}
+function resetMapSel() {
+  mapStep = 0; mapSelCA = ''; mapSelProv = ''; mapSelDem = ''; mapSelAmb = '';
+  mapPaint();
+  document.getElementById('mapSelBox').textContent = 'Haz clic en el mapa para comenzar';
+  ['mapStep1','mapStep2','mapStep3','mapStep4'].forEach(id => {
+    const e = document.getElementById(id); if (e) e.classList.remove('done');
+  });
+  resetF();
+}
+
 </script>
-<style>
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
 </body>
 </html>
