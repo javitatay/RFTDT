@@ -130,8 +130,8 @@ select:focus, select:hover { border-color: var(--green); box-shadow: 0 0 0 3px v
   white-space: nowrap;
 }
 .btn:hover { border-color: var(--ink3); color: var(--ink); }
-.btn-ghost { background: transparent; border-color: transparent; color: var(--ink3); }
-.btn-ghost:hover { background: var(--paper2); border-color: var(--line); color: var(--ink2); }
+.btn-ghost { background: transparent; border-color: var(--line); color: var(--ink2); }
+.btn-ghost:hover { background: var(--paper2); border-color: var(--ink3); color: var(--ink); }
 
 /* CSV notice */
 .csv-notice {
@@ -268,7 +268,7 @@ main {
 .spec-scroll { overflow-x: auto; padding-bottom: 4px; }
 .spec-track {
   position: relative;
-  height: 72px;
+  height: 96px;
   background: var(--paper2);
   border: 1px solid var(--line);
   border-radius: var(--r);
@@ -285,13 +285,26 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
 }
 .spec-ch .ch-num { font-family: var(--mono); font-size: 10px; font-weight: 600; color: #fff; pointer-events: none; white-space: nowrap; line-height: 1; }
-.spec-ch.free { background: var(--green); opacity: .5; }
-.spec-ch.probed { background: var(--red); opacity: .9; }
+.spec-ch.occupied { background: var(--red); opacity: .75; }
+.spec-ch.occupied:hover { opacity: 1; }
+.spec-ch.probed   { background: var(--red); opacity: 1; box-shadow: 0 0 0 2px var(--red); }
+.spec-free-gap    { position:absolute; top:6px; height:calc(100% - 12px); background:var(--green); opacity:.28; border-radius:3px; pointer-events:none; }
+.spec-ch-free {
+  position:absolute; top:6px; height:calc(100% - 12px);
+  background:var(--green); opacity:.45; border-radius:4px;
+  cursor:default; transition:opacity .1s;
+  display:flex; align-items:center; justify-content:center; overflow:visible;
+}
+.spec-ch-free:hover { opacity:.8; z-index:3; }
+.spec-ch-free:hover .spec-ch-free-probe { background:var(--green); opacity:.95 !important; }
+.ch-num-free {
+  font-family:var(--mono); font-size:9px; font-weight:700;
+  color:#fff; pointer-events:none; white-space:nowrap; line-height:1;
+}
 .spec-ch:hover { opacity: 1; z-index: 3; }
-.spec-ch:hover .spec-tip { opacity: 1; }
 .spec-tip {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -301,19 +314,21 @@ main {
   color: #fff;
   border-radius: 5px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   padding: 5px 10px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transition: .12s;
+  transition: opacity .12s;
   z-index: 20;
 }
 .spec-probe {
   position: absolute; top: 0; height: 100%; width: 2px;
   background: var(--red); z-index: 5; pointer-events: none; border-radius: 1px;
-  box-shadow: 0 0 6px rgba(192,57,43,.35);
+  box-shadow: 0 0 6px rgba(168,41,29,.4);
 }
+.spec-ch:hover .spec-tip,
+.spec-ch-free:hover .spec-tip { opacity: 1; }
 .spec-labels {
   display: flex; justify-content: space-between; margin-top: 7px;
   font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 640px;
@@ -658,7 +673,8 @@ footer {
         <div class="spec-labels" id="specLbl"></div>
       </div>
       <div class="spec-legend">
-        <span class="leg"><span class="leg-dot" style="background:var(--green);opacity:.5"></span>Canal TDT activo</span>
+        <span class="leg"><span class="leg-dot" style="background:var(--green);opacity:.45"></span>Espectro libre</span>
+        <span class="leg"><span class="leg-dot" style="background:var(--red);opacity:.8"></span>Canal TDT ocupado</span>
         <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
         <span class="leg" style="margin-left:auto;font-size:10px;font-family:var(--mono)">Pasa el cursor sobre un canal para ver detalles</span>
       </div>
@@ -931,22 +947,51 @@ function renderSpectrum() {
   document.getElementById('specContent').style.display = hasFilter ? 'block' : 'none';
   if (!hasFilter) return;
 
-  const bar = document.getElementById('specBar');
+  const bar  = document.getElementById('specBar');
   const span = SMAX - SMIN;
+
+  // All UHF channels in 470-694 MHz band (CH21-48)
+  const ALL_UHF = [];
+  for (let ch = 21; ch <= 48; ch++) {
+    const f = 306 + 8 * ch;
+    ALL_UHF.push({ canal: ch, lo: f - 4, hi: f + 4, frecuencia: f });
+  }
+
+  // Occupied channels from filtered data
   const chMap = {};
   FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = new Set(Object.keys(chMap).map(Number));
+  const channels = Object.values(chMap).sort((a, b) => a.lo - b.lo);
 
-  bar.innerHTML = Object.values(chMap).map(r => {
-    const l  = ((r.lo - SMIN) / span * 100).toFixed(3);
-    const w  = (8 / span * 100).toFixed(3);
+  // Free channels (green with number label)
+  const freeHTML = ALL_UHF
+    .filter(ch => !occupied.has(ch.canal))
+    .map(ch => {
+      const l   = ((ch.lo - SMIN) / span * 100).toFixed(3);
+      const w   = (8 / span * 100).toFixed(3);
+      const isP = probe !== null && probe >= ch.lo && probe <= ch.hi;
+      return `<div class="spec-ch-free${isP ? ' spec-ch-free-probe' : ''}" style="left:${l}%;width:${w}%">
+        <span class="ch-num-free">${ch.canal}</span>
+        <div class="spec-tip">CH ${ch.canal} · ${ch.frecuencia} MHz · LIBRE</div>
+      </div>`;
+    }).join('');
+
+  // Occupied channels (red)
+  const chHTML = channels.map(r => {
+    const l   = ((r.lo - SMIN) / span * 100).toFixed(3);
+    const w   = (8 / span * 100).toFixed(3);
     const isP = probe !== null && probe >= r.lo && probe <= r.hi;
-    return `<div class="spec-ch ${isP ? 'probed' : 'free'}" style="left:${l}%;width:${w}%">
+    return `<div class="spec-ch ${isP ? 'probed' : 'occupied'}" style="left:${l}%;width:${w}%">
       <span class="ch-num">${r.canal}</span>
       <div class="spec-tip">CH ${r.canal} · ${r.frecuencia} MHz · ${r.lo}–${r.hi} MHz</div>
     </div>`;
-  }).join('') + (probe !== null
+  }).join('');
+
+  const probeHTML = probe !== null
     ? `<div class="spec-probe" style="left:${((probe - SMIN) / span * 100).toFixed(3)}%"></div>`
-    : '');
+    : '';
+
+  bar.innerHTML = freeHTML + chHTML + probeHTML;
 
   document.getElementById('specLbl').innerHTML = LBLS.map(f => `<span>${f} MHz</span>`).join('');
 }
@@ -1151,39 +1196,125 @@ function geoBtnHTML() {
 function geoReverse(lat, lon) {
   const btn = document.getElementById('geoBtn');
   const st  = document.getElementById('geoStatus');
-  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es`)
+  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es&zoom=10`)
     .then(r => r.json())
     .then(data => {
       btn.disabled = false; btn.innerHTML = geoBtnHTML();
       const addr = data.address || {};
-      const m = geoMatch(addr.state || '', addr.province || addr.county || '');
-      if (m.ca) {
-        document.getElementById('fCA').value = m.ca;
+
+      // Collect all candidate strings from Nominatim address object
+      const caRaw   = addr.state || addr.region || '';
+      const provRaw = addr.province || addr.state_district || addr.county || '';
+
+      const csvCA   = GEO_CA[caRaw]   || geoNormMatch(caRaw,   GEO_CA);
+      const csvProv = GEO_PROV[provRaw] || geoNormMatch(provRaw, GEO_PROV)
+                   || geoNormMatch(caRaw,  GEO_PROV);  // fallback: single-province CAs
+
+      if (csvCA) {
+        document.getElementById('fCA').value = csvCA;
         document.getElementById('fCA').dispatchEvent(new Event('change'));
-        if (m.provincia) {
+        if (csvProv) {
           setTimeout(() => {
-            const fp = document.getElementById('fProv');
-            const best = [...fp.options].map(o => o.value)
-              .find(o => norm(o) === norm(m.provincia) || norm(o).includes(norm(m.provincia)));
+            const fp   = document.getElementById('fProv');
+            const opts = [...fp.options].map(o => o.value);
+            const best = opts.find(o => o === csvProv) || opts.find(o => norm(o) === norm(csvProv));
             if (best) { fp.value = best; fp.dispatchEvent(new Event('change')); }
-            st.textContent = '📍 ' + (fp.value || m.ca);
+            st.textContent = '📍 ' + (best || csvCA);
             st.style.color = 'var(--green)';
-          }, 80);
-        } else { st.textContent = '📍 ' + m.ca; st.style.color = 'var(--green)'; }
-      } else { st.textContent = 'Selecciona manualmente'; st.style.color = 'var(--amber)'; }
+          }, 100);
+        } else {
+          st.textContent = '📍 ' + csvCA;
+          st.style.color = 'var(--green)';
+        }
+      } else {
+        st.textContent = 'No reconocido — selecciona manualmente';
+        st.style.color = 'var(--amber)';
+      }
     })
-    .catch(() => { btn.disabled = false; btn.innerHTML = geoBtnHTML(); });
+    .catch(() => {
+      btn.disabled = false; btn.innerHTML = geoBtnHTML();
+      st.textContent = 'Error de conexión'; st.style.color = 'var(--red)';
+    });
 }
+
+// Hardcoded Nominatim → CSV lookup tables (covers all known variations)
+const GEO_CA = {
+  'Andalucía':'Andalucía','Aragón':'Aragón',
+  'Asturias':'Asturias','Asturias, Principado de':'Asturias','Principado de Asturias':'Asturias',
+  'Illes Balears':'Illes Balears','Islas Baleares':'Illes Balears',
+  'Canarias':'Islas Canarias','Islas Canarias':'Islas Canarias',
+  'Cantabria':'Cantabria',
+  'Castilla-La Mancha':'Castilla-La Mancha','Castilla La Mancha':'Castilla-La Mancha',
+  'Castilla y León':'Castilla y León','Castilla y Leon':'Castilla y León',
+  'Cataluña':'Cataluña','Catalunya':'Cataluña','Catalonia':'Cataluña',
+  'Ceuta':'Ceuta y Melilla','Melilla':'Ceuta y Melilla','Ceuta y Melilla':'Ceuta y Melilla',
+  'Comunidad de Madrid':'Comunidad de Madrid','Madrid':'Comunidad de Madrid',
+  'Comunidad Foral de Navarra':'Navarra','Navarra':'Navarra','Foral Community of Navarre':'Navarra',
+  'Comunitat Valenciana':'Comunitat Valenciana','Comunidad Valenciana':'Comunitat Valenciana',
+  'Extremadura':'Extremadura',
+  'Galicia':'Galicia',
+  'La Rioja':'La Rioja','Rioja':'La Rioja',
+  'País Vasco':'País Vasco / Euskadi','Euskadi':'País Vasco / Euskadi','Basque Country':'País Vasco / Euskadi',
+  'Región de Murcia':'Región de Murcia','Murcia':'Región de Murcia',
+};
+
+const GEO_PROV = {
+  // Andalucía
+  'Almería':'Almería','Cádiz':'Cádiz','Córdoba':'Córdoba','Granada':'Granada',
+  'Huelva':'Huelva','Jaén':'Jaén','Málaga':'Málaga','Sevilla':'Sevilla',
+  // Aragón
+  'Huesca':'Huesca','Teruel':'Teruel','Zaragoza':'Zaragoza',
+  // Asturias
+  'Asturias':'Asturias',
+  // Baleares
+  'Illes Balears':'Baleares','Islas Baleares':'Baleares','Baleares':'Baleares',
+  // Canarias
+  'Las Palmas':'Las Palmas','Santa Cruz de Tenerife':'Santa Cruz de Tenerife',
+  // Cantabria
+  'Cantabria':'Cantabria',
+  // Castilla-La Mancha
+  'Albacete':'Albacete','Ciudad Real':'Ciudad Real','Cuenca':'Cuenca',
+  'Guadalajara':'Guadalajara','Toledo':'Toledo',
+  // Castilla y León
+  'Ávila':'Ávila','Burgos':'Burgos','León':'León','Palencia':'Palencia',
+  'Salamanca':'Salamanca','Segovia':'Segovia','Soria':'Soria',
+  'Valladolid':'Valladolid','Zamora':'Zamora',
+  // Cataluña
+  'Barcelona':'Barcelona','Girona':'Girona','Lleida':'Lleida','Tarragona':'Tarragona',
+  // Ceuta y Melilla
+  'Ceuta':'Ceuta','Melilla':'Melilla',
+  // Madrid
+  'Madrid':'Madrid',
+  // Navarra
+  'Navarra':'Navarra','Nafarroa':'Navarra',
+  // Comunitat Valenciana
+  'Alicante':'Alicante','Alacant':'Alicante','Castellón':'Castellón',
+  'Castelló':'Castellón','Valencia':'Valencia','València':'Valencia',
+  // Extremadura
+  'Badajoz':'Badajoz','Cáceres':'Cáceres',
+  // Galicia
+  'A Coruña':'A Coruña','La Coruña':'A Coruña','Lugo':'Lugo','Ourense':'Ourense',
+  'Orense':'Ourense','Pontevedra':'Pontevedra',
+  // La Rioja
+  'La Rioja':'La Rioja',
+  // País Vasco
+  'Álava':'Álava','Araba':'Álava','Araba/Álava':'Álava',
+  'Vizcaya':'Vizcaya','Bizkaia':'Vizcaya',
+  'Guipúzcoa':'Guipúzcoa','Gipuzkoa':'Guipúzcoa',
+  // Murcia
+  'Murcia':'Murcia',
+};
+
+function geoNormMatch(str, dict) {
+  if (!str) return null;
+  const n = norm(str);
+  const key = Object.keys(dict).find(k => norm(k) === n)
+           || Object.keys(dict).find(k => norm(k).includes(n) || n.includes(norm(k)));
+  return key ? dict[key] : null;
+}
+
 function norm(s) {
   return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim();
-}
-function geoMatch(rawCA, rawProv) {
-  const cas = uniq('ca');
-  const ca = cas.find(c => norm(c) === norm(rawCA)) || cas.find(c => norm(rawCA).includes(norm(c)) || norm(c).includes(norm(rawCA)));
-  if (!ca) return {};
-  const provs = uniq('provincia', ALL.filter(r => r.ca === ca));
-  const prov = provs.find(p => norm(p) === norm(rawProv)) || provs.find(p => norm(rawProv).includes(norm(p)) || norm(p).includes(norm(rawProv)));
-  return { ca, provincia: prov || null };
 }
 
 // ── MAPA INTERACTIVO ───────────────────────────────────────────────────────
