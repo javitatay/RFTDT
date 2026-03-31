@@ -1,6 +1,6 @@
 # RF · TDT España — Frecuencias UHF
 
-**Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con mapa interactivo de selección gradual, verificador de conflictos, visualizador de espectro y calculadora de intermodulación.
+**Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con mapa interactivo de selección gradual, visualización del espectro libre y ocupado, verificador de conflictos y calculadora de intermodulación.
 
 🌐 **[javitatay.github.io/RFTDT](https://javitatay.github.io/RFTDT/)**
 
@@ -16,7 +16,7 @@
 
 Cuando se trabaja con microfonía inalámbrica en un evento o producción en directo, es imprescindible conocer qué frecuencias UHF están ocupadas por la TDT en la zona de trabajo para evitar interferencias. Esta herramienta centraliza esa información y permite consultarla de forma visual e intuitiva, con selección por mapa, filtros en cascada y verificación de conflictos en tiempo real.
 
-El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente en el navegador.
+El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente en el navegador cuando se sirve desde un servidor HTTP (GitHub Pages o servidor local).
 
 ---
 
@@ -24,7 +24,7 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 
 - **Geolocalización automática** — detecta la ubicación del dispositivo y preselecciona automáticamente la Comunidad Autónoma y provincia
 - **Vista de canales activos** — grid visual con número de canal, frecuencia central y rango ocupado para la demarcación seleccionada; los conflictos con el micrófono se marcan en rojo al instante
-- **Mapa de espectro** — representación gráfica del espectro UHF 470–694 MHz con los canales TDT activos y la frecuencia del micrófono superpuesta
+- **Mapa de espectro** — representación gráfica del espectro UHF 470–694 MHz que muestra en **rojo** los canales TDT ocupados y en **verde** los canales libres disponibles, con tooltip de detalle al pasar el cursor
 - **Mapa interactivo** — selección gradual por mapa en 4 pasos: Comunidad Autónoma → Provincia → Demarcación → Ámbito; sincronizado con los desplegables
 - **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura
 - **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
@@ -40,7 +40,7 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 | **Estándar** | DVB-T (TDT) |
 | **Banda** | UHF Banda IV / V |
 | **Rango** | 470 – 694 MHz |
-| **Anchura de canal** | 8 MHz |
+| **Canales** | CH21 – CH48 (28 canales de 8 MHz) |
 | **Rango ocupado por canal** | Frecuencia central ± 4 MHz |
 | **Cobertura geográfica** | España peninsular, Baleares, Canarias, Ceuta y Melilla |
 | **Fuente de datos** | CNAF / Ministerio para la Transformación Digital y de la Función Pública |
@@ -71,10 +71,12 @@ Para uso local, clona el repositorio y sirve los archivos con cualquier servidor
 ```bash
 git clone https://github.com/javitatay/RFTDT.git
 cd RFTDT
-npx serve .   # o cualquier servidor local
+npx serve .
+# o alternativamente:
+python3 -m http.server 8000
 ```
 
-> **Nota:** abrir `index.html` directamente con doble clic puede bloquear la carga del CSV por restricciones CORS del navegador. En ese caso, usa un servidor local o arrastra el archivo `tdt.csv` al área que aparece en pantalla.
+> **Nota:** abrir `index.html` directamente con doble clic bloquea la carga del CSV por restricciones CORS del navegador. Es necesario usar un servidor local o GitHub Pages.
 
 ---
 
