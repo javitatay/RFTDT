@@ -132,6 +132,12 @@ select:focus, select:hover { border-color: var(--green); box-shadow: 0 0 0 3px v
 .btn:hover { border-color: var(--ink3); color: var(--ink); }
 .btn-ghost { background: transparent; border-color: var(--line); color: var(--ink2); }
 .btn-ghost:hover { background: var(--paper2); border-color: var(--ink3); color: var(--ink); }
+.btn-limpiar-filtros {
+  background: var(--red-bg); border: 1px solid var(--red-bd); border-radius: var(--r2);
+  color: var(--red); cursor: pointer; font-family: var(--sans); font-size: 13px;
+  font-weight: 500; padding: 8px 14px; transition: .15s; white-space: nowrap;
+}
+.btn-limpiar-filtros:hover { background: #f8d5d2; border-color: #d4655c; }
 
 /* CSV notice */
 .csv-notice {
@@ -564,8 +570,7 @@ footer {
   color:var(--red); cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:600;
   padding:8px 13px; transition:.15s; margin-top:2px;
 }
-.btn-reset-map:hover { background:#f8d5d2; border-color:#d4655c; }
-.map-tooltip {
+.btn-reset-map:hover { background:#f8d5d2; border-color:#d4655c; }.map-tooltip {
   background:var(--ink) !important; color:#fff !important; border:none !important;
   border-radius:4px !important; font-family:var(--mono) !important; font-size:11px !important;
   padding:3px 8px !important; box-shadow:none !important;
@@ -641,7 +646,7 @@ footer {
     <div class="fg"><label>Demarcación</label><select id="fDem"><option value="">Todas</option></select></div>
     <div class="fg"><label>Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
     <div class="filter-actions">
-      <button class="btn btn-ghost" onclick="resetF()">↺ Limpiar</button>
+      <button class="btn-limpiar-filtros" onclick="resetF()">↺ Limpiar</button>
     </div>
 
   </div>
@@ -676,7 +681,7 @@ footer {
         <span class="leg"><span class="leg-dot" style="background:var(--green);opacity:.45"></span>Espectro libre</span>
         <span class="leg"><span class="leg-dot" style="background:var(--red);opacity:.8"></span>Canal TDT ocupado</span>
         <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
-        <span class="leg" style="margin-left:auto;font-size:10px;font-family:var(--mono)">Pasa el cursor sobre un canal para ver detalles</span>
+        <span class="leg" style="margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--ink3)"></span>
       </div>
     </div>
   </section>
@@ -708,7 +713,7 @@ footer {
         <input class="fc-inp" type="number" id="fcInp" placeholder="546" min="400" max="750" step="0.025">
         <span class="fc-unit">MHz</span>
         <button class="btn-check" onclick="checkFreq()">Comprobar</button>
-        <button class="btn btn-ghost" onclick="clearCheck()">Limpiar</button>
+        <button class="btn-limpiar-filtros" onclick="clearCheck()">Limpiar</button>
       </div>
       <div id="fcRes" class="fc-res"></div>
       <p class="fc-note">Comprueba si la frecuencia cae en el rango ±4 MHz de algún canal TDT activo en la demarcación seleccionada. Pulsa Enter para confirmar.</p>
