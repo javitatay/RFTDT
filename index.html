@@ -208,6 +208,13 @@ main {
 .ch-count { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1; }
 .ch-count-label { font-size: 14px; color: var(--ink2); }
 .ch-range-hint { font-size: 13px; color: var(--ink3); font-family: var(--mono); margin-left: auto; }
+.btn-export-csv {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--paper2); border:1px solid var(--line); border-radius:var(--r2);
+  color:var(--ink2); cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:600;
+  padding:7px 13px; transition:.15s; white-space:nowrap; margin-left:12px;
+}
+.btn-export-csv:hover { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
 
 .ch-grid {
   display: grid;
@@ -662,6 +669,10 @@ footer {
       <span class="ch-count" id="chCount">—</span>
       <span class="ch-count-label">canales ocupados</span>
       <span class="ch-range-hint" id="chRangeHint"></span>
+      <button class="btn-export-csv" id="exportBtn" onclick="exportCSV()" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Exportar CSV
+      </button>
     </div>
     <div id="chGrid" class="ch-grid">
       <p class="ch-grid-empty">Selecciona una localización para ver los canales</p>
@@ -1015,6 +1026,7 @@ function renderChGrid() {
     grid.innerHTML = '<p class="ch-grid-empty">Selecciona una localización para ver los canales</p>';
     countEl.textContent = '—';
     hintEl.textContent = '';
+    document.getElementById('exportBtn').style.display = 'none';
     return;
   }
 
@@ -1028,6 +1040,8 @@ function renderChGrid() {
   hintEl.textContent = `${minF}–${maxF} MHz`;
 
   const span = SMAX - SMIN;
+  document.getElementById('exportBtn').style.display = 'inline-flex';
+
   grid.innerHTML = channels.map(r => {
     const conflict = probe !== null && probe >= r.lo && probe <= r.hi;
     // Mini-barra: posición relativa de la frecuencia central en el espectro
@@ -1182,7 +1196,51 @@ function loadMore() {
   render(false);
 }
 
-// ── GEOLOCALIZACIÓN ────────────────────────────────────────────────────────
+// ── EXPORTAR CSV ───────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!FILT.length) return;
+
+  // All UHF channels CH21-48 in the band
+  const ALL_UHF = [];
+  for (let ch = 21; ch <= 48; ch++) {
+    const f = 306 + 8 * ch;
+    ALL_UHF.push({ canal: ch, frecuencia: f, lo: f - 4, hi: f + 4 });
+  }
+
+  // Occupied channel numbers from current filter
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = new Set(Object.keys(chMap).map(Number));
+
+  // Build location label for filename
+  const dem   = v('fDem')  || v('fProv') || v('fCA') || 'España';
+  const ambito = v('fAmb') ? `_${v('fAmb').substring(0,20)}` : '';
+  const date  = new Date().toISOString().slice(0, 10);
+  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g,'_')}${ambito}_${date}.csv`.replace(/__+/g,'_');
+
+  // CSV header — compatible with Shure WWB and Sennheiser WSM/Sundbase
+  const rows = [
+    '# RF TDT España — Canales UHF activos',
+    `# Demarcación: ${dem}${v('fAmb') ? ' / ' + v('fAmb') : ''}`,
+    `# Fecha: ${date}`,
+    `# Fuente: CNAF / MINETUR`,
+    '',
+    'Canal UHF,Frecuencia central (MHz),Rango inferior (MHz),Rango superior (MHz),Anchura (MHz),Estado',
+  ];
+
+  ALL_UHF.forEach(ch => {
+    const status = occupied.has(ch.canal) ? 'OCUPADO' : 'LIBRE';
+    rows.push(`${ch.canal},${ch.frecuencia},${ch.lo},${ch.hi},8,${status}`);
+  });
+
+  // Download
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
 function geoLocate() {
   const btn = document.getElementById('geoBtn');
   const st  = document.getElementById('geoStatus');
