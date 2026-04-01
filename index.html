@@ -90,6 +90,17 @@ nav {
   max-width: var(--max);
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.filter-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-row-dropdowns {
+  display: flex;
   align-items: flex-end;
   gap: 10px;
   flex-wrap: wrap;
@@ -635,8 +646,8 @@ footer {
       <label class="file-btn" for="csvFile">Seleccionar CSV</label>
     </div>
 
-    <!-- Botones de acción rápida -->
-    <div style="display:flex;align-items:flex-end;gap:8px;padding-bottom:1px;flex-wrap:wrap">
+    <!-- Fila 1: Botones de acción rápida -->
+    <div class="filter-row-actions">
       <button class="geo-btn" id="geoBtn" onclick="geoLocate()">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>
         Mi ubicación
@@ -652,12 +663,15 @@ footer {
       <span class="geo-status" id="geoStatus"></span>
     </div>
 
-    <div class="fg"><label>Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
-    <div class="fg"><label>Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
-    <div class="fg"><label>Demarcación</label><select id="fDem"><option value="">Todas</option></select></div>
-    <div class="fg"><label>Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
-    <div class="filter-actions">
-      <button class="btn-limpiar-filtros" onclick="resetF()">↺ Limpiar</button>
+    <!-- Fila 2: Desplegables en cascada -->
+    <div class="filter-row-dropdowns">
+      <div class="fg"><label>Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
+      <div class="fg"><label>Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
+      <div class="fg"><label>Demarcación</label><select id="fDem"><option value="">Todas</option></select></div>
+      <div class="fg"><label>Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
+      <div class="filter-actions">
+        <button class="btn-limpiar-filtros" onclick="resetF()">↺ Limpiar</button>
+      </div>
     </div>
 
   </div>
