@@ -8,350 +8,166 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
 <style>
-
 :root {
-  --ink:      #111110;
-  --ink2:     #4a4744;
-  --ink3:     #7a7570;
-  --paper:    #f7f6f2;
-  --paper2:   #efede8;
-  --paper3:   #e2dfd7;
-  --line:     #ccc9c0;
-
-  --green:    #165c3a;
-  --green-bg: #e6f2ec;
-  --green-bd: #8dc4a8;
-
-  --red:      #a8291d;
-  --red-bg:   #fcecea;
-  --red-bd:   #e8948d;
-
-  --amber:    #7a4e08;
-  --amber-bg: #fdf3d6;
-  --amber-bd: #d4aa50;
-
-  --sans:     'DM Sans', sans-serif;
-  --mono:     'DM Mono', monospace;
-
-  --r:  10px;
-  --r2: 6px;
-  --max: 1200px;
+  --ink:#111110;--ink2:#4a4744;--ink3:#7a7570;
+  --paper:#f7f6f2;--paper2:#efede8;--paper3:#e2dfd7;--line:#ccc9c0;
+  --green:#165c3a;--green-bg:#e6f2ec;--green-bd:#8dc4a8;
+  --red:#a8291d;--red-bg:#fcecea;--red-bd:#e8948d;
+  --amber:#7a4e08;--amber-bg:#fdf3d6;--amber-bd:#d4aa50;
+  --sans:"DM Sans",sans-serif;--mono:"DM Mono",monospace;
+  --r:10px;--r2:6px;--max:1200px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-}
-
-/* ── NAV ── */
-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-  height: 50px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 clamp(16px,4vw,48px); gap: 16px;
-}
-.nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); }
-.nav-title { font-size: 14px; font-weight: 600; color: var(--ink); }
-.nav-sub { font-size: 12px; color: var(--ink3); font-family: var(--mono); }
-.nav-back {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--paper2); border: 1px solid var(--line);
-  border-radius: var(--r2); color: var(--ink2);
-  font-size: 12px; font-weight: 500; padding: 6px 12px;
-  text-decoration: none; transition: .15s;
-}
-.nav-back:hover { border-color: var(--ink3); color: var(--ink); }
-
-/* ── MAIN ── */
-main {
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 28px clamp(16px,4vw,48px) 80px;
-  display: flex; flex-direction: column; gap: 20px;
-}
-.sh {
-  font-size: 11px; font-weight: 700; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--ink2);
-  margin-bottom: 14px;
-  display: flex; align-items: center; gap: 10px;
-}
-.sh::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-
-/* ── INFO CARD ── */
-.info-card {
-  background: var(--amber-bg);
-  border: 1px solid var(--amber-bd);
-  border-radius: var(--r);
-  padding: 14px 18px;
-  font-size: 13px;
-  color: var(--amber);
-  line-height: 1.75;
-}
-.info-card strong { font-weight: 700; }
-
-/* ── FREQUENCY INPUTS ── */
-.freqs-card {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 20px 24px;
-}
-.freqs-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
-}
-.freq-count {
-  font-family: var(--mono); font-size: 24px; font-weight: 500;
-  color: var(--ink); line-height: 1;
-}
-.freq-count-label { font-size: 13px; color: var(--ink2); }
-.freq-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.freq-row {
-  display: flex; align-items: center; gap: 0;
-  background: var(--paper2);
-  border: 1px solid var(--line);
-  border-radius: var(--r2);
-  overflow: hidden;
-  transition: border-color .15s, box-shadow .15s;
-}
-.freq-row:focus-within {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px var(--green-bg);
-}
-.freq-row.conflict {
-  border-color: var(--red-bd);
-  background: var(--red-bg);
-}
-.freq-row.conflict:focus-within {
-  border-color: var(--red);
-  box-shadow: 0 0 0 3px var(--red-bg);
-}
-.freq-num {
-  font-family: var(--mono); font-size: 10px; font-weight: 600;
-  color: var(--ink3); padding: 0 8px; min-width: 24px; text-align: center;
-  border-right: 1px solid var(--line); background: var(--paper3);
-  align-self: stretch; display: flex; align-items: center;
-}
-.freq-row.conflict .freq-num { background: var(--red-bd); color: #fff; border-color: var(--red-bd); }
-.freq-inp {
-  background: transparent; border: none; outline: none;
-  color: var(--ink); font-family: var(--mono); font-size: 15px; font-weight: 500;
-  padding: 8px 6px; width: 100%; min-width: 0;
-}
-.freq-inp::placeholder { color: var(--ink3); font-weight: 400; }
-.freq-unit {
-  font-family: var(--mono); font-size: 10px; color: var(--ink3);
-  padding-right: 8px; white-space: nowrap; flex-shrink: 0;
-}
-.freq-del {
-  background: none; border: none; cursor: pointer;
-  color: var(--ink3); padding: 0 8px; font-size: 16px; line-height: 1;
-  transition: color .12s; align-self: stretch; display: flex; align-items: center;
-  border-left: 1px solid var(--line);
-}
-.freq-del:hover { color: var(--red); }
-
-.freq-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn {
-  background: var(--paper2); border: 1px solid var(--line);
-  border-radius: var(--r2); color: var(--ink2);
-  cursor: pointer; font-family: var(--sans); font-size: 13px;
-  font-weight: 500; padding: 8px 14px; transition: .15s; white-space: nowrap;
-}
-.btn:hover { border-color: var(--ink3); color: var(--ink); }
-.btn-add {
-  background: var(--green-bg); border-color: var(--green-bd);
-  color: var(--green); font-weight: 600;
-}
-.btn-add:hover { background: #d2ebe1; border-color: #6db492; }
-.btn-calc {
-  background: var(--green); border-color: var(--green);
-  color: #fff; font-weight: 700; font-size: 13px;
-  padding: 9px 22px; letter-spacing: .02em;
-  margin-left: auto;
-}
-.btn-calc:hover { background: #1a7048; border-color: #1a7048; color: #fff; }
-.btn-clear { color: var(--ink3); border-color: transparent; background: transparent; }
-.btn-clear:hover { background: var(--paper2); border-color: var(--line); color: var(--ink2); }
-
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+nav{position:sticky;top:0;z-index:100;background:var(--paper);border-bottom:1px solid var(--line);height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,48px);gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-title{font-size:14px;font-weight:600;color:var(--ink)}
+.nav-sub{font-size:12px;color:var(--ink3);font-family:var(--mono)}
+.nav-back{display:inline-flex;align-items:center;gap:6px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r2);color:var(--ink2);font-size:12px;font-weight:500;padding:6px 12px;text-decoration:none;transition:.15s}
+.nav-back:hover{border-color:var(--ink3);color:var(--ink)}
+main{max-width:var(--max);margin:0 auto;padding:28px clamp(16px,4vw,48px) 80px;display:flex;flex-direction:column;gap:20px}
+.sh{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sh::after{content:"";flex:1;height:1px;background:var(--line)}
+.info-card{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--r);padding:14px 18px;font-size:13px;color:var(--amber);line-height:1.75}
+.info-card strong{font-weight:700}
+/* ── FREQ INPUTS ── */
+.freqs-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px 24px}
+.freqs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.freq-count{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--ink);line-height:1}
+.freq-count-label{font-size:13px;color:var(--ink2)}
+.freq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:16px}
+.freq-row{display:flex;align-items:center;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.freq-row:focus-within{border-color:var(--green);box-shadow:0 0 0 3px var(--green-bg)}
+.freq-row.conflict{border-color:var(--red-bd);background:var(--red-bg)}
+.freq-row.conflict:focus-within{border-color:var(--red);box-shadow:0 0 0 3px var(--red-bg)}
+.freq-num{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--ink3);padding:0 8px;min-width:24px;text-align:center;border-right:1px solid var(--line);background:var(--paper3);align-self:stretch;display:flex;align-items:center}
+.freq-row.conflict .freq-num{background:var(--red-bd);color:#fff;border-color:var(--red-bd)}
+.freq-inp{background:transparent;border:none;outline:none;color:var(--ink);font-family:var(--mono);font-size:15px;font-weight:500;padding:8px 6px;width:100%;min-width:0}
+.freq-inp::placeholder{color:var(--ink3);font-weight:400}
+.freq-unit{font-family:var(--mono);font-size:10px;color:var(--ink3);padding-right:8px;white-space:nowrap;flex-shrink:0}
+.freq-del{background:none;border:none;cursor:pointer;color:var(--ink3);padding:0 8px;font-size:16px;line-height:1;transition:color .12s;align-self:stretch;display:flex;align-items:center;border-left:1px solid var(--line)}
+.freq-del:hover{color:var(--red)}
+.freq-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r2);color:var(--ink2);cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;padding:8px 14px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--ink3);color:var(--ink)}
+.btn-add{background:var(--green-bg);border-color:var(--green-bd);color:var(--green);font-weight:600}
+.btn-add:hover{background:#d2ebe1;border-color:#6db492}
+.btn-calc{background:var(--green);border-color:var(--green);color:#fff;font-weight:700;font-size:13px;padding:9px 22px;letter-spacing:.02em;margin-left:auto}
+.btn-calc:hover{background:#1a7048;border-color:#1a7048;color:#fff}
+.btn-clear{color:var(--ink3);border-color:transparent;background:transparent}
+.btn-clear:hover{background:var(--paper2);border-color:var(--line);color:var(--ink2)}
 /* ── RESULTS ── */
-.results-card {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-.results-ok {
-  display: flex; align-items: center; gap: 12px;
-  padding: 18px 24px;
-  background: var(--green-bg); border-bottom: 1px solid var(--green-bd);
-}
-.results-ok-icon {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--green); display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.results-ok-icon svg { stroke: #fff; }
-.results-ok-title { font-size: 14px; font-weight: 700; color: var(--green); }
-.results-ok-sub { font-size: 12px; color: var(--green); opacity: .8; font-family: var(--mono); }
-
-.results-conflict-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 18px 24px;
-  background: var(--red-bg); border-bottom: 1px solid var(--red-bd);
-}
-.results-conflict-icon {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--red); display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.results-conflict-icon svg { stroke: #fff; }
-.results-conflict-title { font-size: 14px; font-weight: 700; color: var(--red); }
-.results-conflict-sub { font-size: 12px; color: var(--red); opacity: .8; font-family: var(--mono); }
-
-.conflict-list { padding: 0; }
-.conflict-item {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 12px 24px;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-}
-.conflict-item:last-child { border-bottom: none; }
-.conflict-badge {
-  font-family: var(--mono); font-size: 11px; font-weight: 700;
-  background: var(--red-bg); border: 1px solid var(--red-bd); color: var(--red);
-  border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0;
-  margin-top: 1px;
-}
-.conflict-detail { color: var(--ink2); line-height: 1.6; }
-.conflict-detail strong { color: var(--ink); font-weight: 600; }
-.conflict-formula {
-  font-family: var(--mono); font-size: 11px; color: var(--ink3);
-  margin-top: 2px;
-}
-
-/* ── SPECTRUM PREVIEW ── */
-.spectrum-card {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 20px 24px;
-}
-.spec-scroll { overflow-x: auto; padding-bottom: 4px; }
-.spec-track {
-  position: relative; height: 72px;
-  background: var(--paper2); border: 1px solid var(--line);
-  border-radius: var(--r); min-width: 600px; overflow: visible;
-}
-.spec-pin {
-  position: absolute; top: 6px; height: calc(100% - 12px);
-  width: 8px; border-radius: 3px;
-  transform: translateX(-50%);
-  cursor: default; transition: opacity .1s;
-  display: flex; align-items: center; justify-content: center;
-}
-.spec-pin.ok { background: var(--green); opacity: .7; }
-.spec-pin.im { background: var(--amber); opacity: .6; }
-.spec-pin.conflict-freq { background: var(--red); opacity: .9; }
-.spec-pin:hover { opacity: 1 !important; z-index: 5; }
-.spec-pin:hover .spec-tip { opacity: 1; }
-.spec-tip {
-  position: absolute; bottom: calc(100% + 7px); left: 50%;
-  transform: translateX(-50%);
-  background: var(--ink); color: #fff; border-radius: 5px;
-  font-family: var(--mono); font-size: 10px; padding: 4px 9px;
-  white-space: nowrap; pointer-events: none; opacity: 0; transition: .12s; z-index: 20;
-}
-.spec-labels {
-  display: flex; justify-content: space-between; margin-top: 7px;
-  font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 600px;
-}
-.spec-legend { display: flex; gap: 18px; margin-top: 11px; flex-wrap: wrap; }
-.leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2); }
-.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-.spec-empty { font-size: 14px; color: var(--ink3); padding: 16px 0; font-style: italic; }
-
+.results-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.results-ok{display:flex;align-items:center;gap:12px;padding:18px 24px;background:var(--green-bg);border-bottom:1px solid var(--green-bd)}
+.results-ok-icon{width:32px;height:32px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.results-ok-icon svg{stroke:#fff}
+.results-ok-title{font-size:14px;font-weight:700;color:var(--green)}
+.results-ok-sub{font-size:12px;color:var(--green);opacity:.8;font-family:var(--mono)}
+.results-conflict-header{display:flex;align-items:center;gap:12px;padding:18px 24px;background:var(--red-bg);border-bottom:1px solid var(--red-bd)}
+.results-conflict-icon{width:32px;height:32px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.results-conflict-icon svg{stroke:#fff}
+.results-conflict-title{font-size:14px;font-weight:700;color:var(--red)}
+.results-conflict-sub{font-size:12px;color:var(--red);opacity:.8;font-family:var(--mono)}
+.conflict-list{padding:0}
+.conflict-item{display:flex;align-items:flex-start;gap:12px;padding:12px 24px;border-bottom:1px solid var(--line);font-size:13px}
+.conflict-item:last-child{border-bottom:none}
+.conflict-badge{font-family:var(--mono);font-size:11px;font-weight:700;background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red);border-radius:4px;padding:2px 7px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.conflict-detail{color:var(--ink2);line-height:1.6}
+.conflict-detail strong{color:var(--ink);font-weight:600}
+.conflict-formula{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:2px}
+/* ── SPECTRUM ── */
+.spectrum-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px 24px}
+.spec-scroll{overflow-x:auto;padding-bottom:4px}
+.spec-track{position:relative;height:72px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);min-width:600px;overflow:visible}
+.spec-pin{position:absolute;top:6px;height:calc(100% - 12px);width:8px;border-radius:3px;transform:translateX(-50%);cursor:default;transition:opacity .1s;display:flex;align-items:center;justify-content:center}
+.spec-pin.ok{background:var(--green);opacity:.7}
+.spec-pin.im{background:var(--amber);opacity:.6}
+.spec-pin.conflict-freq{background:var(--red);opacity:.9}
+.spec-pin:hover{opacity:1!important;z-index:5}
+.spec-pin:hover .spec-tip{opacity:1}
+.spec-tip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:5px;font-family:var(--mono);font-size:10px;padding:4px 9px;white-space:nowrap;pointer-events:none;opacity:0;transition:.12s;z-index:20}
+.spec-labels{display:flex;justify-content:space-between;margin-top:7px;font-family:var(--mono);font-size:11px;color:var(--ink3);min-width:600px}
+.spec-legend{display:flex;gap:18px;margin-top:11px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2)}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 /* ── IM TABLE ── */
-.im-table-card {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-.im-tscroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-thead th {
-  background: var(--paper2); color: var(--ink2);
-  font-size: 11px; font-weight: 600; letter-spacing: .08em;
-  text-align: center; text-transform: uppercase;
-  padding: 10px 12px; border-bottom: 1px solid var(--line);
-  white-space: nowrap;
-}
-thead th:first-child { text-align: left; }
-tbody tr { border-bottom: 1px solid var(--line); }
-tbody tr:last-child { border-bottom: none; }
-tbody td {
-  padding: 9px 12px; font-size: 12px;
-  font-family: var(--mono); text-align: center; color: var(--ink2);
-  vertical-align: middle;
-}
-tbody td:first-child { text-align: left; color: var(--ink); font-weight: 500; }
-.td-ok { background: var(--green-bg); color: var(--green); border-radius: 3px; font-size: 11px; padding: 1px 6px; display: inline-block; }
-.td-conflict { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd); border-radius: 3px; font-size: 11px; padding: 1px 6px; display: inline-block; font-weight: 600; }
-.td-im { color: var(--amber); font-size: 11px; }
-
+.im-table-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.im-tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--paper2);color:var(--ink2);font-size:11px;font-weight:600;letter-spacing:.08em;text-align:center;text-transform:uppercase;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+thead th:first-child{text-align:left}
+tbody tr{border-bottom:1px solid var(--line)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:9px 12px;font-size:12px;font-family:var(--mono);text-align:center;color:var(--ink2);vertical-align:middle}
+tbody td:first-child{text-align:left;color:var(--ink);font-weight:500}
+.td-conflict{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);border-radius:3px;font-size:11px;padding:1px 6px;display:inline-block;font-weight:600}
+.td-im{color:var(--amber);font-size:11px}
 /* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--line); background: var(--paper2);
-  padding: 14px clamp(16px,4vw,48px);
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 8px;
-  font-size: 12px; font-family: var(--mono); color: var(--ink3);
-}
-
-@media (max-width: 580px) {
-  .freq-grid { grid-template-columns: 1fr 1fr; }
-  .btn-calc { margin-left: 0; width: 100%; justify-content: center; }
-}
-
-/* ── CREDITS ── */
-.footer-credits { max-width: var(--max); margin: 0 auto; padding: 18px clamp(16px,4vw,48px) 20px; }
-.credit-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.credit-left { display: flex; align-items: center; gap: 14px; }
-.credit-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 2px; }
-.credit-name { font-size: 13px; font-weight: 500; color: var(--ink2); }
-.credit-link { display: inline-flex; align-items: center; gap: 6px; color: var(--ink2); font-size: 12px; font-weight: 500; padding: 6px 12px; text-decoration: none; background: var(--paper2); border: 1px solid var(--line); border-radius: var(--r2); transition: .15s; }
-.credit-link:hover { background: var(--paper3); border-color: var(--ink3); color: var(--ink); }
-
+footer{border-top:1px solid var(--line);background:var(--paper2);padding:14px clamp(16px,4vw,48px);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;font-family:var(--mono);color:var(--ink3)}
+.footer-credits{max-width:var(--max);margin:0 auto;padding:18px clamp(16px,4vw,48px) 20px}
+.credit-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.credit-left{display:flex;align-items:center;gap:14px}
+.credit-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
+.credit-name{font-size:13px;font-weight:500;color:var(--ink2)}
+.credit-link{display:inline-flex;align-items:center;gap:6px;color:var(--ink2);font-size:12px;font-weight:500;padding:6px 12px;text-decoration:none;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r2);transition:.15s}
+.credit-link:hover{background:var(--paper3);border-color:var(--ink3);color:var(--ink)}
+@media(max-width:580px){.freq-grid{grid-template-columns:1fr 1fr}.btn-calc{margin-left:0;width:100%;justify-content:center}}
+/* ── EXPLAINER ── */
+.explainer-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px 24px}
+.explainer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.exp-step{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r2);padding:16px;position:relative}
+.exp-step-num{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ink3);margin-bottom:8px;text-transform:uppercase}
+.exp-step-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.exp-step-body{font-size:12px;color:var(--ink2);line-height:1.6}
+.exp-formula{margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--green);background:var(--green-bg);border:1px solid var(--green-bd);border-radius:5px;padding:7px 10px;line-height:1.8}
+.exp-step.step-conflict .exp-formula{color:var(--red);background:var(--red-bg);border-color:var(--red-bd)}
+/* ── SIMULATOR ── */
+.sim-wrap{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r2);padding:18px 20px}
+.sim-sliders{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.sim-slider-group label{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink2);margin-bottom:6px}
+.sim-slider-group label span{font-size:15px;font-weight:600;color:var(--ink)}
+.sim-slider-group label em{font-style:normal;font-size:10px;color:var(--ink3)}
+.sim-slider-row{display:flex;align-items:center;gap:8px}
+.sim-step-btn{flex-shrink:0;width:28px;height:28px;border-radius:var(--r2);border:1px solid var(--line);background:var(--paper);color:var(--ink2);font-size:17px;font-weight:600;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s,border-color .12s,color .12s;user-select:none}
+.sim-step-btn:hover{background:var(--paper3);border-color:var(--ink3);color:var(--ink)}
+.sim-step-btn:active{background:var(--line)}
+input[type=range].sim-range{-webkit-appearance:none;flex:1;width:100%;height:4px;border-radius:2px;outline:none;cursor:pointer;background:var(--line)}
+input[type=range].sim-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;border:2px solid var(--paper);box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer;transition:transform .12s}
+input[type=range].sim-range::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type=range].sim-fa::-webkit-slider-thumb{background:#2563eb}
+input[type=range].sim-fb::-webkit-slider-thumb{background:#dc2626}
+input[type=range].sim-fa{background:linear-gradient(to right,#2563eb var(--fa-pct,13%),var(--line) var(--fa-pct,13%))}
+input[type=range].sim-fb{background:linear-gradient(to right,#dc2626 var(--fb-pct,22%),var(--line) var(--fb-pct,22%))}
+.sim-results{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.sim-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r2);padding:10px 12px;text-align:center}
+.sim-card.conflict{border-color:var(--red-bd);background:var(--red-bg)}
+.sim-card-label{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-bottom:3px}
+.sim-card-value{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--amber)}
+.sim-card.conflict .sim-card-value{color:var(--red)}
+.sim-card-sub{font-size:10px;color:var(--ink3);margin-top:2px}
+.sim-card.conflict .sim-card-sub{color:var(--red)}
+canvas#simCanvas{display:block;width:100%;height:100px;border-radius:var(--r2);background:var(--paper3)}
+.sim-alert{margin-top:12px;padding:10px 14px;border-radius:var(--r2);font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px}
+.sim-alert.ok{background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green)}
+.sim-alert.warn{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red)}
+.sim-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.sim-leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink2)}
+.sim-leg-dot{width:8px;height:8px;border-radius:2px}
+@media(max-width:640px){.explainer-grid{grid-template-columns:1fr}.sim-sliders{grid-template-columns:1fr}.sim-results{grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
 
-
 <nav>
   <div class="nav-brand">
     <animated-icons
-    src="https://animatedicons.co/get-icon?name=Wireless&style=minimalistic&token=8dff41c2-b1dd-4146-a4e9-3a487f0e0f22"
-    trigger="hover"
-    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1.5,"defaultColours":{"group-1":"#165c3a","group-2":"#8dc4a8","background":"#f7f6f2"}}'
-    height="36"
-    width="36"
-    style="flex-shrink:0;display:block;background:#f7f6f2;border-radius:4px"
-  ></animated-icons>
+      src="https://animatedicons.co/get-icon?name=Wireless&style=minimalistic&token=8dff41c2-b1dd-4146-a4e9-3a487f0e0f22"
+      trigger="hover"
+      attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1.5,"defaultColours":{"group-1":"#165c3a","group-2":"#8dc4a8","background":"#f7f6f2"}}'
+      height="36" width="36"
+      style="flex-shrink:0;display:block;background:#f7f6f2;border-radius:4px"
+    ></animated-icons>
     <div class="nav-title">RF · TDT España</div>
     <span class="nav-sub">Calculadora de Intermodulación IM3</span>
   </div>
@@ -363,6 +179,7 @@ footer {
 
 <main>
 
+  <!-- INFO -->
   <div class="info-card">
     <strong>¿Qué es la intermodulación de 3er orden?</strong> Cuando dos transmisores emiten simultáneamente en frecuencias Fa y Fb,
     generan productos de intermodulación en <strong>2·Fa − Fb</strong> y <strong>2·Fb − Fa</strong>.
@@ -404,17 +221,108 @@ footer {
     </div>
   </div>
 
-  <!-- TABLA DETALLADA -->
+  <!-- TABLA -->
   <div class="im-table-card" id="tableCard" style="display:none">
     <div style="padding:16px 24px 0"><div class="sh">Tabla de productos IM por par de frecuencias</div></div>
-    <div class="im-tscroll">
-      <table id="imTable"></table>
+    <div class="im-tscroll"><table id="imTable"></table></div>
+  </div>
+
+  <!-- EXPLAINER -->
+  <div class="explainer-card">
+    <div class="sh">Cómo funciona la intermodulación</div>
+    <div class="explainer-grid">
+      <div class="exp-step">
+        <div class="exp-step-num">Paso 1</div>
+        <div class="exp-step-title">Dos transmisores activos</div>
+        <div class="exp-step-body">Dos micrófonos o packs emitiendo a la vez se mezclan en el receptor o amplificador RF de forma no lineal.</div>
+        <div class="exp-formula">Fa = frecuencia micrófono A<br>Fb = frecuencia micrófono B</div>
+      </div>
+      <div class="exp-step">
+        <div class="exp-step-num">Paso 2</div>
+        <div class="exp-step-title">Se generan señales fantasma</div>
+        <div class="exp-step-body">La no-linealidad produce productos de IM3 a ambos lados del par. Siempre equidistantes — si la separación es Δ, aparecen a Δ de cada frecuencia.</div>
+        <div class="exp-formula">IM₁ = 2·Fa − Fb<br>IM₂ = 2·Fb − Fa<br>Δ = |Fb − Fa|</div>
+      </div>
+      <div class="exp-step step-conflict">
+        <div class="exp-step-num">Paso 3</div>
+        <div class="exp-step-title">Conflicto si coincide con otro mic</div>
+        <div class="exp-step-body">Si IM₁ o IM₂ cae sobre la frecuencia de otro dispositivo del sistema, habrá dropout o ruido audible.</div>
+        <div class="exp-formula">|IM − Fc| &lt; 25 kHz<br>→ ⚠ Conflicto detectado</div>
+      </div>
+    </div>
+
+    <!-- Simulador -->
+    <div class="sim-wrap">
+      <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:14px;letter-spacing:.04em;">
+        Simulador — ajusta las frecuencias y observa los productos IM en tiempo real
+      </div>
+      <div class="sim-sliders">
+        <div class="sim-slider-group">
+          <label>
+            <span style="display:flex;align-items:center;gap:6px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#2563eb;display:inline-block;flex-shrink:0"></span>
+              Frecuencia A
+            </span>
+            <span id="simFaVal">506.000</span><em>MHz</em>
+          </label>
+          <div class="sim-slider-row">
+            <button class="sim-step-btn" onclick="stepSim('simFa',-1)" title="−25 kHz">−</button>
+            <input type="range" class="sim-range sim-fa" id="simFa" min="470" max="690" value="506" step="0.025">
+            <button class="sim-step-btn" onclick="stepSim('simFa',+1)" title="+25 kHz">+</button>
+          </div>
+        </div>
+        <div class="sim-slider-group">
+          <label>
+            <span style="display:flex;align-items:center;gap:6px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#dc2626;display:inline-block;flex-shrink:0"></span>
+              Frecuencia B
+            </span>
+            <span id="simFbVal">518.000</span><em>MHz</em>
+          </label>
+          <div class="sim-slider-row">
+            <button class="sim-step-btn" onclick="stepSim('simFb',-1)" title="−25 kHz">−</button>
+            <input type="range" class="sim-range sim-fb" id="simFb" min="470" max="690" value="518" step="0.025">
+            <button class="sim-step-btn" onclick="stepSim('simFb',+1)" title="+25 kHz">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-results">
+        <div class="sim-card" id="simIm1Card">
+          <div class="sim-card-label">IM₁ = 2·Fa − Fb</div>
+          <div class="sim-card-value" id="simIm1Val">494.000</div>
+          <div class="sim-card-sub" id="simIm1Sub">MHz</div>
+        </div>
+        <div class="sim-card">
+          <div class="sim-card-label">Separación Δ</div>
+          <div class="sim-card-value" style="color:var(--ink2);font-size:15px" id="simDelta">12.000 MHz</div>
+          <div class="sim-card-sub">|Fb − Fa|</div>
+        </div>
+        <div class="sim-card" id="simIm2Card">
+          <div class="sim-card-label">IM₂ = 2·Fb − Fa</div>
+          <div class="sim-card-value" id="simIm2Val">530.000</div>
+          <div class="sim-card-sub" id="simIm2Sub">MHz</div>
+        </div>
+      </div>
+
+      <canvas id="simCanvas"></canvas>
+
+      <div class="sim-legend">
+        <span class="sim-leg"><span class="sim-leg-dot" style="background:#2563eb"></span>Frecuencia A</span>
+        <span class="sim-leg"><span class="sim-leg-dot" style="background:#dc2626"></span>Frecuencia B</span>
+        <span class="sim-leg"><span class="sim-leg-dot" style="background:var(--amber)"></span>Producto IM3</span>
+        <span class="sim-leg"><span class="sim-leg-dot" style="background:var(--red)"></span>Conflicto</span>
+      </div>
+
+      <div class="sim-alert ok" id="simAlert">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 7-6"/></svg>
+        Sin conflictos — los productos IM3 no coinciden con ninguna frecuencia activa.
+      </div>
     </div>
   </div>
 
 </main>
 
-<!-- CRÉDITOS -->
 <div class="footer-credits">
   <div class="credit-row">
     <div class="credit-left">
@@ -428,13 +336,13 @@ footer {
         <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         Ver en GitHub
       </a>
-      <a href="mailto:j.tatayrubio&#64;edu.gva.es" class="credit-link">
+      <a href="mailto:j.tatayrubio@edu.gva.es" class="credit-link">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
-        j.tatayrubio&#64;edu.gva.es
+        j.tatayrubio@edu.gva.es
       </a>
-      <a href="mailto:javitatay&#64;gmail.com" class="credit-link">
+      <a href="mailto:javitatay@gmail.com" class="credit-link">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
-        javitatay&#64;gmail.com
+        javitatay@gmail.com
       </a>
     </div>
   </div>
@@ -442,7 +350,7 @@ footer {
 
 <footer>
   <div style="flex:1;min-width:0">
-    <span>RF · TDT España &nbsp;·&nbsp; Calculadora de Intermodulación IM3 &nbsp;·&nbsp; v3.2</span>
+    <span>RF · TDT España &nbsp;·&nbsp; Calculadora de Intermodulación IM3 &nbsp;·&nbsp; v3.3</span>
     <div style="margin-top:5px;font-size:11px;color:var(--ink3);line-height:1.6">
       ⚠︎ Esta información puede no estar actualizada en el momento de su uso. Se recomienda realizar un escaneo completo de frecuencias del espacio en el que se desarrollará el show para el conocimiento exacto de las interferencias presentes.
     </div>
@@ -453,45 +361,43 @@ footer {
 </footer>
 
 <script>
-// ── STATE ──────────────────────────────────────────────────────────────────
-let freqs = [null, null, null]; // start with 3 empty slots
-const TOLERANCE = 0.025; // MHz — typical step for UHF wireless
+// ── CALCULADORA ────────────────────────────────────────────────────────────
+var freqs = [null, null, null];
+var TOLERANCE = 0.025;
 
-// ── INIT ───────────────────────────────────────────────────────────────────
 renderInputs();
 
 function renderInputs() {
-  const grid = document.getElementById('freqGrid');
-  grid.innerHTML = freqs.map((f, i) => `
-    <div class="freq-row" id="row_${i}">
-      <span class="freq-num">${i + 1}</span>
-      <input class="freq-inp" type="number" id="f_${i}"
-        value="${f !== null ? f : ''}"
-        placeholder="546.000"
-        min="400" max="800" step="0.025"
-        onchange="freqChanged(${i}, this.value)"
-        oninput="freqChanged(${i}, this.value)"
-        onkeydown="if(event.key==='Enter') calculate()">
-      <span class="freq-unit">MHz</span>
-      <button class="freq-del" onclick="removeFreq(${i})" title="Eliminar">×</button>
-    </div>`).join('');
-  document.getElementById('freqCount').textContent = freqs.filter(f => f !== null && f !== '').length;
+  var grid = document.getElementById('freqGrid');
+  var html = '';
+  for (var i = 0; i < freqs.length; i++) {
+    var f = freqs[i];
+    html += '<div class="freq-row" id="row_' + i + '">' +
+      '<span class="freq-num">' + (i+1) + '</span>' +
+      '<input class="freq-inp" type="number" id="f_' + i + '"' +
+        ' value="' + (f !== null ? f : '') + '"' +
+        ' placeholder="546.000" min="400" max="800" step="0.025"' +
+        ' onchange="freqChanged(' + i + ', this.value)"' +
+        ' oninput="freqChanged(' + i + ', this.value)"' +
+        ' onkeydown="if(event.key===\'Enter\') calculate()">' +
+      '<span class="freq-unit">MHz</span>' +
+      '<button class="freq-del" onclick="removeFreq(' + i + ')" title="Eliminar">\u00d7</button>' +
+      '</div>';
+  }
+  grid.innerHTML = html;
+  document.getElementById('freqCount').textContent = freqs.filter(function(f){ return f !== null && f !== ''; }).length;
 }
 
 function freqChanged(i, val) {
   freqs[i] = val === '' ? null : parseFloat(val);
-  document.getElementById('freqCount').textContent = freqs.filter(f => f !== null && !isNaN(f)).length;
+  document.getElementById('freqCount').textContent = freqs.filter(function(f){ return f !== null && !isNaN(f); }).length;
 }
 
 function addFreq() {
   if (freqs.length >= 30) return;
   freqs.push(null);
   renderInputs();
-  // Focus new input
-  setTimeout(() => {
-    const inp = document.getElementById(`f_${freqs.length - 1}`);
-    if (inp) inp.focus();
-  }, 50);
+  setTimeout(function() { var inp = document.getElementById('f_' + (freqs.length - 1)); if (inp) inp.focus(); }, 50);
 }
 
 function removeFreq(i) {
@@ -505,477 +411,297 @@ function clearAll() {
   document.getElementById('resultsWrap').style.display = 'none';
   document.getElementById('specCard').style.display = 'none';
   document.getElementById('tableCard').style.display = 'none';
-  // reset conflict highlights
-  document.querySelectorAll('.freq-row').forEach(r => r.classList.remove('conflict'));
+  document.querySelectorAll('.freq-row').forEach(function(r){ r.classList.remove('conflict'); });
 }
 
-// ── CALCULATE ──────────────────────────────────────────────────────────────
 function calculate() {
-  // Get valid frequencies
-  const active = freqs
-    .map((f, i) => ({ f: parseFloat(f), i }))
-    .filter(x => !isNaN(x.f) && x.f > 0);
-
-  if (active.length < 2) {
-    alert('Introduce al menos 2 frecuencias para calcular la intermodulación.');
-    return;
+  var active = [];
+  for (var i = 0; i < freqs.length; i++) {
+    var f = parseFloat(freqs[i]);
+    if (!isNaN(f) && f > 0) active.push({ f: f, i: i });
   }
+  if (active.length < 2) { alert('Introduce al menos 2 frecuencias para calcular la intermodulación.'); return; }
 
-  const fValues = active.map(x => x.f);
-  const conflictFreqs = new Set();
-  const imProducts = []; // { fa, fb, im, conflictsWith }
+  var conflictFreqs = new Set();
+  var imProducts = [];
 
-  // Compute all IM3 products: 2·Fa - Fb and 2·Fb - Fa
-  for (let i = 0; i < active.length; i++) {
-    for (let j = 0; j < active.length; j++) {
-      if (i === j) continue;
-      const fa = active[i].f;
-      const fb = active[j].f;
-      const im = 2 * fa - fb;
+  for (var a = 0; a < active.length; a++) {
+    for (var b = 0; b < active.length; b++) {
+      if (a === b) continue;
+      var fa = active[a].f, fb = active[b].f;
+      var im = 2 * fa - fb;
       if (im <= 0) continue;
-
-      // Check if IM product lands on any active frequency
-      const hits = active
-        .filter(x => Math.abs(x.f - im) <= TOLERANCE)
-        .map(x => x.f);
-
-      imProducts.push({ fa, fb, im: parseFloat(im.toFixed(3)), hits });
-
+      var hits = active.filter(function(x){ return Math.abs(x.f - im) <= TOLERANCE; }).map(function(x){ return x.f; });
+      imProducts.push({ fa: fa, fb: fb, im: parseFloat(im.toFixed(3)), hits: hits });
       if (hits.length > 0) {
-        conflictFreqs.add(fa);
-        conflictFreqs.add(fb);
-        hits.forEach(h => conflictFreqs.add(h));
+        conflictFreqs.add(fa); conflictFreqs.add(fb);
+        hits.forEach(function(h){ conflictFreqs.add(h); });
       }
     }
   }
 
-  // Unique IM products with conflicts
-  const conflicts = imProducts.filter(p => p.hits.length > 0);
+  var conflicts = imProducts.filter(function(p){ return p.hits.length > 0; });
 
-  // Highlight conflict rows
   renderInputs();
-  active.forEach(x => {
-    const row = document.getElementById(`row_${x.i}`);
+  active.forEach(function(x) {
+    var row = document.getElementById('row_' + x.i);
     if (row && conflictFreqs.has(x.f)) row.classList.add('conflict');
   });
 
-  // Show results
   showResults(conflicts, active, imProducts);
   showSpectrum(active, conflicts, imProducts);
   showTable(active, imProducts);
 }
 
 function showResults(conflicts, active, imProducts) {
-  const wrap = document.getElementById('resultsWrap');
+  var wrap = document.getElementById('resultsWrap');
   wrap.style.display = 'block';
-
   if (conflicts.length === 0) {
-    wrap.innerHTML = `
-      <div class="results-card">
-        <div class="results-ok">
-          <div class="results-ok-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 4.5"/></svg>
-          </div>
-          <div>
-            <div class="results-ok-title">Sin conflictos de intermodulación</div>
-            <div class="results-ok-sub">${active.length} frecuencias · ${imProducts.length} productos IM calculados · ninguno coincide</div>
-          </div>
-        </div>
-      </div>`;
+    wrap.innerHTML = '<div class="results-card"><div class="results-ok">' +
+      '<div class="results-ok-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 4.5"/></svg></div>' +
+      '<div><div class="results-ok-title">Sin conflictos de intermodulación</div>' +
+      '<div class="results-ok-sub">' + active.length + ' frecuencias · ' + imProducts.length + ' productos IM calculados · ninguno coincide</div>' +
+      '</div></div></div>';
     return;
   }
-
-  // Deduplicate conflicts for display
-  const seen = new Set();
-  const unique = conflicts.filter(c => {
-    const key = `${Math.min(c.fa,c.fb)}-${Math.max(c.fa,c.fb)}-${c.im}`;
-    if (seen.has(key)) return false;
-    seen.add(key); return true;
+  var seen = new Set();
+  var unique = conflicts.filter(function(c) {
+    var key = Math.min(c.fa,c.fb) + '-' + Math.max(c.fa,c.fb) + '-' + c.im;
+    if (seen.has(key)) return false; seen.add(key); return true;
   });
-
-  wrap.innerHTML = `
-    <div class="results-card">
-      <div class="results-conflict-header">
-        <div class="results-conflict-icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
-        </div>
-        <div>
-          <div class="results-conflict-title">${unique.length} conflicto${unique.length > 1 ? 's' : ''} de intermodulación detectado${unique.length > 1 ? 's' : ''}</div>
-          <div class="results-conflict-sub">${active.length} frecuencias · cambia las frecuencias afectadas</div>
-        </div>
-      </div>
-      <div class="conflict-list">
-        ${unique.map(c => `
-          <div class="conflict-item">
-            <span class="conflict-badge">${c.im.toFixed(3)} MHz</span>
-            <div>
-              <div class="conflict-detail">
-                Producto IM cae sobre <strong>${c.hits.map(h => h.toFixed(3)+' MHz').join(', ')}</strong>
-              </div>
-              <div class="conflict-formula">2 × ${c.fa.toFixed(3)} − ${c.fb.toFixed(3)} = ${c.im.toFixed(3)} MHz</div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`;
+  var items = unique.map(function(c) {
+    return '<div class="conflict-item">' +
+      '<span class="conflict-badge">' + c.im.toFixed(3) + ' MHz</span>' +
+      '<div><div class="conflict-detail">Producto IM cae sobre <strong>' +
+        c.hits.map(function(h){ return h.toFixed(3)+' MHz'; }).join(', ') +
+      '</strong></div>' +
+      '<div class="conflict-formula">2 × ' + c.fa.toFixed(3) + ' − ' + c.fb.toFixed(3) + ' = ' + c.im.toFixed(3) + ' MHz</div>' +
+      '</div></div>';
+  }).join('');
+  wrap.innerHTML = '<div class="results-card">' +
+    '<div class="results-conflict-header">' +
+    '<div class="results-conflict-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg></div>' +
+    '<div><div class="results-conflict-title">' + unique.length + ' conflicto' + (unique.length>1?'s':'') + ' de intermodulación detectado' + (unique.length>1?'s':'') + '</div>' +
+    '<div class="results-conflict-sub">' + active.length + ' frecuencias · cambia las frecuencias afectadas</div>' +
+    '</div></div>' +
+    '<div class="conflict-list">' + items + '</div></div>';
 }
 
 function showSpectrum(active, conflicts, imProducts) {
-  const card = document.getElementById('specCard');
+  var card = document.getElementById('specCard');
   card.style.display = 'block';
-
-  const allFreqs = [
-    ...active.map(x => x.f),
-    ...imProducts.filter(p => p.hits.length > 0).map(p => p.im)
-  ].filter(f => f > 0);
-
+  var allFreqs = active.map(function(x){ return x.f; })
+    .concat(imProducts.filter(function(p){ return p.hits.length > 0; }).map(function(p){ return p.im; }))
+    .filter(function(f){ return f > 0; });
   if (!allFreqs.length) return;
-
-  const conflictSet = new Set(conflicts.flatMap(c => [...c.hits, c.fa, c.fb]));
-  const imSet = new Set(imProducts.filter(p => p.hits.length > 0).map(p => p.im));
-
-  const min = Math.max(Math.min(...allFreqs) - 10, 400);
-  const max = Math.min(Math.max(...allFreqs) + 10, 800);
-  const span = max - min;
-
-  const bar = document.getElementById('specBar');
-
-  // Active frequencies
-  const activeHTML = active.map(x => {
-    const pct = ((x.f - min) / span * 100).toFixed(2);
-    const cls = conflictSet.has(x.f) ? 'conflict-freq' : 'ok';
-    return `<div class="spec-pin ${cls}" style="left:${pct}%">
-      <div class="spec-tip">${x.f.toFixed(3)} MHz · Mic ${x.i + 1}</div>
-    </div>`;
+  var conflictSet = new Set();
+  conflicts.forEach(function(c){ conflictSet.add(c.fa); conflictSet.add(c.fb); c.hits.forEach(function(h){ conflictSet.add(h); }); });
+  var min = Math.max(Math.min.apply(null, allFreqs) - 10, 400);
+  var max = Math.min(Math.max.apply(null, allFreqs) + 10, 800);
+  var span = max - min;
+  var bar = document.getElementById('specBar');
+  var activeHTML = active.map(function(x) {
+    var pct = ((x.f - min) / span * 100).toFixed(2);
+    var cls = conflictSet.has(x.f) ? 'conflict-freq' : 'ok';
+    return '<div class="spec-pin ' + cls + '" style="left:' + pct + '%"><div class="spec-tip">' + x.f.toFixed(3) + ' MHz · Mic ' + (x.i+1) + '</div></div>';
   }).join('');
-
-  // IM products (only those causing conflicts)
-  const imHTML = imProducts
-    .filter(p => p.hits.length > 0)
-    .filter(p => p.im >= min && p.im <= max)
-    .map(p => {
-      const pct = ((p.im - min) / span * 100).toFixed(2);
-      return `<div class="spec-pin im" style="left:${pct}%">
-        <div class="spec-tip">IM: ${p.im.toFixed(3)} MHz = 2×${p.fa}−${p.fb}</div>
-      </div>`;
-    }).join('');
-
+  var imHTML = imProducts.filter(function(p){ return p.hits.length > 0 && p.im >= min && p.im <= max; }).map(function(p) {
+    var pct = ((p.im - min) / span * 100).toFixed(2);
+    return '<div class="spec-pin im" style="left:' + pct + '%"><div class="spec-tip">IM: ' + p.im.toFixed(3) + ' MHz = 2\u00d7' + p.fa + '\u2212' + p.fb + '</div></div>';
+  }).join('');
   bar.innerHTML = activeHTML + imHTML;
-
-  // Labels
-  const step = span > 100 ? 50 : span > 40 ? 20 : 10;
-  const lblStart = Math.ceil(min / step) * step;
-  let lbls = '';
-  for (let f = lblStart; f <= max; f += step) {
-    const pct = ((f - min) / span * 100).toFixed(1);
-    lbls += `<span style="position:absolute;left:${pct}%;transform:translateX(-50%)">${f}</span>`;
+  var step = span > 100 ? 50 : span > 40 ? 20 : 10;
+  var lblStart = Math.ceil(min / step) * step;
+  var lbls = '';
+  for (var f = lblStart; f <= max; f += step) {
+    var pct = ((f - min) / span * 100).toFixed(1);
+    lbls += '<span style="position:absolute;left:' + pct + '%;transform:translateX(-50%)">' + f + '</span>';
   }
-  document.getElementById('specLbl').style.position = 'relative';
-  document.getElementById('specLbl').innerHTML = lbls;
+  var lbl = document.getElementById('specLbl');
+  lbl.style.position = 'relative';
+  lbl.innerHTML = lbls;
 }
 
 function showTable(active, imProducts) {
-  const card = document.getElementById('tableCard');
-  card.style.display = 'block';
-  const table = document.getElementById('imTable');
-
+  var card = document.getElementById('tableCard');
   if (active.length < 2) { card.style.display = 'none'; return; }
-
-  const fVals = active.map(x => x.f);
-
-  // Header
-  let thead = '<thead><tr><th>2Fa − Fb</th>';
-  active.forEach(x => { thead += `<th>${x.f.toFixed(2)}</th>`; });
+  card.style.display = 'block';
+  var fVals = active.map(function(x){ return x.f; });
+  var thead = '<thead><tr><th>2Fa \u2212 Fb</th>';
+  active.forEach(function(x){ thead += '<th>' + x.f.toFixed(2) + '</th>'; });
   thead += '</tr></thead>';
-
-  // Body: for each Fa row, show IM for each Fb col
-  let tbody = '<tbody>';
-  active.forEach(rowX => {
-    tbody += `<tr><td>${rowX.f.toFixed(2)} MHz</td>`;
-    active.forEach(colX => {
-      if (rowX.i === colX.i) {
-        tbody += `<td style="color:var(--line)">—</td>`;
-      } else {
-        const im = parseFloat((2 * rowX.f - colX.f).toFixed(3));
-        const isConflict = fVals.some(f => Math.abs(f - im) <= TOLERANCE);
-        if (im <= 0) {
-          tbody += `<td style="color:var(--line)">−</td>`;
-        } else if (isConflict) {
-          tbody += `<td><span class="td-conflict">${im.toFixed(2)}</span></td>`;
-        } else {
-          tbody += `<td class="td-im">${im.toFixed(2)}</td>`;
-        }
+  var tbody = '<tbody>';
+  active.forEach(function(rowX) {
+    tbody += '<tr><td>' + rowX.f.toFixed(2) + ' MHz</td>';
+    active.forEach(function(colX) {
+      if (rowX.i === colX.i) { tbody += '<td style="color:var(--line)">\u2014</td>'; }
+      else {
+        var im = parseFloat((2 * rowX.f - colX.f).toFixed(3));
+        var isConflict = fVals.some(function(f){ return Math.abs(f - im) <= TOLERANCE; });
+        if (im <= 0) { tbody += '<td style="color:var(--line)">\u2212</td>'; }
+        else if (isConflict) { tbody += '<td><span class="td-conflict">' + im.toFixed(2) + '</span></td>'; }
+        else { tbody += '<td class="td-im">' + im.toFixed(2) + '</td>'; }
       }
     });
     tbody += '</tr>';
   });
   tbody += '</tbody>';
-
-  table.innerHTML = thead + tbody;
+  document.getElementById('imTable').innerHTML = thead + tbody;
 }
 </script>
 
 <script>
+// ── SIMULADOR ─────────────────────────────────────────────────────────────
+(function() {
+  var FA_MIN = 470, FA_MAX = 690;
+  var CONFLICT_BW = 0.025;
 
-// ── STATE ──────────────────────────────────────────────────────────────────
-let freqs = [null, null, null]; // start with 3 empty slots
-const TOLERANCE = 0.025; // MHz — typical step for UHF wireless
+  var sliderFa = document.getElementById('simFa');
+  var sliderFb = document.getElementById('simFb');
+  var dispFa   = document.getElementById('simFaVal');
+  var dispFb   = document.getElementById('simFbVal');
+  var im1Card  = document.getElementById('simIm1Card');
+  var im2Card  = document.getElementById('simIm2Card');
+  var im1Val   = document.getElementById('simIm1Val');
+  var im2Val   = document.getElementById('simIm2Val');
+  var im1Sub   = document.getElementById('simIm1Sub');
+  var im2Sub   = document.getElementById('simIm2Sub');
+  var deltaEl  = document.getElementById('simDelta');
+  var alertEl  = document.getElementById('simAlert');
+  var canvas   = document.getElementById('simCanvas');
+  var ctx      = canvas.getContext('2d');
 
-// ── INIT ───────────────────────────────────────────────────────────────────
-renderInputs();
-
-function renderInputs() {
-  const grid = document.getElementById('freqGrid');
-  grid.innerHTML = freqs.map((f, i) => `
-    <div class="freq-row" id="row_${i}">
-      <span class="freq-num">${i + 1}</span>
-      <input class="freq-inp" type="number" id="f_${i}"
-        value="${f !== null ? f : ''}"
-        placeholder="546.000"
-        min="400" max="800" step="0.025"
-        onchange="freqChanged(${i}, this.value)"
-        oninput="freqChanged(${i}, this.value)"
-        onkeydown="if(event.key==='Enter') calculate()">
-      <span class="freq-unit">MHz</span>
-      <button class="freq-del" onclick="removeFreq(${i})" title="Eliminar">×</button>
-    </div>`).join('');
-  document.getElementById('freqCount').textContent = freqs.filter(f => f !== null && f !== '').length;
-}
-
-function freqChanged(i, val) {
-  freqs[i] = val === '' ? null : parseFloat(val);
-  document.getElementById('freqCount').textContent = freqs.filter(f => f !== null && !isNaN(f)).length;
-}
-
-function addFreq() {
-  if (freqs.length >= 30) return;
-  freqs.push(null);
-  renderInputs();
-  // Focus new input
-  setTimeout(() => {
-    const inp = document.getElementById(`f_${freqs.length - 1}`);
-    if (inp) inp.focus();
-  }, 50);
-}
-
-function removeFreq(i) {
-  freqs.splice(i, 1);
-  renderInputs();
-}
-
-function clearAll() {
-  freqs = [null, null, null];
-  renderInputs();
-  document.getElementById('resultsWrap').style.display = 'none';
-  document.getElementById('specCard').style.display = 'none';
-  document.getElementById('tableCard').style.display = 'none';
-  // reset conflict highlights
-  document.querySelectorAll('.freq-row').forEach(r => r.classList.remove('conflict'));
-}
-
-// ── CALCULATE ──────────────────────────────────────────────────────────────
-function calculate() {
-  // Get valid frequencies
-  const active = freqs
-    .map((f, i) => ({ f: parseFloat(f), i }))
-    .filter(x => !isNaN(x.f) && x.f > 0);
-
-  if (active.length < 2) {
-    alert('Introduce al menos 2 frecuencias para calcular la intermodulación.');
-    return;
+  function pct(slider) {
+    return ((slider.value - slider.min) / (slider.max - slider.min) * 100).toFixed(1) + '%';
   }
 
-  const fValues = active.map(x => x.f);
-  const conflictFreqs = new Set();
-  const imProducts = []; // { fa, fb, im, conflictsWith }
+  function freqToX(f, w) {
+    return (f - FA_MIN) / (FA_MAX - FA_MIN) * w;
+  }
 
-  // Compute all IM3 products: 2·Fa - Fb and 2·Fb - Fa
-  for (let i = 0; i < active.length; i++) {
-    for (let j = 0; j < active.length; j++) {
-      if (i === j) continue;
-      const fa = active[i].f;
-      const fb = active[j].f;
-      const im = 2 * fa - fb;
-      if (im <= 0) continue;
+  function drawCanvas(fa, fb, im1, im2) {
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    var W = rect.width, H = rect.height;
+    ctx.clearRect(0, 0, W, H);
+    var baseline = H - 22;
 
-      // Check if IM product lands on any active frequency
-      const hits = active
-        .filter(x => Math.abs(x.f - im) <= TOLERANCE)
-        .map(x => x.f);
+    ctx.beginPath();
+    ctx.moveTo(0, baseline);
+    ctx.lineTo(W, baseline);
+    ctx.strokeStyle = '#ccc9c0';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
-      imProducts.push({ fa, fb, im: parseFloat(im.toFixed(3)), hits });
-
-      if (hits.length > 0) {
-        conflictFreqs.add(fa);
-        conflictFreqs.add(fb);
-        hits.forEach(h => conflictFreqs.add(h));
-      }
+    ctx.font = '10px DM Mono, monospace';
+    ctx.fillStyle = '#9a9590';
+    ctx.textAlign = 'center';
+    for (var f = 480; f <= 690; f += 40) {
+      ctx.fillText(f, freqToX(f, W), H - 6);
     }
-  }
 
-  // Unique IM products with conflicts
-  const conflicts = imProducts.filter(p => p.hits.length > 0);
-
-  // Highlight conflict rows
-  renderInputs();
-  active.forEach(x => {
-    const row = document.getElementById(`row_${x.i}`);
-    if (row && conflictFreqs.has(x.f)) row.classList.add('conflict');
-  });
-
-  // Show results
-  showResults(conflicts, active, imProducts);
-  showSpectrum(active, conflicts, imProducts);
-  showTable(active, imProducts);
-}
-
-function showResults(conflicts, active, imProducts) {
-  const wrap = document.getElementById('resultsWrap');
-  wrap.style.display = 'block';
-
-  if (conflicts.length === 0) {
-    wrap.innerHTML = `
-      <div class="results-card">
-        <div class="results-ok">
-          <div class="results-ok-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 4.5"/></svg>
-          </div>
-          <div>
-            <div class="results-ok-title">Sin conflictos de intermodulación</div>
-            <div class="results-ok-sub">${active.length} frecuencias · ${imProducts.length} productos IM calculados · ninguno coincide</div>
-          </div>
-        </div>
-      </div>`;
-    return;
-  }
-
-  // Deduplicate conflicts for display
-  const seen = new Set();
-  const unique = conflicts.filter(c => {
-    const key = `${Math.min(c.fa,c.fb)}-${Math.max(c.fa,c.fb)}-${c.im}`;
-    if (seen.has(key)) return false;
-    seen.add(key); return true;
-  });
-
-  wrap.innerHTML = `
-    <div class="results-card">
-      <div class="results-conflict-header">
-        <div class="results-conflict-icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
-        </div>
-        <div>
-          <div class="results-conflict-title">${unique.length} conflicto${unique.length > 1 ? 's' : ''} de intermodulación detectado${unique.length > 1 ? 's' : ''}</div>
-          <div class="results-conflict-sub">${active.length} frecuencias · cambia las frecuencias afectadas</div>
-        </div>
-      </div>
-      <div class="conflict-list">
-        ${unique.map(c => `
-          <div class="conflict-item">
-            <span class="conflict-badge">${c.im.toFixed(3)} MHz</span>
-            <div>
-              <div class="conflict-detail">
-                Producto IM cae sobre <strong>${c.hits.map(h => h.toFixed(3)+' MHz').join(', ')}</strong>
-              </div>
-              <div class="conflict-formula">2 × ${c.fa.toFixed(3)} − ${c.fb.toFixed(3)} = ${c.im.toFixed(3)} MHz</div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`;
-}
-
-function showSpectrum(active, conflicts, imProducts) {
-  const card = document.getElementById('specCard');
-  card.style.display = 'block';
-
-  const allFreqs = [
-    ...active.map(x => x.f),
-    ...imProducts.filter(p => p.hits.length > 0).map(p => p.im)
-  ].filter(f => f > 0);
-
-  if (!allFreqs.length) return;
-
-  const conflictSet = new Set(conflicts.flatMap(c => [...c.hits, c.fa, c.fb]));
-  const imSet = new Set(imProducts.filter(p => p.hits.length > 0).map(p => p.im));
-
-  const min = Math.max(Math.min(...allFreqs) - 10, 400);
-  const max = Math.min(Math.max(...allFreqs) + 10, 800);
-  const span = max - min;
-
-  const bar = document.getElementById('specBar');
-
-  // Active frequencies
-  const activeHTML = active.map(x => {
-    const pct = ((x.f - min) / span * 100).toFixed(2);
-    const cls = conflictSet.has(x.f) ? 'conflict-freq' : 'ok';
-    return `<div class="spec-pin ${cls}" style="left:${pct}%">
-      <div class="spec-tip">${x.f.toFixed(3)} MHz · Mic ${x.i + 1}</div>
-    </div>`;
-  }).join('');
-
-  // IM products (only those causing conflicts)
-  const imHTML = imProducts
-    .filter(p => p.hits.length > 0)
-    .filter(p => p.im >= min && p.im <= max)
-    .map(p => {
-      const pct = ((p.im - min) / span * 100).toFixed(2);
-      return `<div class="spec-pin im" style="left:${pct}%">
-        <div class="spec-tip">IM: ${p.im.toFixed(3)} MHz = 2×${p.fa}−${p.fb}</div>
-      </div>`;
-    }).join('');
-
-  bar.innerHTML = activeHTML + imHTML;
-
-  // Labels
-  const step = span > 100 ? 50 : span > 40 ? 20 : 10;
-  const lblStart = Math.ceil(min / step) * step;
-  let lbls = '';
-  for (let f = lblStart; f <= max; f += step) {
-    const pct = ((f - min) / span * 100).toFixed(1);
-    lbls += `<span style="position:absolute;left:${pct}%;transform:translateX(-50%)">${f}</span>`;
-  }
-  document.getElementById('specLbl').style.position = 'relative';
-  document.getElementById('specLbl').innerHTML = lbls;
-}
-
-function showTable(active, imProducts) {
-  const card = document.getElementById('tableCard');
-  card.style.display = 'block';
-  const table = document.getElementById('imTable');
-
-  if (active.length < 2) { card.style.display = 'none'; return; }
-
-  const fVals = active.map(x => x.f);
-
-  // Header
-  let thead = '<thead><tr><th>2Fa − Fb</th>';
-  active.forEach(x => { thead += `<th>${x.f.toFixed(2)}</th>`; });
-  thead += '</tr></thead>';
-
-  // Body: for each Fa row, show IM for each Fb col
-  let tbody = '<tbody>';
-  active.forEach(rowX => {
-    tbody += `<tr><td>${rowX.f.toFixed(2)} MHz</td>`;
-    active.forEach(colX => {
-      if (rowX.i === colX.i) {
-        tbody += `<td style="color:var(--line)">—</td>`;
-      } else {
-        const im = parseFloat((2 * rowX.f - colX.f).toFixed(3));
-        const isConflict = fVals.some(f => Math.abs(f - im) <= TOLERANCE);
-        if (im <= 0) {
-          tbody += `<td style="color:var(--line)">−</td>`;
-        } else if (isConflict) {
-          tbody += `<td><span class="td-conflict">${im.toFixed(2)}</span></td>`;
-        } else {
-          tbody += `<td class="td-im">${im.toFixed(2)}</td>`;
-        }
+    function spike(f, height, color, label, dashed) {
+      if (f < FA_MIN || f > FA_MAX) return;
+      var x = freqToX(f, W);
+      var tipY = baseline - height;
+      ctx.save();
+      if (dashed) { ctx.setLineDash([3, 3]); ctx.globalAlpha = 0.75; }
+      ctx.strokeStyle = color;
+      ctx.lineWidth = dashed ? 1.5 : 2.5;
+      ctx.beginPath();
+      ctx.moveTo(x, baseline);
+      ctx.lineTo(x, tipY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.arc(x, tipY, dashed ? 3 : 4, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      if (label) {
+        ctx.font = '10px DM Mono, monospace';
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.fillText(label, Math.max(22, Math.min(W - 22, x)), tipY - 7);
       }
-    });
-    tbody += '</tr>';
-  });
-  tbody += '</tbody>';
+      ctx.restore();
+    }
 
-  table.innerHTML = thead + tbody;
-}
+    var im1InRange = im1 >= FA_MIN && im1 <= FA_MAX;
+    var im2InRange = im2 >= FA_MIN && im2 <= FA_MAX;
+    var im1Conflict = im1InRange && (Math.abs(im1 - fa) < CONFLICT_BW || Math.abs(im1 - fb) < CONFLICT_BW);
+    var im2Conflict = im2InRange && (Math.abs(im2 - fa) < CONFLICT_BW || Math.abs(im2 - fb) < CONFLICT_BW);
 
+    // dashed connection lines
+    var lineY = baseline - 48;
+    ctx.save();
+    ctx.setLineDash([2, 4]);
+    ctx.strokeStyle = '#d4aa50';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.4;
+    if (im1InRange) { ctx.beginPath(); ctx.moveTo(freqToX(fa,W), lineY); ctx.lineTo(freqToX(im1,W), lineY); ctx.stroke(); }
+    if (im2InRange) { ctx.beginPath(); ctx.moveTo(freqToX(fb,W), lineY); ctx.lineTo(freqToX(im2,W), lineY); ctx.stroke(); }
+    ctx.restore();
+
+    if (im1InRange) spike(im1, 52, im1Conflict ? '#a8291d' : '#d4aa50', im1.toFixed(3), true);
+    if (im2InRange) spike(im2, 52, im2Conflict ? '#a8291d' : '#d4aa50', im2.toFixed(3), true);
+    spike(fa, 72, '#2563eb', 'Fa ' + fa.toFixed(3), false);
+    spike(fb, 72, '#dc2626', 'Fb ' + fb.toFixed(3), false);
+  }
+
+  function update() {
+    var fa = parseFloat(sliderFa.value);
+    var fb = parseFloat(sliderFb.value);
+    dispFa.textContent = fa.toFixed(3);
+    dispFb.textContent = fb.toFixed(3);
+    sliderFa.style.setProperty('--fa-pct', pct(sliderFa));
+    sliderFb.style.setProperty('--fb-pct', pct(sliderFb));
+
+    var im1 = parseFloat((2 * fa - fb).toFixed(3));
+    var im2 = parseFloat((2 * fb - fa).toFixed(3));
+    var delta = Math.abs(fb - fa);
+
+    im1Val.textContent = im1.toFixed(3);
+    im2Val.textContent = im2.toFixed(3);
+    deltaEl.textContent = delta.toFixed(3) + ' MHz';
+
+    var im1InRange = im1 >= FA_MIN && im1 <= FA_MAX;
+    var im2InRange = im2 >= FA_MIN && im2 <= FA_MAX;
+    var im1Conflict = im1InRange && (Math.abs(im1 - fa) < CONFLICT_BW || Math.abs(im1 - fb) < CONFLICT_BW);
+    var im2Conflict = im2InRange && (Math.abs(im2 - fa) < CONFLICT_BW || Math.abs(im2 - fb) < CONFLICT_BW);
+
+    im1Card.classList.toggle('conflict', im1Conflict);
+    im2Card.classList.toggle('conflict', im2Conflict);
+    im1Sub.textContent = !im1InRange ? 'fuera de banda UHF' : im1Conflict ? '\u26a0 conflicto' : 'MHz';
+    im2Sub.textContent = !im2InRange ? 'fuera de banda UHF' : im2Conflict ? '\u26a0 conflicto' : 'MHz';
+
+    if (im1Conflict || im2Conflict) {
+      alertEl.className = 'sim-alert warn';
+      alertEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 1L1 13h12L7 1z"/><path d="M7 5v3M7 10v.5"/></svg> Conflicto detectado — un producto IM3 coincide con una frecuencia activa. Cambia Fa o Fb.';
+    } else {
+      alertEl.className = 'sim-alert ok';
+      alertEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 7-6"/></svg> Sin conflictos — los productos IM3 no coinciden con ninguna frecuencia activa.';
+    }
+    drawCanvas(fa, fb, im1, im2);
+  }
+
+  window.stepSim = function(id, dir) {
+    var slider = document.getElementById(id);
+    var next = Math.round((parseFloat(slider.value) + dir * 0.025) * 1000) / 1000;
+    if (next < parseFloat(slider.min) || next > parseFloat(slider.max)) return;
+    slider.value = next;
+    update();
+  };
+
+  sliderFa.addEventListener('input', update);
+  sliderFb.addEventListener('input', update);
+  window.addEventListener('resize', update);
+  update();
+})();
 </script>
+
 </body>
 </html>
