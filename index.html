@@ -577,6 +577,7 @@ footer {
 .map-list-item {
   padding:5px 9px; font-size:12px; color:var(--ink2); border-radius:var(--r2);
   cursor:pointer; transition:background .12s, color .12s; line-height:1.4;
+  display:flex; align-items:center; justify-content:space-between; gap:6px;
 }
 .map-list-item:hover { background:var(--blue-bg); color:var(--blue); }
 .map-list-item.selected { background:var(--blue-bg); color:var(--blue); font-weight:600; border-left:2px solid var(--blue); padding-left:7px; }
@@ -1514,6 +1515,19 @@ function mapResolve(str) {
          || Object.keys(PROV_NORM).find(k => norm(k).includes(n) || n.includes(norm(k)));
   return k ? PROV_NORM[k] : null;
 }
+// Devuelve los bounds de todas las capas que pertenecen a una CA
+function mapBoundsCA(ca) {
+  const bounds = L.latLngBounds([]);
+  mapGeoLayer.eachLayer(l => { if (l._cc === ca) bounds.extend(l.getBounds()); });
+  return bounds.isValid() ? bounds : null;
+}
+// Devuelve los bounds de la provincia seleccionada
+function mapBoundsProv(prov) {
+  const bounds = L.latLngBounds([]);
+  mapGeoLayer.eachLayer(l => { if (l._cp === prov) bounds.extend(l.getBounds()); });
+  return bounds.isValid() ? bounds : null;
+}
+
 function mapHov(layer, on) {
   if (!on) { mapPaint(); return; }
   if (mapStep === 0 || (mapStep === 1 && layer._cc === mapSelCA)) {
@@ -1523,18 +1537,22 @@ function mapHov(layer, on) {
 function mapClic(layer) {
   if (!layer._cp || !layer._cc) return;
   if (mapStep === 0 || (mapStep >= 2 && layer._cc !== mapSelCA)) {
-    // Step 1 — select CA
+    // Step 1 — select CA + zoom to CA
     mapSelCA = layer._cc; mapSelProv = ''; mapSelDem = ''; mapSelAmb = ''; mapStep = 1;
     mapPaint();
+    const b = mapBoundsCA(mapSelCA);
+    if (b) mapLeaflet.flyToBounds(b, { padding: [24, 24], maxZoom: 9, duration: 0.7 });
     mapUpdating = true;
     const fCA = document.getElementById('fCA');
     fCA.value = mapSelCA; fCA.dispatchEvent(new Event('change'));
     mapUpdating = false;
     mapInfo();
   } else if (mapStep === 1 && layer._cc === mapSelCA) {
-    // Step 2 — select province
+    // Step 2 — select province + zoom to province
     mapSelProv = layer._cp; mapSelDem = ''; mapSelAmb = ''; mapStep = 2;
     mapPaint();
+    const b = mapBoundsProv(mapSelProv);
+    if (b) mapLeaflet.flyToBounds(b, { padding: [32, 32], maxZoom: 11, duration: 0.6 });
     mapUpdating = true;
     const fP = document.getElementById('fProv');
     const m = [...fP.options].map(o => o.value).find(o => o === mapSelProv || norm(o) === norm(mapSelProv));
@@ -1558,24 +1576,58 @@ function mapInfo() {
     if (el) el.classList.toggle('done', mapStep > i);
   });
   const box = document.getElementById('mapSelBox');
+
   if (mapStep === 1) {
-    box.innerHTML = `<strong>${mapSelCA}</strong><br><span style="font-size:11px;color:var(--ink3)">Haz clic en una provincia</span>`;
+    const provs = uniq('provincia', ALL.filter(r => r.ca === mapSelCA));
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px">${mapSelCA}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${provs.length} provincia${provs.length!==1?'s':''} · haz clic en el mapa</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${provs.map(p => `<span style="font-size:11px;background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green);border-radius:4px;padding:2px 7px;font-weight:500">${p}</span>`).join('')}
+      </div>`;
+
   } else if (mapStep === 2) {
     const dems = uniq('demarcacion', ALL.filter(r => r.provincia === mapSelProv));
-    box.innerHTML = `<strong>${mapSelProv}</strong> <span style="font-size:11px;color:var(--ink3)">${mapSelCA}</span>
-      <div style="font-size:11px;color:var(--ink3);margin:5px 0 3px">Selecciona demarcación:</div>
-      <div class="map-side-scroll">${dems.map(d => `<div class="map-list-item${d===mapSelDem?' selected':''}" onclick="mapDem(this,'${d.replace(/'/g,"\\'")}')">  ${d}</div>`).join('')}</div>`;
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:1px">${mapSelProv}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${mapSelCA}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Demarcación</div>
+      <div class="map-side-scroll" style="display:flex;flex-direction:column;gap:3px">
+        ${dems.map(d => {
+          const nAmbs = uniq('ambito', ALL.filter(r => r.provincia === mapSelProv && r.demarcacion === d)).length;
+          return `<div class="map-list-item${d===mapSelDem?' selected':''}" onclick="mapDem(this,'${d.replace(/'/g,"\\'")}')">
+            <span style="flex:1">${d}</span>
+            <span style="font-size:10px;color:var(--ink3);font-family:var(--mono);margin-left:4px">${nAmbs} ámbito${nAmbs!==1?'s':''}</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+
   } else if (mapStep === 3) {
     const ambs = uniq('ambito', ALL.filter(r => r.provincia === mapSelProv && r.demarcacion === mapSelDem));
     if (ambs.length === 1) { mapAmb(null, ambs[0]); return; }
-    box.innerHTML = `<strong>${mapSelDem}</strong><br><span style="font-size:11px;color:var(--ink3)">${mapSelProv}</span>
-      <div style="font-size:11px;color:var(--ink3);margin:5px 0 3px">Selecciona ámbito:</div>
-      <div class="map-side-scroll">${ambs.map(a => `<div class="map-list-item${a===mapSelAmb?' selected':''}" onclick="mapAmb(this,'${a.replace(/'/g,"\\'")}')">  ${a}</div>`).join('')}</div>`;
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:1px">${mapSelDem}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${mapSelProv} · ${mapSelCA}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Ámbito de cobertura</div>
+      <div class="map-side-scroll" style="display:flex;flex-direction:column;gap:3px">
+        ${ambs.map(a => `<div class="map-list-item${a===mapSelAmb?' selected':''}" onclick="mapAmb(this,'${a.replace(/'/g,"\\'")}')">
+          ${a}
+        </div>`).join('')}
+      </div>`;
+
   } else if (mapStep === 4) {
-    box.innerHTML = `<strong>${mapSelDem}</strong><br>
-      <span style="font-size:11px;color:var(--ink3)">${mapSelProv} · ${mapSelCA}</span><br>
-      <span style="font-size:11px;color:var(--ink3)">${mapSelAmb}</span><br>
-      <span style="font-size:12px;color:var(--green);font-weight:600">✓ Selección completa</span>`;
+    const nChs = uniq('canal', ALL.filter(r => r.provincia === mapSelProv && r.demarcacion === mapSelDem && r.ambito === mapSelAmb)).length;
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:1px">${mapSelDem}</div>
+      <div style="font-size:11px;color:var(--ink3)">${mapSelProv} · ${mapSelCA}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:10px">${mapSelAmb}</div>
+      <div style="background:var(--green-bg);border:1px solid var(--green-bd);border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 7-6"/></svg>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--green)">Selección completa</div>
+          <div style="font-size:11px;color:var(--green);font-family:var(--mono)">${nChs} canal${nChs!==1?'es':''} ocupado${nChs!==1?'s':''}</div>
+        </div>
+      </div>`;
   }
 }
 function mapDem(el, dem) {
@@ -1609,6 +1661,7 @@ function resetMapSel() {
   ['mapStep1','mapStep2','mapStep3','mapStep4'].forEach(id => {
     const e = document.getElementById(id); if (e) e.classList.remove('done');
   });
+  if (mapLeaflet) mapLeaflet.flyTo([40.2, -3.5], 5, { duration: 0.7 });
   resetF();
 }
 

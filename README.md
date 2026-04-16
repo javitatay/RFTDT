@@ -8,7 +8,7 @@
 
 ### Badges
 
-![version](https://img.shields.io/badge/version-3.3.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
+![version](https://img.shields.io/badge/version-3.4.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey) ![datos](https://img.shields.io/badge/datos-abril%202026-red)
 
 ---
 
@@ -25,9 +25,11 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 - **Geolocalización automática** — detecta la ubicación del dispositivo y preselecciona automáticamente la Comunidad Autónoma y provincia
 - **Vista de canales activos** — grid visual con número de canal, frecuencia central y rango ocupado para la demarcación seleccionada; los conflictos con el micrófono se marcan en rojo al instante
 - **Mapa de espectro** — representación gráfica del espectro UHF 470–694 MHz que muestra en **rojo** los canales TDT ocupados y en **verde** los canales libres disponibles, con tooltip de detalle al pasar el cursor
-- **Mapa interactivo** — selección gradual por mapa en 4 pasos: Comunidad Autónoma → Provincia → Demarcación → Ámbito; sincronizado con los desplegables
-- **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura
+- **Mapa interactivo con zoom gradual** — selección en 4 pasos: Comunidad Autónoma → Provincia → Demarcación → Ámbito; al seleccionar cada nivel el mapa hace zoom automático (`flyToBounds`) a la zona correspondiente; al limpiar la selección vuelve a la vista general de España
+- **Panel lateral contextual** — muestra las provincias disponibles como chips al seleccionar una CA, y el número de ámbitos por demarcación al seleccionar provincia; la selección completa indica el número de canales ocupados
+- **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura, sincronizados con el mapa
 - **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
+- **Exportar CSV** — exporta los canales UHF (ocupados y libres) de la selección actual en formato compatible con Shure Wireless Workbench y Sennheiser WSM/Sundbase
 - **Tabla ordenable** — ordena los resultados por cualquier columna (canal, frecuencia, rango, demarcación...)
 - **Calculadora de intermodulación IM3** — herramienta independiente para comprobar si las frecuencias de un sistema de micrófonos generan productos de intermodulación de tercer orden entre sí, con diagrama explicativo interactivo integrado
 
@@ -39,22 +41,12 @@ La página `intermodulacion.html` combina la calculadora con un **diagrama expli
 
 ### Diagrama explicativo
 
-Situado debajo de la calculadora, el diagrama incluye:
-
 - **3 pasos conceptuales** — explica de forma progresiva qué ocurre: dos transmisores activos generan señales fantasma (productos IM3) que pueden coincidir con otras frecuencias del sistema
-- **Simulador interactivo** — dos sliders permiten mover Fa y Fb libremente por la banda UHF (470–690 MHz) en pasos de **25 kHz** (resolución real de la microfonía UHF profesional), observando en tiempo real:
-  - Los productos IM₁ = 2·Fa − Fb e IM₂ = 2·Fb − Fa con tres decimales de precisión
-  - La separación Δ entre las dos frecuencias
-  - Visualización de espectro en canvas: picos para Fa/Fb y productos IM, con líneas que muestran la relación geométrica entre ellos
-  - Alerta verde/roja instantánea si algún producto coincide con una frecuencia activa
+- **Simulador interactivo** — dos sliders permiten mover Fa y Fb libremente por la banda UHF (470–690 MHz) en pasos de **25 kHz**, observando en tiempo real los productos IM₁/IM₂, la separación Δ, la visualización en canvas y la alerta de conflicto
 
 ### Calculadora
 
-Introduciendo las frecuencias reales del sistema (hasta 30 dispositivos), calcula todos los productos IM3 por par de frecuencias y muestra:
-
-- Resumen de conflictos con la fórmula exacta de cada uno
-- Visualización de espectro con tooltip por frecuencia
-- Tabla cruzada completa de todos los productos IM por par
+Introduciendo las frecuencias reales del sistema (hasta 30 dispositivos), calcula todos los productos IM3 por par y muestra resumen de conflictos con fórmula exacta, visualización de espectro y tabla cruzada completa.
 
 ---
 
@@ -71,6 +63,7 @@ Introduciendo las frecuencias reales del sistema (hasta 30 dispositivos), calcul
 | **Tolerancia detección conflicto IM** | ± 25 kHz |
 | **Cobertura geográfica** | España peninsular, Baleares, Canarias, Ceuta y Melilla |
 | **Fuente de datos** | CNAF / Ministerio para la Transformación Digital y de la Función Pública |
+| **Actualización de datos** | Abril 2026 |
 
 ---
 
@@ -121,7 +114,7 @@ Los campos Canal y Frecuencia admiten múltiples valores separados por comas (en
 
 ## Aviso
 
-> Esta información puede no estar actualizada en el momento de su uso. Se recomienda realizar un escaneo completo de frecuencias del espacio en el que se desarrollará el show para el conocimiento exacto de las interferencias presentes.
+> **Base de datos actualizada a abril de 2026.** Los datos de canales TDT proceden del CNAF / Ministerio para la Transformación Digital y de la Función Pública. La asignación de frecuencias puede variar: se recomienda verificar con la fuente oficial antes de cada producción y realizar siempre un escaneo RF del espacio de trabajo.
 
 ---
 
@@ -134,4 +127,4 @@ Los campos Canal y Frecuencia admiten múltiples valores separados por comas (en
 
 *Herramienta de uso libre para técnicos audiovisuales · 2026*
 
-**Version:** 3.3.0 | **Built with:** Claude AI
+**Version:** 3.4.0 | **Built with:** Claude AI
