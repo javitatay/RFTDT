@@ -8,7 +8,7 @@
 
 ### Badges
 
-![version](https://img.shields.io/badge/version-3.4.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey) ![datos](https://img.shields.io/badge/datos-abril%202026-red)
+![version](https://img.shields.io/badge/version-3.5.0-blue) ![standard](https://img.shields.io/badge/estándar-DVB--T-green) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange) ![license](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey) ![datos](https://img.shields.io/badge/datos-abril%202026-red)
 
 ---
 
@@ -26,7 +26,8 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 - **Vista de canales activos** — grid visual con número de canal, frecuencia central y rango ocupado para la demarcación seleccionada; los conflictos con el micrófono se marcan en rojo al instante
 - **Mapa de espectro** — representación gráfica del espectro UHF 470–694 MHz que muestra en **rojo** los canales TDT ocupados y en **verde** los canales libres disponibles, con tooltip de detalle al pasar el cursor
 - **Mapa interactivo con zoom gradual** — selección en 4 pasos: Comunidad Autónoma → Provincia → Demarcación → Ámbito; al seleccionar cada nivel el mapa hace zoom automático (`flyToBounds`) a la zona correspondiente; al limpiar la selección vuelve a la vista general de España
-- **Panel lateral contextual** — muestra las provincias disponibles como chips al seleccionar una CA, y el número de ámbitos por demarcación al seleccionar provincia; la selección completa indica el número de canales ocupados
+- **Markers de demarcación** — al seleccionar una provincia aparecen en el mapa marcadores circulares orientativos para cada demarcación; el marcador seleccionado se rellena en verde; un clic sobre él selecciona la demarcación directamente sin usar el panel lateral. Las coordenadas son aproximadas (extraídas de Google Maps por nombre de municipio) y se irán refinando con datos reales de repetidores
+- **Panel lateral contextual** — muestra las provincias disponibles como chips al seleccionar una CA, el número de ámbitos por demarcación al seleccionar provincia, y el número de canales ocupados al completar la selección
 - **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura, sincronizados con el mapa
 - **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
 - **Exportar CSV** — exporta los canales UHF (ocupados y libres) de la selección actual en formato compatible con Shure Wireless Workbench y Sennheiser WSM/Sundbase
@@ -64,6 +65,7 @@ Introduciendo las frecuencias reales del sistema (hasta 30 dispositivos), calcul
 | **Cobertura geográfica** | España peninsular, Baleares, Canarias, Ceuta y Melilla |
 | **Fuente de datos** | CNAF / Ministerio para la Transformación Digital y de la Función Pública |
 | **Actualización de datos** | Abril 2026 |
+| **Demarcaciones con marker en mapa** | 274 (coordenadas orientativas, pendiente refinamiento) |
 
 ---
 
@@ -127,4 +129,4 @@ Los campos Canal y Frecuencia admiten múltiples valores separados por comas (en
 
 *Herramienta de uso libre para técnicos audiovisuales · 2026*
 
-**Version:** 3.4.0 | **Built with:** Claude AI
+**Version:** 3.5.0 | **Built with:** Claude AI
