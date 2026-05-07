@@ -226,6 +226,16 @@ main {
   padding:7px 13px; transition:.15s; white-space:nowrap; margin-left:12px;
 }
 .btn-export-csv:hover { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
+.export-compat-badges { display:inline-flex; align-items:center; gap:5px; margin-left:6px; }
+.compat-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:4px; border:1px solid var(--line);
+  background:var(--paper); opacity:.6; transition:opacity .15s, border-color .15s;
+  cursor:default; overflow:hidden; flex-shrink:0;
+}
+.compat-badge:hover { opacity:1; border-color:var(--ink3); }
+.compat-badge-wrap { display:none; align-items:center; gap:5px; margin-left:6px; }
+.compat-badge-label { font-size:10px; color:var(--ink3); font-family:var(--mono); letter-spacing:.04em; white-space:nowrap; }
 
 .ch-grid {
   display: grid;
@@ -694,6 +704,33 @@ footer {
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
         Exportar CSV
       </button>
+      <!-- Compat badges — shown when export button is visible -->
+      <div class="compat-badge-wrap" id="compatBadges">
+        <span class="compat-badge-label">compatible con</span>
+        <!-- Shure Wireless Workbench icon -->
+        <div class="compat-badge" title="Shure Wireless Workbench">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- WWB-style spectrum bars: grey/white/green palette -->
+            <rect x="1"   y="10" width="2" height="4" fill="#6b6b6b" rx="0.5"/>
+            <rect x="3.5" y="7"  width="2" height="7" fill="#d0d0d0" rx="0.5"/>
+            <rect x="6"   y="9"  width="2" height="5" fill="#6b6b6b" rx="0.5"/>
+            <rect x="8.5" y="4"  width="2" height="10" fill="#7ed321" rx="0.5"/>
+            <rect x="11"  y="6"  width="2" height="8" fill="#d0d0d0" rx="0.5"/>
+            <rect x="13.5" y="9" width="1.5" height="5" fill="#6b6b6b" rx="0.5"/>
+          </svg>
+        </div>
+        <!-- SoundBase Coord icon -->
+        <div class="compat-badge" title="SoundBase Coord">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- SoundBase-style: "s" with wifi/sound waves -->
+            <text x="1.5" y="11" font-family="Georgia,serif" font-size="9" font-weight="700" fill="#1a2a4a">s</text>
+            <!-- concentric arcs inside the "O" of sOundBase -->
+            <path d="M8.5 11 Q10 9 8.5 7" stroke="#3a8fd4" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+            <path d="M9.8 12 Q12.2 9 9.8 6" stroke="#5aaee8" stroke-width="1" stroke-linecap="round" fill="none" opacity=".7"/>
+            <circle cx="7.8" cy="9" r="1.1" fill="#1a2a4a"/>
+          </svg>
+        </div>
+      </div>
     </div>
     <div id="chGrid" class="ch-grid">
       <p class="ch-grid-empty">Selecciona una localización para ver los canales</p>
@@ -1061,6 +1098,7 @@ function renderChGrid() {
     countEl.textContent = '—';
     hintEl.textContent = '';
     document.getElementById('exportBtn').style.display = 'none';
+  document.getElementById('compatBadges').style.display = 'none';
     return;
   }
 
@@ -1075,6 +1113,7 @@ function renderChGrid() {
 
   const span = SMAX - SMIN;
   document.getElementById('exportBtn').style.display = 'inline-flex';
+  document.getElementById('compatBadges').style.display = 'inline-flex';
 
   grid.innerHTML = channels.map(r => {
     const conflict = probe !== null && probe >= r.lo && probe <= r.hi;

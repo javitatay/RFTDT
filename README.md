@@ -30,7 +30,7 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 - **Panel lateral contextual** — muestra las provincias disponibles como chips al seleccionar una CA, el número de ámbitos por demarcación al seleccionar provincia, y el número de canales ocupados al completar la selección
 - **Filtros en cascada** — filtra por Comunidad Autónoma → Provincia → Demarcación → Ámbito de cobertura, sincronizados con el mapa
 - **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación seleccionada
-- **Exportar CSV** — exporta los canales UHF (ocupados y libres) de la selección actual en formato compatible con Shure Wireless Workbench y Sennheiser WSM/Sundbase
+- **Exportar CSV** — exporta los canales UHF (ocupados y libres) de la selección actual en formato compatible con **Shure Wireless Workbench**, **Sennheiser WSM/Sundbase** y **SoundBase Coord**; el botón muestra iconos de compatibilidad para cada plataforma
 - **Tabla ordenable** — ordena los resultados por cualquier columna (canal, frecuencia, rango, demarcación...)
 - **Calculadora de intermodulación IM3** — herramienta independiente para comprobar si las frecuencias de un sistema de micrófonos generan productos de intermodulación de tercer orden entre sí, con diagrama explicativo interactivo integrado
 
