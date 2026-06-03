@@ -9,6 +9,7 @@
 Herramienta visual para técnicas y técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra los canales UHF ocupados por la TDT en cada demarcación, con mapa interactivo, visualización del espectro libre y ocupado, verificador de conflictos y calculadora de intermodulación. Funciona sin conexión.
 
 [![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/RFTDT/)
+[![Invítame a un café](https://img.shields.io/badge/☕_Invítame_a_un_café-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/javitatay)
 
 ![version](https://img.shields.io/badge/version-3.7.0-c89838?style=flat-square) ![standard](https://img.shields.io/badge/estándar-DVB--T-green?style=flat-square) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange?style=flat-square) ![datos](https://img.shields.io/badge/datos-abril%202026-red?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
 
