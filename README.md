@@ -10,7 +10,7 @@ Herramienta visual para técnicas y técnicos de microfonía inalámbrica y sist
 
 [![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/RFTDT/)
 
-![version](https://img.shields.io/badge/version-3.6.0-c89838?style=flat-square) ![standard](https://img.shields.io/badge/estándar-DVB--T-green?style=flat-square) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange?style=flat-square) ![datos](https://img.shields.io/badge/datos-abril%202026-red?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
+![version](https://img.shields.io/badge/version-3.7.0-c89838?style=flat-square) ![standard](https://img.shields.io/badge/estándar-DVB--T-green?style=flat-square) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange?style=flat-square) ![datos](https://img.shields.io/badge/datos-abril%202026-red?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
 
 </div>
 
@@ -34,6 +34,7 @@ No necesita servidor, instalación ni cuenta. Funciona directamente en el navega
 - ⚠️ **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación.
 - 📤 **Exportar CSV** — exporta el espectro UHF en formato de scan compatible con **Shure Wireless Workbench** y **SoundBase Coord** (dos columnas `frecuencia,dBm`, paso 25 kHz, canales ocupados a −20 dBm).
 - 📤 **Exportar WWB .shw** — genera un proyecto nativo de **Shure Wireless Workbench** con los canales TDT de la demarcación seleccionada ya marcados como excluidos (`<exclude>true</exclude>`), listo para abrir directamente en WWB sin configuración adicional.
+- 📤 **Exportar SoundBase .sbcoordsite** — genera un proyecto nativo de **SoundBase Coord** con los canales TDT ocupados marcados como `isActive: true`, listo para importar directamente en SoundBase sin configuración adicional.
 - 🔃 **Tabla ordenable** — ordena los resultados por cualquier columna (canal, frecuencia, rango, demarcación…).
 - 🧮 **Calculadora de intermodulación IM3** — comprueba si las frecuencias de tu sistema generan productos de intermodulación de tercer orden, con diagrama explicativo interactivo integrado.
 
@@ -73,6 +74,15 @@ Genera un archivo `frecuencia,dBm` con paso de 25 kHz cubriendo 470–694 MHz. L
 
 ### Exportar WWB .shw *(nuevo en v3.6.0)*
 Genera un proyecto `.shw` nativo de Wireless Workbench con los canales TDT de la demarcación seleccionada marcados directamente como excluidos en la sección `TV Channels`. Al abrir el archivo en WWB los canales bloqueados aparecen de inmediato, sin necesidad de ajustar umbrales ni configuración manual. Compatible con WWB 6 / WWB 7.
+
+---
+
+## 📤 Integración con SoundBase
+
+### Exportar SoundBase .sbcoordsite *(nuevo en v3.7.0)*
+Genera un proyecto nativo de **[SoundBase Coord](https://soundbase.app)** en formato `.sbcoordsite` (JSON gzip), con la estructura completa de site, zone y group y los canales de broadcast UHF CH21–CH48 del plan español. Los canales TDT ocupados en la demarcación seleccionada se exportan con `isActive: true`, que SoundBase interpreta como canales de TV activos y bloquea automáticamente en el cálculo de coordinación.
+
+Para importar: en SoundBase, cerrar el proyecto actual → `Import` → seleccionar el archivo `.sbcoordsite`.
 
 ---
 

@@ -615,6 +615,7 @@ footer {
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
 
@@ -707,6 +708,10 @@ footer {
       <button class="btn-export-csv" id="exportShwBtn" onclick="exportSHW()" style="display:none">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
         Exportar WWB .shw
+      </button>
+      <button class="btn-export-csv" id="exportSbBtn" onclick="exportSoundBase()" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Exportar SoundBase
       </button>
       <!-- Compat badges — shown when export button is visible -->
       <div class="compat-badge-wrap" id="compatBadges">
@@ -1103,6 +1108,7 @@ function renderChGrid() {
     hintEl.textContent = '';
     document.getElementById('exportBtn').style.display = 'none';
   document.getElementById('exportShwBtn').style.display = 'none';
+  document.getElementById('exportSbBtn').style.display = 'none';
   document.getElementById('compatBadges').style.display = 'none';
     return;
   }
@@ -1119,6 +1125,7 @@ function renderChGrid() {
   const span = SMAX - SMIN;
   document.getElementById('exportBtn').style.display = 'inline-flex';
   document.getElementById('exportShwBtn').style.display = 'inline-flex';
+  document.getElementById('exportSbBtn').style.display = 'inline-flex';
   document.getElementById('compatBadges').style.display = 'inline-flex';
 
   grid.innerHTML = channels.map(r => {
@@ -1496,6 +1503,236 @@ ${channels}            </channel_avoidance_info>
   const a    = document.createElement('a');
   a.href = url; a.download = filename; a.click();
   URL.revokeObjectURL(url);
+}
+
+// ── EXPORTAR SOUNDBASE .sbcoordsite ───────────────────────────────────────
+function exportSoundBase() {
+  if (!FILT.length) return;
+
+  // Canales TDT ocupados en la selección actual
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = new Set(Object.keys(chMap).map(Number));
+
+  // Nombre y localización
+  const dem      = v('fDem') || v('fProv') || v('fCA') || 'España';
+  const siteName = dem;
+  const date     = new Date().toISOString().slice(0, 10);
+  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g, '_')}_${date}.sbcoordsite`.replace(/__+/g, '_');
+
+  // Generador de IDs aleatorios estilo Meteor (17 chars alfanuméricos)
+  function randId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let id = '';
+    for (let i = 0; i < 17; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+
+  const now       = new Date().toISOString();
+  const projectId = randId();
+  const siteId    = randId();
+  const zoneId    = randId();
+  const groupId   = randId();
+  const userId    = randId();
+
+  // currentVersion placeholder — SoundBase lo recalcula al importar
+  const CV = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+
+  // ── Colección coordSite ──────────────────────────────────────────────────
+  const coordSite = {
+    _id: siteId,
+    calcSettings: {
+      thirdsBypassEnabled: 'false', thirdsBypass: '100',
+      triplesBypassEnabled: 'true', triplesBypass: '40',
+      findWhiteSpaceBetweenChannels: 'false',
+      exclusionThreshold: '-85',
+      includeActiveSpectrum: 'true',
+      IM3: 'true', IM5: 'true', IM3TX3: 'true',
+      singleFreqExclusions: []
+    },
+    cellularBlocks: {
+      guard_1:    { start: 790, stop: 791, enabled: true },
+      downlink_A: { start: 791, stop: 796, enabled: true },
+      downlink_B: { start: 796, stop: 801, enabled: true },
+      downlink_C: { start: 801, stop: 806, enabled: true },
+      downlink_D: { start: 806, stop: 811, enabled: true },
+      downlink_E: { start: 811, stop: 816, enabled: true },
+      downlink_F: { start: 816, stop: 821, enabled: true },
+      guard_2:    { start: 821, stop: 823, enabled: true },
+      uplink_A:   { start: 832, stop: 837, enabled: true },
+      uplink_B:   { start: 837, stop: 842, enabled: true },
+      uplink_C:   { start: 842, stop: 847, enabled: true },
+      uplink_D:   { start: 847, stop: 852, enabled: true },
+      uplink_E:   { start: 852, stop: 857, enabled: true },
+      uplink_F:   { start: 857, stop: 862, enabled: true }
+    },
+    country: 'ES',
+    currentVersion: CV,
+    interactions: {},
+    isLocked: false,
+    lastModified: now,
+    location: {
+      address: siteName,
+      lat: 40.4168, lon: -3.7038,   // Madrid como fallback; no crítico
+      name: siteName,
+      type: 'Point',
+      coordinates: [-3.7038, 40.4168],
+      country: 'ES'
+    },
+    lockedBy: null, lockedDateTime: null, lockedSites: [],
+    name: siteName,
+    plotSettings: {
+      freqFocusBandwidth: 3, bandPlanFocusPadding: 3,
+      plotStart: 30, plotStop: 1000, zoomIncrement: 5,
+      defaultStart: 470, defaultStop: 694,
+      minAmplitude: -120, maxAmplitude: -20
+    },
+    projectId,
+    publicationEnabled: false, publicationPassword: '',
+    publishKey: randId().slice(0, 6),
+    timezone: 'Europe/Madrid',
+    unlessRequestedBy: null,
+    unlockRequestRejected: false, unlockRequestTimeout: null,
+    unlockRequested: false
+  };
+
+  // ── Colección coordZone ──────────────────────────────────────────────────
+  const coordZone = {
+    _id: zoneId,
+    interactions: {},
+    lastModified: `{timestamp}${now}`,
+    name: 'Default Zone',
+    projectId,
+    publicationEnabled: false, publicationPassword: '',
+    publishKey: randId().slice(0, 6),
+    siteId
+  };
+
+  // ── Colección coordGroup ─────────────────────────────────────────────────
+  const coordGroup = {
+    _id: groupId,
+    color: '#718096',
+    lastModified: `{timestamp}${now}`,
+    name: 'Default Group',
+    ordinal: 1,
+    projectId,
+    publicationEnabled: false, publicationPassword: '',
+    publishKey: randId().slice(0, 6),
+    siteId,
+    zoneId
+  };
+
+  // ── CoordSiteActiveBroadcastChannels: CH21–CH61 ──────────────────────────
+  // Todos los canales de la banda (igual que el archivo de referencia).
+  // isActive = true en canales TDT ocupados → SoundBase los bloquea.
+  const broadcastEntries = [];
+
+  // Canales VHF/FM del plan español (presentes en el archivo de referencia)
+  const vhfChannels = [
+    { ch: 2,  start: 47,  stop: 54  },
+    { ch: 3,  start: 54,  stop: 61  },
+    { ch: 4,  start: 61,  stop: 68  },
+    { ch: 5,  start: 174, stop: 181 },
+    { ch: 6,  start: 181, stop: 188 },
+    { ch: 7,  start: 188, stop: 195 },
+    { ch: 8,  start: 195, stop: 202 },
+    { ch: 9,  start: 202, stop: 209 },
+    { ch: 10, start: 209, stop: 216 },
+    { ch: 11, start: 216, stop: 223 },
+    { ch: 12, start: 223, stop: 230 },
+  ];
+
+  vhfChannels.forEach(({ ch, start, stop }) => {
+    broadcastEntries.push({
+      _id: randId(),
+      automaticOrManual: 'automatic',
+      channel: ch,
+      currentVersion: CV,
+      isActive: true,
+      isPublicSafety: false,
+      lastModified: `{timestamp}${now}`,
+      projectId, siteId, start, stop
+    });
+  });
+
+  // Canales UHF CH21–CH48 (banda de microfonía española)
+  for (let ch = 21; ch <= 48; ch++) {
+    const start = 470 + (ch - 21) * 8;
+    const stop  = start + 8;
+    const isOcc = occupied.has(ch);
+    broadcastEntries.push({
+      _id: randId(),
+      automaticOrManual: 'automatic',
+      channel: ch,
+      currentVersion: CV,
+      isActive: isOcc,   // true = bloqueado como canal TDT activo
+      isPublicSafety: false,
+      lastModified: `{timestamp}${now}`,
+      projectId, siteId, start, stop
+    });
+  }
+
+  // Canales UHF CH49–CH61 (fuera de banda española pero presentes en ref.)
+  for (let ch = 49; ch <= 61; ch++) {
+    const start = 470 + (ch - 21) * 8;
+    const stop  = start + 8;
+    broadcastEntries.push({
+      _id: randId(),
+      automaticOrManual: 'automatic',
+      channel: ch,
+      currentVersion: CV,
+      isActive: true,
+      isPublicSafety: false,
+      lastModified: `{timestamp}${now}`,
+      projectId, siteId, start, stop
+    });
+  }
+
+  // ── CoordUserSettings ────────────────────────────────────────────────────
+  const coordUserSettings = {
+    _id: randId(),
+    candidates: [],
+    collapsedGroups: [],
+    currentVersion: CV,
+    lastModified: `{timestamp}${now}`,
+    projectId, siteId,
+    userId
+  };
+
+  // ── Ensamblar el array final ─────────────────────────────────────────────
+  const totalDocs = 1 + 1 + 1 + broadcastEntries.length + 1; // site+zone+group+broadcast+userSettings
+
+  const docs = [
+    { type: 'meta', value: { created: now, version: '1.0.1', totalDocs } },
+    { type: 'collection', collectionName: 'coordSite',  value: coordSite  },
+    { type: 'collection', collectionName: 'coordZone',  value: coordZone  },
+    { type: 'collection', collectionName: 'coordGroup', value: coordGroup },
+    ...broadcastEntries.map(v => ({ type: 'collection', collectionName: 'CoordSiteActiveBroadcastChannels', value: v })),
+    { type: 'collection', collectionName: 'CoordUserSettings', value: coordUserSettings }
+  ];
+
+  const json = JSON.stringify(docs);
+
+  // Comprimir con pako (gzip) — SoundBase requiere gzip
+  // pako está disponible via CDN; si no está cargado, descargamos JSON plano con aviso
+  if (typeof pako !== 'undefined') {
+    const compressed = pako.gzip(json);
+    const blob = new Blob([compressed], { type: 'application/gzip' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    // Fallback: JSON sin comprimir con extensión .json para que el usuario lo comprima
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = filename.replace('.sbcoordsite', '_NOCOMPRESS.json');
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('pako no disponible: se ha descargado el JSON sin comprimir. Renómbralo a .sbcoordsite y comprime con gzip antes de importar.');
+  }
 }
 
 function geoLocate() {
