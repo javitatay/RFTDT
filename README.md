@@ -6,7 +6,7 @@
 
 **Consulta qué frecuencias UHF ocupa la TDT en cada zona de España para tu microfonía inalámbrica.**
 
-Herramienta visual para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra los canales UHF ocupados por la TDT en cada demarcación, con mapa interactivo, visualización del espectro libre y ocupado, verificador de conflictos y calculadora de intermodulación. Funciona sin conexión.
+Herramienta visual para técnicas y técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra los canales UHF ocupados por la TDT en cada demarcación, con mapa interactivo, visualización del espectro libre y ocupado, verificador de conflictos y calculadora de intermodulación. Funciona sin conexión.
 
 [![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/RFTDT/)
 
@@ -51,7 +51,7 @@ Funciona igual en móvil y en ordenador. Desde el navegador del móvil puedes us
 
 ## 🧮 Calculadora de intermodulación IM3
 
-La página `intermodulacion.html` combina la calculadora con un **diagrama explicativo interactivo**, pensado para técnicos que necesitan entender o enseñar el fenómeno en campo.
+La página `intermodulacion.html` combina la calculadora con un **diagrama explicativo interactivo**, pensado para técnicas y técnicos que necesitan entender o enseñar el fenómeno en campo.
 
 ### Diagrama explicativo
 
@@ -140,9 +140,9 @@ python3 -m http.server 8000
 
 ## 🧪 Beta testers
 
-Gracias a los técnicos que han probado la herramienta en condiciones reales y han aportado feedback:
+Gracias a quienes han probado la herramienta en condiciones reales y han aportado feedback:
 
-| Técnico | Perfil |
+| Persona | Perfil |
 |---|---|
 | [@miwel.rar](https://www.instagram.com/miwel.rar?igsh=aG53M3dja2Y1NWlk) | Instagram |
 
@@ -166,5 +166,5 @@ Eres libre de usar, estudiar, modificar y compartir este software. La única con
 ---
 
 <div align="center">
-<sub>Herramienta para técnicos audiovisuales · RF · TDT España · 2026</sub>
+<sub>Herramienta para profesionales del audiovisual · RF · TDT España · 2026</sub>
 </div>
