@@ -1274,40 +1274,32 @@ function loadMore() {
 function exportCSV() {
   if (!FILT.length) return;
 
-  // All UHF channels CH21-48 in the band
-  const ALL_UHF = [];
-  for (let ch = 21; ch <= 48; ch++) {
-    const f = 306 + 8 * ch;
-    ALL_UHF.push({ canal: ch, frecuencia: f, lo: f - 4, hi: f + 4 });
-  }
-
-  // Occupied channel numbers from current filter
+  // Occupied channel ranges from current filter
   const chMap = {};
   FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
-  const occupied = new Set(Object.keys(chMap).map(Number));
+  const occupied = Object.values(chMap).map(r => ({ lo: r.lo, hi: r.hi }));
 
   // Build location label for filename
-  const dem   = v('fDem')  || v('fProv') || v('fCA') || 'España';
-  const ambito = v('fAmb') ? `_${v('fAmb').substring(0,20)}` : '';
-  const date  = new Date().toISOString().slice(0, 10);
-  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g,'_')}${ambito}_${date}.csv`.replace(/__+/g,'_');
+  const dem    = v('fDem') || v('fProv') || v('fCA') || 'España';
+  const ambito = v('fAmb') ? `_${v('fAmb').substring(0, 20)}` : '';
+  const date   = new Date().toISOString().slice(0, 10);
+  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g, '_')}${ambito}_${date}.csv`.replace(/__+/g, '_');
 
-  // CSV header — compatible with Shure WWB and Sennheiser WSM/Sundbase
-  const rows = [
-    '# RF TDT España — Canales UHF activos',
-    `# Demarcación: ${dem}${v('fAmb') ? ' / ' + v('fAmb') : ''}`,
-    `# Fecha: ${date}`,
-    `# Fuente: CNAF / MINETUR`,
-    '',
-    'Canal UHF,Frecuencia central (MHz),Rango inferior (MHz),Rango superior (MHz),Anchura (MHz),Estado',
-  ];
+  // Shure Wireless Workbench scan format:
+  // Two columns only — frequency_MHz,level_dBm — no headers, no comments, 25 kHz step.
+  // Occupied channel bands → high level (−20 dBm); free spectrum → noise floor (−100 dBm).
+  const STEP     = 0.025;
+  const F_START  = 470.000;
+  const F_END    = 694.000;
+  const DBM_OCC  = -20;
+  const DBM_FREE = -100;
 
-  ALL_UHF.forEach(ch => {
-    const status = occupied.has(ch.canal) ? 'OCUPADO' : 'LIBRE';
-    rows.push(`${ch.canal},${ch.frecuencia},${ch.lo},${ch.hi},8,${status}`);
-  });
+  const rows = [];
+  for (let f = F_START; f <= F_END + 0.001; f = Math.round((f + STEP) * 1000) / 1000) {
+    const isOcc = occupied.some(ch => f >= ch.lo && f <= ch.hi);
+    rows.push(`${f.toFixed(3)},${isOcc ? DBM_OCC : DBM_FREE}`);
+  }
 
-  // Download
   const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
