@@ -704,6 +704,10 @@ footer {
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
         Exportar CSV
       </button>
+      <button class="btn-export-csv" id="exportShwBtn" onclick="exportSHW()" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Exportar WWB .shw
+      </button>
       <!-- Compat badges — shown when export button is visible -->
       <div class="compat-badge-wrap" id="compatBadges">
         <span class="compat-badge-label">compatible con</span>
@@ -1098,6 +1102,7 @@ function renderChGrid() {
     countEl.textContent = '—';
     hintEl.textContent = '';
     document.getElementById('exportBtn').style.display = 'none';
+  document.getElementById('exportShwBtn').style.display = 'none';
   document.getElementById('compatBadges').style.display = 'none';
     return;
   }
@@ -1113,6 +1118,7 @@ function renderChGrid() {
 
   const span = SMAX - SMIN;
   document.getElementById('exportBtn').style.display = 'inline-flex';
+  document.getElementById('exportShwBtn').style.display = 'inline-flex';
   document.getElementById('compatBadges').style.display = 'inline-flex';
 
   grid.innerHTML = channels.map(r => {
@@ -1301,6 +1307,191 @@ function exportCSV() {
   }
 
   const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── EXPORTAR WWB .shw ──────────────────────────────────────────────────────
+function exportSHW() {
+  if (!FILT.length) return;
+
+  // Canales ocupados
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = new Set(Object.keys(chMap).map(Number));
+
+  // Nombre de localización para el show y el fichero
+  const dem    = v('fDem') || v('fProv') || v('fCA') || 'España';
+  const date   = new Date().toISOString().slice(0, 10);
+  const showName = `TDT ${dem}`;
+  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g, '_')}_${date}.shw`.replace(/__+/g, '_');
+
+  // Generar bloques <channel> para CH21–CH71 (rango completo que usa WWB)
+  // Frecuencia: coma como separador decimal, formato "NNN,000 MHz"
+  function fmtFreq(mhz) {
+    return mhz.toFixed(3).replace('.', ',') + ' MHz';
+  }
+
+  let channels = '';
+  for (let ch = 21; ch <= 71; ch++) {
+    const lo = 306 + 8 * ch;        // frecuencia inicio canal = 306+8*CH
+    const hi = lo + 8;
+    const isOcc = occupied.has(ch);
+    channels += `                <channel>
+                    <number>${ch}</number>
+                    <call_sign/>
+                    <tv_station_country/>
+                    <tv_station_latitude/>
+                    <tv_station_longitude/>
+                    <tv_chann_start_freq>${fmtFreq(lo)}</tv_chann_start_freq>
+                    <tv_chann_end_freq>${fmtFreq(hi)}</tv_chann_end_freq>
+                    <distance>0</distance>
+                    <type>4</type>
+                    <db_source>${isOcc ? 1 : 0}</db_source>
+                    <power>0</power>
+                    <exclude>${isOcc ? 'true' : 'false'}</exclude>
+                </channel>\n`;
+  }
+
+  const now = new Date();
+  const dateStr = now.toDateString().replace(/(\w+) (\w+) (\d+) (\d+)/, '$1 $2 $3 $4');
+  const timeStr = now.toTimeString().slice(0, 8);
+
+  const shw = `<show version="1.0" source="RFTDT" date="${dateStr}" time="${timeStr}" appl_version="7.8.1.56">
+    <show_properties version="1.0">
+        <show_info>
+            <name>${showName}</name>
+            <customer/>
+        </show_info>
+        <point_of_contact_info>
+            <name/>
+            <address/>
+            <phone/>
+            <email/>
+            <remember_poc>false</remember_poc>
+        </point_of_contact_info>
+        <venue_info>
+            <name>${dem}</name>
+            <address/>
+            <phone/>
+            <email/>
+        </venue_info>
+        <notes>Generado por RF · TDT España — Fuente: CNAF / MINETUR — ${date}</notes>
+    </show_properties>
+    <inventory version="2.1">
+        <zones version="1.1">
+            <zone ordinal="0" color="#6692fc">Default</zone>
+            <zone_matrix>
+                <from zone="Default">
+                    <to zone="Default">
+                        <ch-ch>1</ch-ch>
+                        <ch-imd>1</ch-imd>
+                    </to>
+                </from>
+            </zone_matrix>
+        </zones>
+    </inventory>
+    <coordination_info>
+        <scan_data version="1.3">
+            <merged_scans/>
+            <threshold>-85</threshold>
+            <higher_threshold>-60</higher_threshold>
+        </scan_data>
+        <channel_exclusions version="1.1">
+            <location_info>
+                <search_type/>
+                <radius units="Miles">50</radius>
+                <country>Countries with 8MHz TV-Ch</country>
+                <found_count>0</found_count>
+                <found_count>0</found_count>
+                <tv_spectrum_format>8 MHz</tv_spectrum_format>
+            </location_info>
+            <channel_avoidance_info>
+${channels}            </channel_avoidance_info>
+        </channel_exclusions>
+        <band_planning version="1.0">
+            <accounted>false</accounted>
+            <country>Countries with 8MHz TV-Ch</country>
+            <user_group/>
+            <band_plan_accounted>false</band_plan_accounted>
+        </band_planning>
+    </coordination_info>
+    <CFLs version="1.0"/>
+    <plot_info>
+        <coordination_plot version="1.2">
+            <plots/>
+            <start>470,000 MHz</start>
+            <center>582,000 MHz</center>
+            <end>694,000 MHz</end>
+            <span>224,000 MHz</span>
+        </coordination_plot>
+    </plot_info>
+    <custom_user_group_list>
+        <inclusion_list version="1.0" name="Custom" active="false" uuid="51121dae-e17c-4679-9de4-3532d9e25000"/>
+    </custom_user_group_list>
+    <band_plan_group_list version="1.0"/>
+    <coordinated_data_root version="0.3" id="1297ef93-edb2-4a5f-bd95-74665169d019">
+        <mic_channels units="khz" count="0"/>
+        <compatibility_profile_settings version="1.0" count="1">
+            <profile>
+                <band>Wideband</band>
+                <series>Generic Device - IMD</series>
+                <tx_profile/>
+                <zone/>
+                <incl_group>00000000-0000-0000-0000-000000000000</incl_group>
+                <compat_profile version="0.0.0.1" imd_source="1" id="6cbbb7e8-55ab-e4bb-f5c7-1b86242f7fd2" name="Standard" synthesizable="0">
+                    <spacing freq_units="KHz">
+                        <ch_ch>800</ch_ch>
+                        <imd_2t3o>400</imd_2t3o>
+                        <imd_2t5o>0</imd_2t5o>
+                        <imd_2t7o>0</imd_2t7o>
+                        <imd_2t9o>0</imd_2t9o>
+                        <imd_3t3o>0</imd_3t3o>
+                    </spacing>
+                    <filter type="1">
+                        <filter_start>-100000</filter_start>
+                        <filter_end>100000</filter_end>
+                        <filter_center>0</filter_center>
+                    </filter>
+                </compat_profile>
+            </profile>
+        </compatibility_profile_settings>
+        <keys_coord_order version="1.1"/>
+    </coordinated_data_root>
+    <monitoring_info version="2.2">
+        <channel_order/>
+        <charger_order/>
+        <chooser_widget id="1">
+            <sort_section>2</sort_section>
+            <sort_order>0</sort_order>
+        </chooser_widget>
+        <chooser_widget id="2">
+            <sort_section>4</sort_section>
+            <sort_order>0</sort_order>
+        </chooser_widget>
+        <device_chooser_layout>24,521,24,24,24,24</device_chooser_layout>
+        <device_chooser_selection>0,1,0,0,0,0</device_chooser_selection>
+        <strip_parameters>
+            <enabled_options>CS_GraphicsChannelNameNetworkLockWidget,CS_FrequencyTvChannelWidget,CS_GraphicsRfAudioWidget,CS_TxInfoWidget,CS_GraphicsRfPowerContainer,CS_GraphicsEncryptionContainer,CS_GraphicsBatteryAudioModeWidget,CS_GraphicsCarouselContainer,CS_GraphicsChargerStripView,CS_GraphicsAccessPointStripView</enabled_options>
+        </strip_parameters>
+        <autolog_parameters>
+            <enabled_plots>22,7,1,25,3,27,28,26,8,9,10,11,29,30,13,14,24</enabled_plots>
+            <plot_view_mode>4</plot_view_mode>
+        </autolog_parameters>
+        <monitoring_pager version="1.1">
+            <view id="{c0c6b6c1-dace-45bb-b18f-c5af9809be99}" name="View 1" active="true"/>
+        </monitoring_pager>
+        <monitoring_registry version="1.1">
+            <view id="{c0c6b6c1-dace-45bb-b18f-c5af9809be99}">
+                <registry arrange_mode="0"/>
+            </view>
+        </monitoring_registry>
+    </monitoring_info>
+</show>`;
+
+  const blob = new Blob([shw], { type: 'application/xml;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href = url; a.download = filename; a.click();
