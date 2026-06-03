@@ -10,7 +10,7 @@ Herramienta visual para técnicos de microfonía inalámbrica y sistemas RF en p
 
 [![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/RFTDT/)
 
-![version](https://img.shields.io/badge/version-3.5.0-c89838?style=flat-square) ![standard](https://img.shields.io/badge/estándar-DVB--T-green?style=flat-square) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange?style=flat-square) ![datos](https://img.shields.io/badge/datos-abril%202026-red?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
+![version](https://img.shields.io/badge/version-3.6.0-c89838?style=flat-square) ![standard](https://img.shields.io/badge/estándar-DVB--T-green?style=flat-square) ![banda](https://img.shields.io/badge/banda-UHF%20470–694%20MHz-orange?style=flat-square) ![datos](https://img.shields.io/badge/datos-abril%202026-red?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
 
 </div>
 
@@ -32,7 +32,8 @@ No necesita servidor, instalación ni cuenta. Funciona directamente en el navega
 - 🧭 **Panel lateral contextual** — muestra las provincias como chips al elegir CA, el número de ámbitos por demarcación al elegir provincia y los canales ocupados al completar la selección.
 - 🔎 **Filtros en cascada** — filtra por CA → Provincia → Demarcación → Ámbito de cobertura, sincronizados con el mapa.
 - ⚠️ **Verificador de frecuencia** — introduce la frecuencia central de tu micrófono y comprueba si entra en conflicto con algún canal TDT activo en la demarcación.
-- 📤 **Exportar CSV** — exporta los canales UHF (ocupados y libres) de la selección actual en formato compatible con **Shure Wireless Workbench**, **Sennheiser WSM/Sundbase** y **SoundBase Coord**, con iconos de compatibilidad por plataforma.
+- 📤 **Exportar CSV** — exporta el espectro UHF en formato de scan compatible con **Shure Wireless Workbench** y **SoundBase Coord** (dos columnas `frecuencia,dBm`, paso 25 kHz, canales ocupados a −20 dBm).
+- 📤 **Exportar WWB .shw** — genera un proyecto nativo de **Shure Wireless Workbench** con los canales TDT de la demarcación seleccionada ya marcados como excluidos (`<exclude>true</exclude>`), listo para abrir directamente en WWB sin configuración adicional.
 - 🔃 **Tabla ordenable** — ordena los resultados por cualquier columna (canal, frecuencia, rango, demarcación…).
 - 🧮 **Calculadora de intermodulación IM3** — comprueba si las frecuencias de tu sistema generan productos de intermodulación de tercer orden, con diagrama explicativo interactivo integrado.
 
@@ -60,6 +61,18 @@ La página `intermodulacion.html` combina la calculadora con un **diagrama expli
 ### Calculadora
 
 Introduciendo las frecuencias reales del sistema (hasta 30 dispositivos), calcula todos los productos IM3 por par y muestra el resumen de conflictos con fórmula exacta, visualización de espectro y tabla cruzada completa.
+
+---
+
+## 📤 Integración con Shure Wireless Workbench
+
+RF · TDT España ofrece dos modos de exportación para WWB, accesibles desde el botón de exportar una vez seleccionada una demarcación:
+
+### Exportar CSV (scan de espectro)
+Genera un archivo `frecuencia,dBm` con paso de 25 kHz cubriendo 470–694 MHz. Los canales TDT ocupados aparecen a −20 dBm y el espectro libre a −100 dBm. Se importa desde `Frequency coordination → Scan data → Import`.
+
+### Exportar WWB .shw *(nuevo en v3.6.0)*
+Genera un proyecto `.shw` nativo de Wireless Workbench con los canales TDT de la demarcación seleccionada marcados directamente como excluidos en la sección `TV Channels`. Al abrir el archivo en WWB los canales bloqueados aparecen de inmediato, sin necesidad de ajustar umbrales ni configuración manual. Compatible con WWB 6 / WWB 7.
 
 ---
 
@@ -122,6 +135,16 @@ python3 -m http.server 8000
 ```
 
 > **Nota:** abrir `index.html` directamente con doble clic bloquea la carga del CSV por restricciones CORS del navegador. Es necesario usar un servidor local o GitHub Pages.
+
+---
+
+## 🧪 Beta testers
+
+Gracias a los técnicos que han probado la herramienta en condiciones reales y han aportado feedback:
+
+| Técnico | Perfil |
+|---|---|
+| [@miwel.rar](https://www.instagram.com/miwel.rar?igsh=aG53M3dja2Y1NWlk) | Instagram |
 
 ---
 
