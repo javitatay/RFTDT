@@ -213,9 +213,11 @@ main {
 ═══════════════════════════════════════════════════════ */
 .ch-summary {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+  row-gap: 10px;
 }
 .ch-count { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1; }
 .ch-count-label { font-size: 14px; color: var(--ink2); }
@@ -224,7 +226,15 @@ main {
   display:inline-flex; align-items:center; gap:7px;
   background:var(--paper2); border:1px solid var(--line); border-radius:var(--r2);
   color:var(--ink2); cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:600;
-  padding:7px 13px; transition:.15s; white-space:nowrap; margin-left:12px;
+  padding:7px 13px; transition:.15s; white-space:nowrap;
+}
+/* Export row: agrupa los botones y badges en un contenedor propio */
+.export-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 .btn-export-csv:hover { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
 .btn-export-wwb { background:#f4fce3; border-color:#9cd620; color:#3a5200; }
@@ -261,7 +271,7 @@ main {
   cursor:default; overflow:hidden; flex-shrink:0;
 }
 .compat-badge:hover { opacity:1; border-color:var(--ink3); }
-.compat-badge-wrap { display:none; align-items:center; gap:5px; margin-left:6px; }
+.compat-badge-wrap { display:none; align-items:center; gap:5px; }
 .compat-badge-label { font-size:10px; color:var(--ink3); font-family:var(--mono); letter-spacing:.04em; white-space:nowrap; }
 
 .ch-grid {
@@ -552,6 +562,16 @@ footer {
   .fg { min-width: 130px; }
   .ch-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
   .fc-inp { width: 100px; font-size: 15px; }
+  /* Fila de exportación: ancho completo, alineada a la izquierda */
+  .ch-range-hint { margin-left: 0; }
+  .export-row {
+    display: flex;
+    width: 100%;
+    margin-left: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 
 /* ── NEW TOKENS ── */
@@ -823,6 +843,7 @@ thead th { transition: color 150ms ease; }
       <span class="ch-count" id="chCount">—</span>
       <span class="ch-count-label">canales ocupados</span>
       <span class="ch-range-hint" id="chRangeHint"></span>
+      <div class="export-row">
       <button class="btn-export-csv" id="exportBtn" onclick="exportCSV()" style="display:none">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
         Exportar CSV
@@ -865,6 +886,7 @@ thead th { transition: color 150ms ease; }
           </svg>
         </div>
       </div>
+      </div><!-- /.export-row -->
     </div>
     <div id="chGrid" class="ch-grid">
       <p class="ch-grid-empty">Selecciona una localización para ver los canales</p>
