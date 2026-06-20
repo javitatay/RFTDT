@@ -43,7 +43,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
   background: var(--paper);
   color: var(--ink);
@@ -473,7 +474,7 @@ thead th {
 thead th:hover { color: var(--ink); }
 thead th.asc::after  { content: ' ↑'; color: var(--green); }
 thead th.desc::after { content: ' ↓'; color: var(--green); }
-tbody tr { border-bottom: 1px solid var(--line); transition: background .1s; }
+tbody tr { border-bottom: 1px solid var(--line); transition: background 150ms ease; }
 tbody tr:hover { background: var(--green-bg); }
 tbody tr:last-child { border-bottom: none; }
 tbody td { padding: 10px 16px; font-size: 13px; vertical-align: middle; white-space: nowrap; color: var(--ink); }
@@ -603,7 +604,7 @@ footer {
 .map-step-num {
   width:18px; height:18px; border-radius:50%; background:var(--line); color:var(--ink2);
   font-size:10px; font-weight:700; flex-shrink:0; margin-top:1px;
-  display:flex; align-items:center; justify-content:center; transition:background .2s, color .2s;
+  display:flex; align-items:center; justify-content:center; transition:background 200ms ease-out, color 200ms ease-out;
 }
 .map-step-num.done { background:var(--green); color:#fff; }
 .map-sel-box {
@@ -638,6 +639,101 @@ footer {
 }
 @keyframes spin { to { transform:rotate(360deg); } }
 
+/* ════════════════════════════════════════════════════════
+ *  EMIL KOWALSKI DESIGN ENGINEERING PATCH
+ *  javitatay/RFTDT — applied via emil-design-eng skill
+ *  Capas: focus, motion, transitions, active states, hover guards
+ * ════════════════════════════════════════════════════════ */
+
+/* ── 1. FOCUS VISIBLE GLOBAL (WCAG AA) ───────────────── */
+*:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: var(--r2);
+}
+select:focus-visible,
+.fc-inp:focus-visible { outline: none; } /* ya usan box-shadow de focus */
+
+/* ── 2. PREFERS-REDUCED-MOTION ──────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .spin-icon { animation: none !important; opacity: .7; }
+}
+
+/* ── 3. TRANSITION: .15s → propiedades explícitas ───── */
+/* Emil: nunca usar shorthand sin propiedades — puede   */
+/* animar layout properties y causar reflow innecesario */
+.btn          { transition: border-color 150ms ease, color 150ms ease, background 150ms ease, box-shadow 150ms ease; }
+.btn-ghost    { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-limpiar-filtros { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.file-btn     { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-export-csv,
+.btn-export-wwb,
+.btn-export-sb { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-check    { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.expand-btn   { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.credit-link  { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.geo-btn      { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.im-link      { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.map-toggle-btn { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-reset-map  { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+
+/* ── 4. :ACTIVE — feedback físico de press ──────────── */
+/* Emil: los botones deben responder al press;           */
+/* sin :active el UI parece muerto                       */
+.btn:active,
+.btn-ghost:active,
+.btn-limpiar-filtros:active,
+.file-btn:active,
+.btn-check:active,
+.expand-btn:active,
+.credit-link:active,
+.geo-btn:active,
+.map-toggle-btn:active,
+.btn-reset-map:active { transform: scale(.97); }
+
+.btn-export-csv:active,
+.btn-export-wwb:active,
+.btn-export-sb:active { transform: scale(.97); }
+
+/* ── 5. HOVER GUARDS — touch device protection ───────── */
+/* Emil: gate hover behind (hover:hover) and (pointer:fine) */
+/* RFTDT corre en tablets de técnico — sin guardia el    */
+/* hover se queda pegado tras el tap                     */
+@media (hover: none) {
+  .btn:hover,
+  .btn-ghost:hover             { border-color: var(--line); color: var(--ink2); background: var(--paper); }
+  .btn-limpiar-filtros:hover   { background: var(--red-bg); border-color: var(--red-bd); }
+  .file-btn:hover              { background: var(--paper); }
+  .btn-export-csv:hover,
+  .btn-export-wwb:hover,
+  .btn-export-sb:hover         { background: var(--paper); border-color: var(--line); color: var(--ink2); }
+  .btn-check:hover             { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
+  .expand-btn:hover            { border-color: var(--line); color: var(--ink2); }
+  .credit-link:hover           { border-color: var(--line); color: var(--ink2); background: var(--paper2); }
+  .geo-btn:hover               { background: var(--green-bg); border-color: var(--green-bd); }
+  .im-link:hover               { background: var(--teal-bg); border-color: var(--teal-bd); color: var(--teal); }
+  .map-toggle-btn:hover        { background: var(--blue-bg); border-color: var(--blue-bd); color: var(--blue); }
+  .btn-reset-map:hover         { background: var(--red-bg); border-color: var(--red-bd); }
+  .map-list-item:hover         { background: transparent; color: var(--ink2); }
+  tbody tr:hover               { background: transparent; }
+  thead th:hover               { color: var(--ink2); }
+  .ch-tile:hover               { border-color: var(--line); box-shadow: none; }
+  .ch-tile:hover::before       { opacity: 0; }
+  .ch-tile:hover .ch-tile-bar-fill { opacity: .6; }
+  .ch-tile:hover .ch-tile-tip  { opacity: 0; }
+  .compat-badge:hover          { opacity: .6; border-color: var(--line); }
+  select:hover                 { border-color: var(--line); box-shadow: none; }
+}
+
+/* ── 6. THEAD TH — easing explícito ─────────────────── */
+thead th { transition: color 150ms ease; }
+
+/* ════ FIN PARCHE EMIL KOWALSKI ══════════════════════════ */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
