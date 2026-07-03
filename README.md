@@ -1,14 +1,17 @@
+<div align="center">
+
+<img src="banner.png" alt="RFTDT" width="100%">
+
 # RF · TDT España — Frecuencias UHF
 
 **Herramienta de consulta de frecuencias** para técnicos de microfonía inalámbrica y sistemas RF en producciones en directo. Muestra qué canales UHF ocupa la TDT en cada demarcación de España, con mapa interactivo de selección gradual, visualización del espectro libre y ocupado, verificador de conflictos y calculadora de intermodulación.
 
-🌐 **[javitatay.github.io/RFTDT](https://javitatay.github.io/RFTDT/)**
-
----
-
-### Badges
+[![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/RFTDT/)
+[![Invítame a un café](https://img.shields.io/badge/☕_Invítame_a_un_café-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/javitatay)
 
 [![version](https://img.shields.io/badge/version-3.2.0-blue)](https://img.shields.io/badge/version-3.2.0-blue) [![standard](https://img.shields.io/badge/est%C3%A1ndar-DVB--T-green)](https://img.shields.io/badge/est%C3%A1ndar-DVB--T-green) [![banda](https://img.shields.io/badge/banda-UHF%20470%E2%80%93694%20MHz-orange)](https://img.shields.io/badge/banda-UHF%20470%E2%80%93694%20MHz-orange) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](https://github.com/javitatay/RFTDT/blob/main/LICENSE)
+
+</div>
 
 ---
 
@@ -20,7 +23,7 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 
 ---
 
-## Funcionalidades
+## ✨ Funcionalidades
 
 * **Geolocalización automática** — detecta la ubicación del dispositivo y preselecciona automáticamente la Comunidad Autónoma y provincia
 * **Vista de canales activos** — grid visual con número de canal, frecuencia central y rango ocupado para la demarcación seleccionada; los conflictos con el micrófono se marcan en rojo al instante
@@ -33,7 +36,7 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 
 ---
 
-## Datos técnicos
+## 📊 Datos técnicos
 
 | Campo | Valor |
 | --- | --- |
@@ -47,7 +50,7 @@ El proyecto no requiere servidor, instalación ni cuenta. Funciona directamente 
 
 ---
 
-## Estructura del repositorio
+## 📁 Estructura del repositorio
 
 ```
 RFTDT/
@@ -61,7 +64,7 @@ RFTDT/
 
 ---
 
-## Uso
+## 🌐 Uso
 
 La herramienta está disponible en línea y no requiere instalación:
 
@@ -81,7 +84,7 @@ python3 -m http.server 8000
 
 ---
 
-## Actualizar la base de datos
+## 🔄 Actualizar la base de datos
 
 Sustituye `tdt.csv` por una versión actualizada manteniendo el mismo formato de columnas:
 
@@ -93,13 +96,25 @@ Los campos Canal y Frecuencia admiten múltiples valores separados por comas (en
 
 ---
 
-## Aviso
+## ⚠️ Aviso
 
 > Esta información puede no estar actualizada en el momento de su uso. Se recomienda realizar un escaneo completo de frecuencias del espacio en el que se desarrollará el show para el conocimiento exacto de las interferencias presentes.
 
 ---
 
-## Licencia
+## 🔗 Más herramientas
+
+Otras herramientas para producción de eventos en directo:
+
+- ⏱️ **Tatimer** — Temporizador para el monitor del ponente en shows en vivo. [Ver proyecto](https://github.com/javitatay/Tatimer) · [Demo](https://javitatay.github.io/Tatimer/)
+- 🎪 **Tarimeo** — Diseña y organiza la distribución de tarimas y escenarios. [Ver proyecto](https://github.com/javitatay/Tarimeo) · [Demo](https://javitatay.github.io/Tarimeo/)
+- 🔷 **VectorSlice** — Convierte vectores de Illustrator en Slices de Resolume Arena. [Ver proyecto](https://github.com/javitatay/VectorSlice) · [Demo](https://javitatay.github.io/VectorSlice/)
+- 🎬 **QLab Live Scripts** — Controla PowerPoint, Chrome, Zoom, PDF y Spotify desde QLab 5. [Ver proyecto](https://github.com/javitatay/QLab-Scripts-Live-Events) · [Demo](https://javitatay.github.io/QLab-Scripts-Live-Events/)
+- 🎓 **AVV Lab** — Plataforma educativa interactiva de Animación Visual en Vivo. [Ver proyecto](https://github.com/javitatay/AVV) · [Demo](https://javitatay.github.io/AVV/)
+
+---
+
+## 📄 Licencia
 
 Este proyecto se distribuye bajo la licencia **[GNU General Public License v3.0](https://github.com/javitatay/RFTDT/blob/main/LICENSE)**.
 
@@ -111,13 +126,13 @@ Eres libre de usar, estudiar, modificar y compartir esta herramienta. La única 
 
 ---
 
-## Contacto
+## ✉️ Contacto
 
 **Javier Tatay Rubio**
-📧 [j.tatayrubio@edu.gva.es](mailto:j.tatayrubio@edu.gva.es)
+📧 [j.tatayrubio@edu.gva.es](mailto:j.tatayrubio@edu.gva.es) · [javitatay@gmail.com](mailto:javitatay@gmail.com)
 
 ---
 
-*Herramienta de uso libre para técnicos audiovisuales · 2026*
-
-**Version:** 3.2.0 | **Built with:** Claude AI
+<div align="center">
+<sub>Herramienta de uso libre para técnicos audiovisuales · RFTDT · 2026</sub>
+</div>
