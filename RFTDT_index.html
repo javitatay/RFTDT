@@ -1,0 +1,2440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231e2d3d'/%3E%3Crect x='4' y='18' width='4' height='8' rx='1' fill='%234a5568' opacity='.7'/%3E%3Crect x='10' y='14' width='4' height='12' rx='1' fill='%234a5568' opacity='.7'/%3E%3Crect x='16' y='16' width='4' height='10' rx='1' fill='%234a5568' opacity='.7'/%3E%3Crect x='22' y='11' width='4' height='15' rx='1' fill='%234a5568' opacity='.7'/%3E%3Cpolyline points='3,22 7,16 11,19 15,10 19,14 23,8 29,13' fill='none' stroke='%2322c55e' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>RF · TDT España — Frecuencias UHF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+
+/* ═══════════════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════════════ */
+:root {
+  --ink:      #111110;
+  --ink2:     #4a4744;
+  --ink3:     #7a7570;
+  --paper:    #f7f6f2;
+  --paper2:   #efede8;
+  --paper3:   #e2dfd7;
+  --line:     #ccc9c0;
+
+  --green:    #165c3a;
+  --green-bg: #e6f2ec;
+  --green-bd: #8dc4a8;
+
+  --red:      #a8291d;
+  --red-bg:   #fcecea;
+  --red-bd:   #e8948d;
+
+  --amber:    #7a4e08;
+  --amber-bg: #fdf3d6;
+  --amber-bd: #d4aa50;
+
+  --sans:     'DM Sans', sans-serif;
+  --mono:     'DM Mono', monospace;
+
+  --r:  10px;
+  --r2: 6px;
+  --max: 1200px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════════ */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(16px, 4vw, 48px);
+  justify-content: space-between;
+  gap: 16px;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-title { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: .01em; }
+.nav-sub { font-size: 12px; color: var(--ink3); font-family: var(--mono); letter-spacing: .04em; }
+.nav-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.nav-kv { display: flex; align-items: baseline; gap: 4px; }
+.nav-kv-v { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--ink); }
+.nav-kv-k { font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); }
+@media (max-width: 680px) { .nav-meta { display: none; } }
+
+/* ═══════════════════════════════════════════════════════
+   FILTROS
+═══════════════════════════════════════════════════════ */
+.filter-bar {
+  background: var(--paper2);
+  border-bottom: 1px solid var(--line);
+  padding: 14px clamp(16px, 4vw, 48px);
+}
+.filter-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.filter-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-row-dropdowns {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fg { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; max-width: 210px; }
+.fg label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); }
+select {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 8px 28px 8px 10px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7570' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 10px) center;
+}
+select:focus, select:hover { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-bg); }
+.filter-actions { display: flex; align-items: flex-end; gap: 8px; padding-bottom: 1px; }
+.btn {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  color: var(--ink2);
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  transition: .15s;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink3); color: var(--ink); }
+.btn-ghost { background: transparent; border-color: var(--line); color: var(--ink2); }
+.btn-ghost:hover { background: var(--paper2); border-color: var(--ink3); color: var(--ink); }
+.btn-limpiar-filtros {
+  background: var(--red-bg); border: 1px solid var(--red-bd); border-radius: var(--r2);
+  color: var(--red); cursor: pointer; font-family: var(--sans); font-size: 13px;
+  font-weight: 500; padding: 8px 14px; transition: .15s; white-space: nowrap;
+}
+.btn-limpiar-filtros:hover { background: #f8d5d2; border-color: #d4655c; }
+
+/* CSV notice */
+.csv-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: var(--r2);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--amber);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+input[type=file] { display: none; }
+.file-btn {
+  display: inline-block;
+  cursor: pointer;
+  background: var(--paper);
+  border: 1px solid var(--amber-bd);
+  border-radius: var(--r2);
+  color: var(--amber);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 11px;
+  transition: .15s;
+  white-space: nowrap;
+}
+.file-btn:hover { background: var(--amber-bg); }
+
+/* ═══════════════════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════════════════ */
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 48px) 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sh {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink2);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sh::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* ═══════════════════════════════════════════════════════
+   CHANNEL TILES
+═══════════════════════════════════════════════════════ */
+.ch-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+.ch-count { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1; }
+.ch-count-label { font-size: 14px; color: var(--ink2); }
+.ch-range-hint { font-size: 13px; color: var(--ink3); font-family: var(--mono); margin-left: auto; }
+.btn-export-csv {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--paper2); border:1px solid var(--line); border-radius:var(--r2);
+  color:var(--ink2); cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:600;
+  padding:7px 13px; transition:.15s; white-space:nowrap;
+}
+/* Export row: agrupa los botones y badges en un contenedor propio */
+.export-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+.btn-export-csv:hover { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
+.btn-export-wwb { background:#f4fce3; border-color:#9cd620; color:#3a5200; }
+.btn-export-wwb:hover { background:#e4f7b8; border-color:#7ab800; color:#2a3d00; }
+.btn-export-sb  { background:#eff6ff; border-color:#93c5fd; color:#1d4ed8; }
+.btn-export-sb:hover  { background:#dbeafe; border-color:#3b82f6; color:#1e40af; }
+.sb-tooltip-wrap { position:relative; display:inline-flex; }
+.sb-tooltip {
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%; transform:translateX(-50%);
+  background:var(--ink); color:#fff;
+  border-radius:6px;
+  font-family:var(--sans); font-size:11px; line-height:1.55;
+  padding:8px 11px;
+  white-space:normal; width:220px;
+  pointer-events:none;
+  opacity:0; transition:opacity .15s;
+  z-index:50;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.sb-tooltip::after {
+  content:'';
+  position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  border:5px solid transparent;
+  border-top-color:var(--ink);
+}
+.sb-tooltip-wrap:hover .sb-tooltip { opacity:1; }
+.export-compat-badges { display:inline-flex; align-items:center; gap:5px; margin-left:6px; }
+.compat-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:4px; border:1px solid var(--line);
+  background:var(--paper); opacity:.6; transition:opacity .15s, border-color .15s;
+  cursor:default; overflow:hidden; flex-shrink:0;
+}
+.compat-badge:hover { opacity:1; border-color:var(--ink3); }
+.compat-badge-wrap { display:none; align-items:center; gap:5px; }
+.compat-badge-label { font-size:10px; color:var(--ink3); font-family:var(--mono); letter-spacing:.04em; white-space:nowrap; }
+
+.ch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+.ch-tile {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 12px 14px 10px;
+  cursor: default;
+  transition: border-color .15s, box-shadow .15s;
+  position: relative;
+  overflow: hidden;
+}
+.ch-tile::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--green);
+  opacity: .6;
+  transition: opacity .15s;
+}
+.ch-tile:hover { border-color: var(--green-bd); box-shadow: 0 2px 8px rgba(22,92,58,.1); }
+.ch-tile:hover::before { opacity: 1; }
+.ch-tile.conflict { background: var(--red-bg); border-color: var(--red-bd); }
+.ch-tile.conflict::before { background: var(--red); opacity: 1; }
+
+.ch-tile-num { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.ch-tile.conflict .ch-tile-num { color: var(--red); }
+.ch-tile-freq { font-family: var(--mono); font-size: 12px; color: var(--ink2); line-height: 1; font-weight: 500; }
+.ch-tile-range { font-family: var(--mono); font-size: 10px; color: var(--ink3); margin-top: 3px; line-height: 1; }
+
+.ch-tile-bar-wrap { margin-top: 8px; height: 3px; background: var(--paper3); border-radius: 2px; overflow: hidden; }
+.ch-tile-bar-fill { height: 100%; background: var(--green); opacity: .6; border-radius: 2px; transition: opacity .15s; }
+.ch-tile:hover .ch-tile-bar-fill { opacity: 1; }
+.ch-tile.conflict .ch-tile-bar-fill { background: var(--red); opacity: .8; }
+
+.ch-tile-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 9px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+  z-index: 50;
+}
+.ch-tile:hover .ch-tile-tip { opacity: 1; }
+.ch-grid-empty { font-size: 14px; color: var(--ink3); padding: 20px 0; font-style: italic; }
+
+/* ═══════════════════════════════════════════════════════
+   ESPECTRO
+═══════════════════════════════════════════════════════ */
+.spec-scroll { overflow-x: auto; padding-bottom: 4px; }
+.spec-track {
+  position: relative;
+  height: 96px;
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  min-width: 640px;
+  overflow: visible;
+}
+.spec-ch {
+  position: absolute;
+  top: 6px;
+  height: calc(100% - 12px);
+  border-radius: 4px;
+  cursor: default;
+  transition: opacity .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+.spec-ch .ch-num { font-family: var(--mono); font-size: 10px; font-weight: 600; color: #fff; pointer-events: none; white-space: nowrap; line-height: 1; }
+.spec-ch.occupied { background: var(--red); opacity: .75; }
+.spec-ch.occupied:hover { opacity: 1; }
+.spec-ch.probed   { background: var(--red); opacity: 1; box-shadow: 0 0 0 2px var(--red); }
+.spec-free-gap    { position:absolute; top:6px; height:calc(100% - 12px); background:var(--green); opacity:.28; border-radius:3px; pointer-events:none; }
+.spec-ch-free {
+  position:absolute; top:6px; height:calc(100% - 12px);
+  background:var(--green); opacity:.45; border-radius:4px;
+  cursor:default; transition:opacity .1s;
+  display:flex; align-items:center; justify-content:center; overflow:visible;
+}
+.spec-ch-free:hover { opacity:.8; z-index:3; }
+.spec-ch-free:hover .spec-ch-free-probe { background:var(--green); opacity:.95 !important; }
+.ch-num-free {
+  font-family:var(--mono); font-size:9px; font-weight:700;
+  color:#fff; pointer-events:none; white-space:nowrap; line-height:1;
+}
+.spec-ch:hover { opacity: 1; z-index: 3; }
+.spec-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .12s;
+  z-index: 20;
+}
+.spec-probe {
+  position: absolute; top: 0; height: 100%; width: 2px;
+  background: var(--red); z-index: 5; pointer-events: none; border-radius: 1px;
+  box-shadow: 0 0 6px rgba(168,41,29,.4);
+}
+.spec-ch:hover .spec-tip,
+.spec-ch-free:hover .spec-tip { opacity: 1; }
+.spec-labels {
+  display: flex; justify-content: space-between; margin-top: 7px;
+  font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 640px;
+}
+.spec-legend { display: flex; gap: 18px; margin-top: 10px; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2); }
+.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.spec-empty { font-size: 14px; color: var(--ink3); padding: 20px 0; font-style: italic; }
+
+/* ═══════════════════════════════════════════════════════
+   VERIFICADOR
+═══════════════════════════════════════════════════════ */
+.checker-inner {
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px 20px;
+}
+.fc-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fc-lbl { font-size: 13px; font-weight: 600; color: var(--ink2); white-space: nowrap; }
+.fc-inp {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 500;
+  padding: 7px 11px;
+  outline: none;
+  width: 120px;
+  transition: .15s;
+}
+.fc-inp:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-bg); }
+.fc-unit { font-family: var(--mono); font-size: 13px; color: var(--ink3); font-weight: 500; }
+.btn-check {
+  background: var(--green-bg); border: 1px solid var(--green-bd);
+  border-radius: var(--r2); color: var(--green); cursor: pointer;
+  font-family: var(--sans); font-size: 13px; font-weight: 700;
+  padding: 8px 18px; transition: .15s; letter-spacing: .02em;
+}
+.btn-check:hover { background: #d9ede5; border-color: #8ec9a9; }
+.fc-res {
+  display: none; font-size: 13px; font-weight: 500;
+  padding: 9px 13px; border-radius: var(--r2); margin-top: 10px;
+  line-height: 1.65; font-family: var(--mono);
+}
+.fc-res.ok   { display: block; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+.fc-res.bad  { display: block; background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd); }
+.fc-res.warn { display: block; background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+.fc-note { font-size: 12px; color: var(--ink3); margin-top: 8px; line-height: 1.7; }
+
+/* ═══════════════════════════════════════════════════════
+   TABLA
+═══════════════════════════════════════════════════════ */
+.twrap { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--paper); }
+.tbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 18px; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap; gap: 8px; background: var(--paper2);
+}
+.tcount { font-size: 13px; color: var(--ink2); }
+.tcount strong { color: var(--ink); font-family: var(--mono); font-size: 14px; }
+.thint { font-size: 12px; color: var(--ink3); font-family: var(--mono); }
+.tbl-collapsed { padding: 22px 18px; text-align: center; }
+.tbl-collapsed p { font-size: 13px; color: var(--ink2); margin-bottom: 12px; }
+.expand-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--paper2); border: 1px solid var(--line); border-radius: var(--r2);
+  color: var(--ink2); cursor: pointer; font-family: var(--sans); font-size: 12px;
+  font-weight: 500; padding: 8px 16px; transition: .15s;
+}
+.expand-btn:hover { border-color: var(--ink3); color: var(--ink); }
+.tscroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--paper2); color: var(--ink2); font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-align: left; text-transform: uppercase;
+  padding: 10px 16px; border-bottom: 1px solid var(--line);
+  cursor: pointer; user-select: none; white-space: nowrap; transition: color .12s;
+}
+thead th:hover { color: var(--ink); }
+thead th.asc::after  { content: ' ↑'; color: var(--green); }
+thead th.desc::after { content: ' ↓'; color: var(--green); }
+tbody tr { border-bottom: 1px solid var(--line); transition: background 150ms ease; }
+tbody tr:hover { background: var(--green-bg); }
+tbody tr:last-child { border-bottom: none; }
+tbody td { padding: 10px 16px; font-size: 13px; vertical-align: middle; white-space: nowrap; color: var(--ink); }
+tbody td.wrap { white-space: normal; min-width: 160px; max-width: 260px; font-size: 12px; color: var(--ink2); line-height: 1.5; }
+.ch-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 4px; font-family: var(--mono); font-size: 12px; font-weight: 600;
+  min-width: 42px; padding: 3px 8px;
+  background: var(--green-bg); border: 1px solid var(--green-bd); color: var(--green);
+}
+.ch-pill.conflict { background: var(--red-bg); border-color: var(--red-bd); color: var(--red); }
+.fmhz { font-family: var(--mono); font-size: 14px; font-weight: 500; }
+.funit { font-family: var(--mono); font-size: 11px; color: var(--ink3); margin-left: 2px; }
+.rng-row { display: flex; align-items: center; gap: 8px; }
+.rng-txt { font-family: var(--mono); font-size: 12px; color: var(--ink2); white-space: nowrap; }
+.rng-bar { height: 3px; width: 40px; border-radius: 2px; background: var(--green); opacity: .4; flex-shrink: 0; }
+.rng-bar.conflict { background: var(--red); opacity: .6; }
+.empty { text-align: center; padding: 48px 20px; color: var(--ink3); }
+.empty-t { font-size: 15px; font-weight: 500; color: var(--ink2); margin-bottom: 4px; }
+.empty-s { font-size: 13px; }
+
+/* ═══════════════════════════════════════════════════════
+   AVISO BANDAS
+═══════════════════════════════════════════════════════ */
+.bands-warning {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--amber-bg); border: 1px solid var(--amber-bd);
+  border-radius: var(--r); padding: 12px 16px;
+}
+.bands-warning p { font-size: 13px; color: var(--amber); line-height: 1.75; }
+.bands-warning strong { font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+.footer-credits {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px) 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.credit-row {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--line); border-radius: var(--r2);
+  background: var(--paper);
+}
+.credit-left { display: flex; align-items: center; gap: 12px; }
+.credit-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 2px; }
+.credit-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.credit-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--paper2); border: 1px solid var(--line); border-radius: var(--r2);
+  color: var(--ink2); font-size: 12px; font-weight: 500;
+  padding: 6px 12px; text-decoration: none; transition: .15s; white-space: nowrap;
+}
+.credit-link:hover { border-color: var(--green-bd); color: var(--green); background: var(--green-bg); }
+
+footer {
+  border-top: 1px solid var(--line);
+  background: var(--paper2);
+  padding: 14px clamp(16px, 4vw, 48px);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+  font-size: 12px; font-family: var(--mono); color: var(--ink3);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 580px) {
+  .fg { min-width: 130px; }
+  .ch-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+  .fc-inp { width: 100px; font-size: 15px; }
+  /* Fila de exportación: ancho completo, alineada a la izquierda */
+  .ch-range-hint { margin-left: 0; }
+  .export-row {
+    display: flex;
+    width: 100%;
+    margin-left: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* ── NEW TOKENS ── */
+:root {
+  --teal:    #1a6672; --teal-bg: #e6f4f6; --teal-bd: #8ccad4;
+  --blue:    #1a4d8c; --blue-bg: #e6eef8; --blue-bd: #8ab0d8;
+}
+
+/* ── ACTION BUTTONS IN FILTER BAR ── */
+.geo-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--green-bg); border:1px solid var(--green-bd); border-radius:var(--r2);
+  color:var(--green); cursor:pointer; font-family:var(--sans); font-size:13px; font-weight:600;
+  padding:8px 14px; transition:.15s; white-space:nowrap; flex-shrink:0;
+}
+.geo-btn:hover { background:#d2ebe1; border-color:#6db492; }
+.geo-btn:disabled { opacity:.5; cursor:default; }
+.geo-status { font-size:12px; color:var(--ink3); font-family:var(--mono); }
+
+.im-link {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--teal-bg); border:1px solid var(--teal-bd); border-radius:var(--r2);
+  color:var(--teal); font-size:13px; font-weight:600; padding:8px 15px;
+  text-decoration:none; transition:.15s; white-space:nowrap; flex-shrink:0;
+}
+.im-link:hover { background:#cce8ec; border-color:#5aaab8; color:#124d57; }
+
+.map-toggle-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--blue-bg); border:1px solid var(--blue-bd); border-radius:var(--r2);
+  color:var(--blue); cursor:pointer; font-family:var(--sans); font-size:13px; font-weight:600;
+  padding:8px 14px; transition:.15s; white-space:nowrap; flex-shrink:0;
+}
+.map-toggle-btn:hover { background:#ccdaf0; border-color:#5a88c0; color:#12336a; }
+.map-toggle-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+
+/* ── MAP SECTION ── */
+.map-wrap {
+  display:flex; gap:16px; align-items:flex-start; padding:4px 0 6px;
+}
+#map {
+  height:400px; flex:1; min-width:0; border-radius:var(--r2);
+  border:1px solid var(--line); background:var(--paper3);
+}
+.map-side {
+  width:210px; flex-shrink:0; display:flex; flex-direction:column; gap:9px;
+}
+.map-side-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2); }
+.map-step { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink3); line-height:1.5; }
+.map-step-num {
+  width:18px; height:18px; border-radius:50%; background:var(--line); color:var(--ink2);
+  font-size:10px; font-weight:700; flex-shrink:0; margin-top:1px;
+  display:flex; align-items:center; justify-content:center; transition:background 200ms ease-out, color 200ms ease-out;
+}
+.map-step-num.done { background:var(--green); color:#fff; }
+.map-sel-box {
+  background:var(--paper2); border:1px solid var(--line); border-radius:var(--r2);
+  padding:10px 12px; font-size:12px; color:var(--ink2); line-height:1.7; min-height:56px;
+}
+.map-sel-box strong { color:var(--ink); font-weight:600; }
+.map-list-item {
+  padding:5px 9px; font-size:12px; color:var(--ink2); border-radius:var(--r2);
+  cursor:pointer; transition:background .12s, color .12s; line-height:1.4;
+  display:flex; align-items:center; justify-content:space-between; gap:6px;
+}
+.map-list-item:hover { background:var(--blue-bg); color:var(--blue); }
+.map-list-item.selected { background:var(--blue-bg); color:var(--blue); font-weight:600; border-left:2px solid var(--blue); padding-left:7px; }
+.map-side-scroll { max-height:180px; overflow-y:auto; }
+.btn-reset-map {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px; width:100%;
+  background:var(--red-bg); border:1px solid var(--red-bd); border-radius:var(--r2);
+  color:var(--red); cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:600;
+  padding:8px 13px; transition:.15s; margin-top:2px;
+}
+.btn-reset-map:hover { background:#f8d5d2; border-color:#d4655c; }.map-tooltip {
+  background:var(--ink) !important; color:#fff !important; border:none !important;
+  border-radius:4px !important; font-family:var(--mono) !important; font-size:11px !important;
+  padding:3px 8px !important; box-shadow:none !important;
+}
+.leaflet-interactive.dem-marker { cursor:pointer !important; }
+@media(max-width:700px){
+  .map-wrap { flex-direction:column; }
+  .map-side { width:100%; }
+  #map { height:260px; width:100%; }
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ════════════════════════════════════════════════════════
+ *  EMIL KOWALSKI DESIGN ENGINEERING PATCH
+ *  javitatay/RFTDT — applied via emil-design-eng skill
+ *  Capas: focus, motion, transitions, active states, hover guards
+ * ════════════════════════════════════════════════════════ */
+
+/* ── 1. FOCUS VISIBLE GLOBAL (WCAG AA) ───────────────── */
+*:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: var(--r2);
+}
+select:focus-visible,
+.fc-inp:focus-visible { outline: none; } /* ya usan box-shadow de focus */
+
+/* ── 2. PREFERS-REDUCED-MOTION ──────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .spin-icon { animation: none !important; opacity: .7; }
+}
+
+/* ── 3. TRANSITION: .15s → propiedades explícitas ───── */
+/* Emil: nunca usar shorthand sin propiedades — puede   */
+/* animar layout properties y causar reflow innecesario */
+.btn          { transition: border-color 150ms ease, color 150ms ease, background 150ms ease, box-shadow 150ms ease; }
+.btn-ghost    { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-limpiar-filtros { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.file-btn     { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-export-csv,
+.btn-export-wwb,
+.btn-export-sb { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-check    { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.expand-btn   { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.credit-link  { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.geo-btn      { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.im-link      { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.map-toggle-btn { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.btn-reset-map  { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+
+/* ── 4. :ACTIVE — feedback físico de press ──────────── */
+/* Emil: los botones deben responder al press;           */
+/* sin :active el UI parece muerto                       */
+.btn:active,
+.btn-ghost:active,
+.btn-limpiar-filtros:active,
+.file-btn:active,
+.btn-check:active,
+.expand-btn:active,
+.credit-link:active,
+.geo-btn:active,
+.map-toggle-btn:active,
+.btn-reset-map:active { transform: scale(.97); }
+
+.btn-export-csv:active,
+.btn-export-wwb:active,
+.btn-export-sb:active { transform: scale(.97); }
+
+/* ── 5. HOVER GUARDS — touch device protection ───────── */
+/* Emil: gate hover behind (hover:hover) and (pointer:fine) */
+/* RFTDT corre en tablets de técnico — sin guardia el    */
+/* hover se queda pegado tras el tap                     */
+@media (hover: none) {
+  .btn:hover,
+  .btn-ghost:hover             { border-color: var(--line); color: var(--ink2); background: var(--paper); }
+  .btn-limpiar-filtros:hover   { background: var(--red-bg); border-color: var(--red-bd); }
+  .file-btn:hover              { background: var(--paper); }
+  .btn-export-csv:hover,
+  .btn-export-wwb:hover,
+  .btn-export-sb:hover         { background: var(--paper); border-color: var(--line); color: var(--ink2); }
+  .btn-check:hover             { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
+  .expand-btn:hover            { border-color: var(--line); color: var(--ink2); }
+  .credit-link:hover           { border-color: var(--line); color: var(--ink2); background: var(--paper2); }
+  .geo-btn:hover               { background: var(--green-bg); border-color: var(--green-bd); }
+  .im-link:hover               { background: var(--teal-bg); border-color: var(--teal-bd); color: var(--teal); }
+  .map-toggle-btn:hover        { background: var(--blue-bg); border-color: var(--blue-bd); color: var(--blue); }
+  .btn-reset-map:hover         { background: var(--red-bg); border-color: var(--red-bd); }
+  .map-list-item:hover         { background: transparent; color: var(--ink2); }
+  tbody tr:hover               { background: transparent; }
+  thead th:hover               { color: var(--ink2); }
+  .ch-tile:hover               { border-color: var(--line); box-shadow: none; }
+  .ch-tile:hover::before       { opacity: 0; }
+  .ch-tile:hover .ch-tile-bar-fill { opacity: .6; }
+  .ch-tile:hover .ch-tile-tip  { opacity: 0; }
+  .compat-badge:hover          { opacity: .6; border-color: var(--line); }
+  select:hover                 { border-color: var(--line); box-shadow: none; }
+}
+
+/* ── 6. THEAD TH — easing explícito ─────────────────── */
+thead th { transition: color 150ms ease; }
+
+/* ════ FIN PARCHE EMIL KOWALSKI ══════════════════════════ */
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Touch targets WCAG 2.5.5: mínimo 44×44px en dispositivos de toque ── */
+@media (pointer: coarse) {
+  .expand-btn,
+  .map-toggle-btn,
+  .geo-btn,
+  .btn-limpiar-filtros,
+  .btn-reset-map {
+    min-height: 44px;
+  }
+  /* iOS hace zoom automático al enfocar un campo con font-size < 16px */
+  .fc-inp,
+  select {
+    font-size: 16px !important;
+  }
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+</head>
+<body>
+
+<!-- ════════════════════ NAV ════════════════════ -->
+<nav>
+  <div class="nav-brand">
+    <animated-icons
+    src="https://animatedicons.co/get-icon?name=Wireless&style=minimalistic&token=8dff41c2-b1dd-4146-a4e9-3a487f0e0f22"
+    trigger="hover"
+    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1.5,"defaultColours":{"group-1":"#165c3a","group-2":"#8dc4a8","background":"#f7f6f2"}}'
+    height="36"
+    width="36"
+    style="flex-shrink:0;display:block;background:#f7f6f2;border-radius:4px"
+  ></animated-icons>
+    <div class="nav-title">RF · TDT España</div>
+    <span class="nav-sub">UHF 470–694 MHz</span>
+  </div>
+  <div class="nav-meta">
+    <div class="nav-kv"><span class="nav-kv-v" id="sRows">—</span><span class="nav-kv-k">Entradas</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sCAs">—</span><span class="nav-kv-k">CC.AA.</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sProvs">—</span><span class="nav-kv-k">Provincias</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sDems">—</span><span class="nav-kv-k">Demarcaciones</span></div>
+    <div class="nav-kv"><span class="nav-kv-v" id="sChs">—</span><span class="nav-kv-k">Canales</span></div>
+    <div class="nav-kv" style="padding-left:14px;border-left:1px solid var(--line)">
+      <span class="nav-kv-v" id="sVis">—</span><span class="nav-kv-k">Vista</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════ FILTROS ════════════════════ -->
+<div class="filter-bar">
+  <div class="filter-inner">
+
+    <div id="csvNotice" style="display:none"
+      class="csv-notice"
+      ondragover="event.preventDefault();this.style.borderColor='var(--green)'"
+      ondragleave="this.style.borderColor=''"
+      ondrop="onDrop(event)">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M5 8h6M5 5h3M5 11h4"/></svg>
+      Arrastra <strong style="font-weight:600">tdt.csv</strong> aquí o selecciónalo para cargar los datos
+      <input type="file" id="csvFile" accept=".csv,.tsv,.txt">
+      <label class="file-btn" for="csvFile">Seleccionar CSV</label>
+    </div>
+
+    <!-- Fila 1: Botones de acción rápida -->
+    <div class="filter-row-actions">
+      <button class="geo-btn" id="geoBtn" onclick="geoLocate()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>
+        Mi ubicación
+      </button>
+      <a href="intermodulacion.html" class="im-link">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5h2M9 5h2M5 8h2M9 8h2M5 11h2M9 11h2"/></svg>
+        Calculadora de intermodulación
+      </a>
+      <button class="map-toggle-btn" id="mapToggle" onclick="toggleMap()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4l5 2 4-2 5 2v8l-5-2-4 2-5-2V4z"/><path d="M6 6v8M10 4v8"/></svg>
+        Mapa interactivo
+      </button>
+      <span class="geo-status" id="geoStatus"></span>
+    </div>
+
+    <!-- Fila 2: Desplegables en cascada -->
+    <div class="filter-row-dropdowns">
+      <div class="fg"><label for="fCA">Comunidad Autónoma</label><select id="fCA"><option value="">Todas</option></select></div>
+      <div class="fg"><label for="fProv">Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
+      <div class="fg"><label for="fDem">Demarcación</label><select id="fDem"><option value="">Todas</option></select></div>
+      <div class="fg"><label for="fAmb">Ámbito</label><select id="fAmb"><option value="">Todos</option></select></div>
+      <div class="filter-actions">
+        <button class="btn-limpiar-filtros" onclick="resetF()">↺ Limpiar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════ MAIN ════════════════════ -->
+<main>
+
+  <!-- 1 · CANALES — protagonista -->
+  <section>
+    <div class="sh">Canales UHF activos en la selección</div>
+    <div class="ch-summary">
+      <span class="ch-count" id="chCount">—</span>
+      <span class="ch-count-label">canales ocupados</span>
+      <span class="ch-range-hint" id="chRangeHint"></span>
+      <div class="export-row">
+      <button class="btn-export-csv" id="exportBtn" onclick="exportCSV()" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Exportar CSV
+      </button>
+      <button class="btn-export-csv btn-export-wwb" id="exportShwBtn" onclick="exportSHW()" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Exportar WWB .shw
+      </button>
+      <div class="sb-tooltip-wrap" id="exportSbBtn" style="display:none">
+        <button class="btn-export-csv btn-export-sb" onclick="exportSoundBase()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+          Exportar .sbcoordsite
+        </button>
+        <div class="sb-tooltip">Genera un sitio de coordinación para <strong>SoundBase Coord</strong> con los canales TDT de esta demarcación ya marcados. Importa desde SoundBase → Projects → Import.</div>
+      </div>
+      <!-- Compat badges — shown when export button is visible -->
+      <div class="compat-badge-wrap" id="compatBadges">
+        <span class="compat-badge-label">compatible con</span>
+        <!-- Shure Wireless Workbench icon -->
+        <div class="compat-badge" title="Shure Wireless Workbench">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- WWB-style spectrum bars: grey/white/green palette -->
+            <rect x="1"   y="10" width="2" height="4" fill="#6b6b6b" rx="0.5"/>
+            <rect x="3.5" y="7"  width="2" height="7" fill="#d0d0d0" rx="0.5"/>
+            <rect x="6"   y="9"  width="2" height="5" fill="#6b6b6b" rx="0.5"/>
+            <rect x="8.5" y="4"  width="2" height="10" fill="#7ed321" rx="0.5"/>
+            <rect x="11"  y="6"  width="2" height="8" fill="#d0d0d0" rx="0.5"/>
+            <rect x="13.5" y="9" width="1.5" height="5" fill="#6b6b6b" rx="0.5"/>
+          </svg>
+        </div>
+        <!-- SoundBase Coord icon -->
+        <div class="compat-badge" title="SoundBase Coord">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- SoundBase-style: "s" with wifi/sound waves -->
+            <text x="1.5" y="11" font-family="Georgia,serif" font-size="9" font-weight="700" fill="#1a2a4a">s</text>
+            <!-- concentric arcs inside the "O" of sOundBase -->
+            <path d="M8.5 11 Q10 9 8.5 7" stroke="#3a8fd4" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+            <path d="M9.8 12 Q12.2 9 9.8 6" stroke="#5aaee8" stroke-width="1" stroke-linecap="round" fill="none" opacity=".7"/>
+            <circle cx="7.8" cy="9" r="1.1" fill="#1a2a4a"/>
+          </svg>
+        </div>
+      </div>
+      </div><!-- /.export-row -->
+    </div>
+    <div id="chGrid" class="ch-grid">
+      <p class="ch-grid-empty">Selecciona una localización para ver los canales</p>
+    </div>
+  </section>
+
+  <!-- 2 · ESPECTRO -->
+  <section>
+    <div class="sh">Mapa de espectro · 470–694 MHz</div>
+    <div id="specEmpty" class="spec-empty">Selecciona una provincia o demarcación para visualizar el espectro</div>
+    <div id="specContent" style="display:none">
+      <div class="spec-scroll">
+        <div class="spec-track" id="specBar"></div>
+        <div class="spec-labels" id="specLbl"></div>
+      </div>
+      <div class="spec-legend">
+        <span class="leg"><span class="leg-dot" style="background:var(--green);opacity:.45"></span>Espectro libre</span>
+        <span class="leg"><span class="leg-dot" style="background:var(--red);opacity:.8"></span>Canal TDT ocupado</span>
+        <span class="leg"><span class="leg-dot" style="background:var(--red)"></span>Frecuencia micrófono</span>
+        <span class="leg" style="margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--ink3)"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAPA INTERACTIVO -->
+  <section id="mapSection" style="display:none">
+    <div class="sh">Mapa interactivo · Selección gradual</div>
+    <div class="map-wrap">
+      <span class="sr-only">Mapa visual de selección. Para navegar con teclado o lector de pantalla, usa los desplegables de Comunidad Autónoma, Provincia, Demarcación y Ámbito.</span>
+      <div id="map" aria-hidden="true"></div>
+      <div class="map-side">
+        <div class="map-side-title">Pasos</div>
+        <div class="map-step"><span class="map-step-num" id="mapStep1">1</span><span>Clic → <strong>Com. Autónoma</strong></span></div>
+        <div class="map-step"><span class="map-step-num" id="mapStep2">2</span><span>Clic en provincia → <strong>Provincia</strong></span></div>
+        <div class="map-step"><span class="map-step-num" id="mapStep3">3</span><span>Lista → <strong>Demarcación</strong></span></div>
+        <div class="map-step"><span class="map-step-num" id="mapStep4">4</span><span>Lista → <strong>Ámbito</strong></span></div>
+        <div class="map-sel-box" id="mapSelBox">Haz clic en el mapa para comenzar</div>
+        <button class="btn-reset-map" onclick="resetMapSel()">↺ Limpiar selección</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 3 · VERIFICADOR -->
+  <section>
+    <div class="sh">Verificar frecuencia de micrófono</div>
+    <div class="checker-inner">
+      <div class="fc-row">
+        <span class="fc-lbl">Frecuencia</span>
+        <input class="fc-inp" type="number" id="fcInp" placeholder="546" min="400" max="750" step="0.025" aria-label="Frecuencia en MHz">
+        <span class="fc-unit">MHz</span>
+        <button class="btn-check" onclick="checkFreq()">Comprobar</button>
+        <button class="btn-limpiar-filtros" onclick="clearCheck()">Limpiar</button>
+      </div>
+      <div id="fcRes" class="fc-res"></div>
+      <p class="fc-note">Comprueba si la frecuencia cae en el rango ±4 MHz de algún canal TDT activo en la demarcación seleccionada. Pulsa Enter para confirmar.</p>
+    </div>
+  </section>
+
+  <!-- 4 · TABLA -->
+  <section>
+    <div class="sh">Tabla de frecuencias</div>
+    <div class="twrap">
+      <div class="tbar">
+        <div class="tcount"><strong id="cVis">0</strong><span style="margin:0 4px">de</span><strong id="cTot">0</strong> entradas</div>
+        <span class="thint" id="tblHint">clic en cabecera para ordenar</span>
+      </div>
+      <div class="tbl-collapsed" id="tblCollapsed">
+        <p id="collapseHint">Aplica filtros o despliega para ver todas las entradas</p>
+        <button class="expand-btn" onclick="expandTable()">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 5l5 5 5-5"/></svg>
+          <span id="expandLabel">Ver todas las entradas</span>
+        </button>
+      </div>
+      <div id="tblExpanded" style="display:none">
+        <div class="tscroll">
+          <table>
+            <thead><tr id="theadRow">
+              <th onclick="sortBy('ca')">Comunidad Autónoma</th>
+              <th onclick="sortBy('provincia')">Provincia</th>
+              <th onclick="sortBy('demarcacion')">Demarcación</th>
+              <th>Ámbito de Cobertura</th>
+              <th onclick="sortBy('canal')">Canal</th>
+              <th onclick="sortBy('frecuencia')">Frec. Central</th>
+              <th onclick="sortBy('lo')">Rango del Canal</th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div id="loadMore" style="display:none;padding:14px 18px;border-top:1px solid var(--line);text-align:center">
+          <button class="btn" style="width:100%" onclick="loadMore()"></button>
+        </div>
+        <div style="padding:10px 18px;border-top:1px solid var(--line);text-align:center">
+          <button class="btn btn-ghost" style="font-size:11px" onclick="collapseTable()">↑ Contraer tabla</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Aviso bandas reservadas -->
+  <div class="bands-warning">
+    <svg style="flex-shrink:0;margin-top:2px" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v4M8 11.5v.5"/></svg>
+    <p>
+      <strong>Bandas reservadas — no utilizar para microfonía inalámbrica:</strong>
+      la banda de <strong>700 MHz</strong> (a partir de 694 MHz) está asignada al <strong>5G</strong>,
+      y la banda de <strong>800 MHz</strong> (a partir de 790 MHz) al <strong>4G LTE</strong>.
+      Trabajar en estas frecuencias provoca interferencias graves y no está permitido.
+    </p>
+  </div>
+
+  <div style="display:flex;gap:10px;align-items:flex-start;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r);padding:12px 16px;">
+    <svg style="flex-shrink:0;margin-top:2px" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="13" rx="2"/><path d="M1 6h14M5 1v2M11 1v2"/></svg>
+    <p style="font-size:12px;color:var(--ink2);line-height:1.75;">
+      <strong style="color:var(--red);font-weight:600;">Base de datos actualizada a abril de 2026</strong> —
+      los datos de canales TDT proceden del CNAF / Ministerio para la Transformación Digital y de la Función Pública.
+      La asignación de frecuencias puede variar: se recomienda verificar con la fuente oficial antes de cada producción
+      y realizar siempre un escaneo RF del espacio de trabajo.
+    </p>
+  </div>
+
+</main>
+
+<!-- CRÉDITOS -->
+<div class="footer-credits">
+  <div class="credit-row">
+    <div class="credit-left">
+      <div>
+        <div class="credit-label">RF · TDT España &nbsp;·&nbsp; Autor · Contacto</div>
+        <div class="credit-name">Javier Tatay Rubio &nbsp;·&nbsp; Consulta de frecuencias UHF para técnicos de directo</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <a href="https://github.com/javitatay/RFTDT" target="_blank" class="credit-link">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Ver en GitHub
+      </a>
+      <a href="mailto:j.tatayrubio&#64;edu.gva.es" class="credit-link">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
+        j.tatayrubio&#64;edu.gva.es
+      </a>
+      <a href="mailto:javitatay&#64;gmail.com" class="credit-link">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6l7 4 7-4"/></svg>
+        javitatay&#64;gmail.com
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div style="flex:1;min-width:0">
+    <span>RF · TDT España &nbsp;·&nbsp; DVB-T · UHF 470–694 MHz &nbsp;·&nbsp; Fuente: CNAF / MINETUR &nbsp;·&nbsp; v3.3 &nbsp;·&nbsp; Datos: abril 2026</span>
+    <div style="margin-top:5px;font-size:11px;color:var(--ink3);line-height:1.6">
+      ⚠︎ Esta información puede no estar actualizada en el momento de su uso. Se recomienda realizar un escaneo completo de frecuencias del espacio en el que se desarrollará el show para el conocimiento exacto de las interferencias presentes.
+    </div>
+    <div style="margin-top:4px;font-size:11px;color:var(--ink3);line-height:1.6">
+      Esta herramienta utiliza servicios externos: <a href="https://nominatim.openstreetmap.org" target="_blank" style="color:var(--ink3)">Nominatim / OpenStreetMap</a> para geolocalización, <a href="https://carto.com" target="_blank" style="color:var(--ink3)">CARTO</a> para los mapas de fondo y <a href="https://cdnjs.com" target="_blank" style="color:var(--ink3)">cdnjs</a> como CDN de librerías. No se almacenan datos personales ni se utilizan cookies propias.
+    </div>
+  </div>
+</footer>
+
+<script>
+
+// ── PARSE ──────────────────────────────────────────────────────────────────
+function parse(txt) {
+  const lines = txt.trim().split(/\r?\n/);
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const c = splitCSV(lines[i]);
+    if (c.length < 6) continue;
+    const ca = c[0].trim(), pv = c[1].trim(), dm = c[2].trim(), am = c[3].trim();
+    const chs  = c[4].split(',').map(s => parseInt(s)).filter(n => !isNaN(n));
+    const mhzs = c[5].split(',').map(s => parseFloat(s.replace(/[^\d.]/g, ''))).filter(f => !isNaN(f));
+    chs.forEach((ch, idx) => {
+      const f = mhzs[idx] ?? (306 + 8 * ch);
+      rows.push({ ca, provincia: pv, demarcacion: dm, ambito: am,
+        canal: ch, frecuencia: f, lo: +(f - 4).toFixed(2), hi: +(f + 4).toFixed(2) });
+    });
+  }
+  return rows;
+}
+
+function splitCSV(l) {
+  const r = []; let cur = '', q = false;
+  for (let i = 0; i < l.length; i++) {
+    if (l[i] === '"') { q = !q; continue; }
+    if (l[i] === ',' && !q) { r.push(cur); cur = ''; }
+    else cur += l[i];
+  }
+  r.push(cur); return r;
+}
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let ALL = [], FILT = [], sCol = 'frecuencia', sDir = 'asc', probe = null;
+
+function uniq(k, s) {
+  return [...new Set((s || ALL).map(r => r[k]).filter(Boolean))]
+    .sort((a, b) => typeof a === 'number' ? a - b : a.localeCompare(b, 'es'));
+}
+function v(id) { return document.getElementById(id).value; }
+
+// ── LOAD ───────────────────────────────────────────────────────────────────
+function loadData(txt) {
+  ALL = parse(txt);
+  if (!ALL.length) { alert('No se pudieron leer datos. Comprueba el formato CSV.'); return; }
+  document.getElementById('csvNotice').style.display = 'none';
+  document.getElementById('sRows').textContent  = ALL.length.toLocaleString('es');
+  document.getElementById('sCAs').textContent   = uniq('ca').length;
+  document.getElementById('sProvs').textContent = uniq('provincia').length;
+  document.getElementById('sDems').textContent  = uniq('demarcacion').length;
+  document.getElementById('sChs').textContent   = uniq('canal').length;
+  fill('fCA',   uniq('ca'));
+  fill('fProv', uniq('provincia'));
+  fill('fDem',  uniq('demarcacion'));
+  fill('fAmb',  uniq('ambito'));
+  render();
+}
+
+fetch('tdt.csv')
+  .then(r => { if (!r.ok) throw 0; return r.text(); })
+  .then(t => loadData(t))
+  .catch(() => { document.getElementById('csvNotice').style.display = 'flex'; });
+
+document.getElementById('csvFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => loadData(ev.target.result);
+  r.readAsText(f, 'UTF-8');
+});
+
+function onDrop(e) {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => loadData(ev.target.result);
+  r.readAsText(f, 'UTF-8');
+}
+
+// ── SELECTS ────────────────────────────────────────────────────────────────
+function fill(id, vals, cur) {
+  const el = document.getElementById(id);
+  const lbl = id === 'fAmb' ? 'Todos' : 'Todas';
+  el.innerHTML = `<option value="">${lbl}</option>` +
+    vals.map(v => `<option${v == cur ? ' selected' : ''}>${v}</option>`).join('');
+}
+
+['fCA','fProv','fDem','fAmb'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    const ca = v('fCA'), pr = v('fProv'), dm = v('fDem'), am = v('fAmb');
+    let p = ALL;
+    if (ca) p = p.filter(r => r.ca === ca);
+    fill('fProv', uniq('provincia', p), pr);
+    if (pr) p = p.filter(r => r.provincia === pr);
+    fill('fDem', uniq('demarcacion', p), dm);
+    if (dm) p = p.filter(r => r.demarcacion === dm);
+    fill('fAmb', uniq('ambito', p), am);
+    render();
+  });
+});
+
+function resetF() {
+  ['fCA','fProv','fDem','fAmb'].forEach(id => document.getElementById(id).value = '');
+  fill('fCA', uniq('ca')); fill('fProv', uniq('provincia'));
+  fill('fDem', uniq('demarcacion')); fill('fAmb', uniq('ambito'));
+  render();
+}
+
+// ── CHECKER ────────────────────────────────────────────────────────────────
+function checkFreq() {
+  const f = parseFloat(document.getElementById('fcInp').value);
+  const res = document.getElementById('fcRes');
+  if (isNaN(f) || f < 400 || f > 750) {
+    res.className = 'fc-res warn';
+    res.textContent = 'Introduce una frecuencia válida entre 470 y 700 MHz';
+    return;
+  }
+  probe = f;
+  const hits = FILT.filter(r => f >= r.lo && f <= r.hi);
+  if (hits.length) {
+    const chs = [...new Set(hits.map(r => `CH${r.canal} (${r.lo}–${r.hi} MHz)`))].join(' · ');
+    res.className = 'fc-res bad';
+    res.innerHTML = `CONFLICTO — ${f} MHz está dentro del rango de: ${chs}`;
+  } else {
+    res.className = 'fc-res ok';
+    res.innerHTML = `LIBRE — ${f} MHz no coincide con ningún canal TDT en la selección actual`;
+  }
+  render();
+}
+function clearCheck() {
+  probe = null;
+  document.getElementById('fcRes').className = 'fc-res';
+  document.getElementById('fcRes').textContent = '';
+  document.getElementById('fcInp').value = '';
+  render();
+}
+document.getElementById('fcInp').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkFreq();
+});
+
+// ── SPECTRUM ───────────────────────────────────────────────────────────────
+const SMIN = 470, SMAX = 694, LBLS = [470, 510, 550, 590, 630, 670, 694];
+
+function renderSpectrum() {
+  const hasFilter = v('fCA') !== '' || v('fProv') !== '' || v('fDem') !== '' || v('fAmb') !== '';
+  document.getElementById('specEmpty').style.display   = hasFilter ? 'none'  : 'block';
+  document.getElementById('specContent').style.display = hasFilter ? 'block' : 'none';
+  if (!hasFilter) return;
+
+  const bar  = document.getElementById('specBar');
+  const span = SMAX - SMIN;
+
+  // All UHF channels in 470-694 MHz band (CH21-48)
+  const ALL_UHF = [];
+  for (let ch = 21; ch <= 48; ch++) {
+    const f = 306 + 8 * ch;
+    ALL_UHF.push({ canal: ch, lo: f - 4, hi: f + 4, frecuencia: f });
+  }
+
+  // Occupied channels from filtered data
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = new Set(Object.keys(chMap).map(Number));
+  const channels = Object.values(chMap).sort((a, b) => a.lo - b.lo);
+
+  // Free channels (green with number label)
+  const freeHTML = ALL_UHF
+    .filter(ch => !occupied.has(ch.canal))
+    .map(ch => {
+      const l   = ((ch.lo - SMIN) / span * 100).toFixed(3);
+      const w   = (8 / span * 100).toFixed(3);
+      const isP = probe !== null && probe >= ch.lo && probe <= ch.hi;
+      return `<div class="spec-ch-free${isP ? ' spec-ch-free-probe' : ''}" style="left:${l}%;width:${w}%">
+        <span class="ch-num-free">${ch.canal}</span>
+        <div class="spec-tip">CH ${ch.canal} · ${ch.frecuencia} MHz · LIBRE</div>
+      </div>`;
+    }).join('');
+
+  // Occupied channels (red)
+  const chHTML = channels.map(r => {
+    const l   = ((r.lo - SMIN) / span * 100).toFixed(3);
+    const w   = (8 / span * 100).toFixed(3);
+    const isP = probe !== null && probe >= r.lo && probe <= r.hi;
+    return `<div class="spec-ch ${isP ? 'probed' : 'occupied'}" style="left:${l}%;width:${w}%">
+      <span class="ch-num">${r.canal}</span>
+      <div class="spec-tip">CH ${r.canal} · ${r.frecuencia} MHz · ${r.lo}–${r.hi} MHz</div>
+    </div>`;
+  }).join('');
+
+  const probeHTML = probe !== null
+    ? `<div class="spec-probe" style="left:${((probe - SMIN) / span * 100).toFixed(3)}%"></div>`
+    : '';
+
+  bar.innerHTML = freeHTML + chHTML + probeHTML;
+
+  document.getElementById('specLbl').innerHTML = LBLS.map(f => `<span>${f} MHz</span>`).join('');
+}
+
+// ── CHANNEL GRID ───────────────────────────────────────────────────────────
+function renderChGrid() {
+  const grid    = document.getElementById('chGrid');
+  const countEl = document.getElementById('chCount');
+  const hintEl  = document.getElementById('chRangeHint');
+
+  if (!FILT.length) {
+    grid.innerHTML = '<p class="ch-grid-empty">Selecciona una localización para ver los canales</p>';
+    countEl.textContent = '—';
+    hintEl.textContent = '';
+    document.getElementById('exportBtn').style.display = 'none';
+  document.getElementById('exportShwBtn').style.display = 'none';
+  document.getElementById('exportSbBtn').style.display = 'none';
+  document.getElementById('compatBadges').style.display = 'none';
+    return;
+  }
+
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const channels = Object.values(chMap).sort((a, b) => a.canal - b.canal);
+
+  countEl.textContent = channels.length;
+  const minF = Math.min(...channels.map(c => c.lo));
+  const maxF = Math.max(...channels.map(c => c.hi));
+  hintEl.textContent = `${minF}–${maxF} MHz`;
+
+  const span = SMAX - SMIN;
+  document.getElementById('exportBtn').style.display = 'inline-flex';
+  document.getElementById('exportShwBtn').style.display = 'inline-flex';
+  document.getElementById('exportSbBtn').style.display = 'inline-block';
+  document.getElementById('compatBadges').style.display = 'inline-flex';
+
+  grid.innerHTML = channels.map(r => {
+    const conflict = probe !== null && probe >= r.lo && probe <= r.hi;
+    // Mini-barra: posición relativa de la frecuencia central en el espectro
+    const pct = ((r.frecuencia - SMIN) / span * 100).toFixed(1);
+    return `<div class="ch-tile${conflict ? ' conflict' : ''}">
+      <div class="ch-tile-num">${r.canal}</div>
+      <div class="ch-tile-freq">${r.frecuencia} MHz</div>
+      <div class="ch-tile-range">${r.lo}–${r.hi}</div>
+      <div class="ch-tile-bar-wrap">
+        <div class="ch-tile-bar-fill" style="width:${Math.min(100, parseFloat(pct))}%"></div>
+      </div>
+      <div class="ch-tile-tip">CH ${r.canal} · ${r.lo}–${r.hi} MHz</div>
+    </div>`;
+  }).join('');
+}
+
+// ── SORT & FILTER ──────────────────────────────────────────────────────────
+function sortBy(col) {
+  sDir = sCol === col ? (sDir === 'asc' ? 'desc' : 'asc') : 'asc';
+  sCol = col;
+  document.querySelectorAll('thead th').forEach(th => th.classList.remove('asc','desc'));
+  const ci = { ca:0, provincia:1, demarcacion:2, canal:4, frecuencia:5, lo:6 };
+  const th = document.querySelectorAll('thead th')[ci[col]];
+  if (th) th.classList.add(sDir);
+  render();
+}
+
+function getFiltered() {
+  let r = ALL;
+  const ca = v('fCA'), pr = v('fProv'), dm = v('fDem'), am = v('fAmb');
+  if (ca) r = r.filter(x => x.ca === ca);
+  if (pr) r = r.filter(x => x.provincia === pr);
+  if (dm) r = r.filter(x => x.demarcacion === dm);
+  if (am) r = r.filter(x => x.ambito === am);
+  return r;
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+const PAGE = 30;
+let visibleRows = PAGE;
+let tableExpanded = false;
+
+function expandTable() {
+  tableExpanded = true;
+  document.getElementById('tblCollapsed').style.display = 'none';
+  document.getElementById('tblExpanded').style.display = 'block';
+  renderRows();
+}
+function collapseTable() {
+  tableExpanded = false;
+  document.getElementById('tblCollapsed').style.display = 'block';
+  document.getElementById('tblExpanded').style.display = 'none';
+}
+
+function render(resetPage = true) {
+  if (resetPage) { visibleRows = PAGE; }
+  FILT = getFiltered();
+  FILT.sort((a, b) => {
+    let va = a[sCol], vb = b[sCol];
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    return sDir === 'asc' ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
+  });
+
+  document.getElementById('sVis').textContent = FILT.length.toLocaleString('es');
+  document.getElementById('cVis').textContent = FILT.length.toLocaleString('es');
+  document.getElementById('cTot').textContent = ALL.length.toLocaleString('es');
+
+  renderSpectrum();
+  renderChGrid();
+
+  const filtered = FILT.length < ALL.length;
+  document.getElementById('collapseHint').textContent = filtered
+    ? `${FILT.length.toLocaleString('es')} entradas coinciden con los filtros`
+    : 'Aplica filtros o despliega para ver todas las entradas';
+  document.getElementById('expandLabel').textContent = filtered
+    ? `Ver ${FILT.length.toLocaleString('es')} entradas`
+    : 'Ver todas las entradas';
+
+  if (filtered && !tableExpanded && !mapUpdating) expandTable();
+  if (tableExpanded) renderRows();
+}
+
+function renderRows() {
+  const isDetailed = v('fDem') !== '' || v('fAmb') !== '' || v('fProv') !== '';
+  const thead = document.getElementById('theadRow');
+  const hint  = document.getElementById('tblHint');
+
+  if (isDetailed) {
+    thead.innerHTML = `
+      <th onclick="sortBy('demarcacion')">Demarcación</th>
+      <th onclick="sortBy('canal')">Canal</th>
+      <th onclick="sortBy('frecuencia')">Frec. Central</th>
+      <th onclick="sortBy('lo')">Rango ocupado</th>`;
+    hint.textContent = 'Vista compacta';
+  } else {
+    thead.innerHTML = `
+      <th onclick="sortBy('ca')">Comunidad Autónoma</th>
+      <th onclick="sortBy('provincia')">Provincia</th>
+      <th onclick="sortBy('demarcacion')">Demarcación</th>
+      <th>Ámbito de Cobertura</th>
+      <th onclick="sortBy('canal')">Canal</th>
+      <th onclick="sortBy('frecuencia')">Frec. Central</th>
+      <th onclick="sortBy('lo')">Rango del Canal</th>`;
+    hint.textContent = 'clic en cabecera para ordenar';
+  }
+
+  const tbody = document.getElementById('tbody');
+  if (!FILT.length) {
+    const cols = isDetailed ? 4 : 7;
+    tbody.innerHTML = `<tr><td colspan="${cols}"><div class="empty">
+      <div class="empty-t">Sin resultados</div>
+      <div class="empty-s">Prueba otros filtros</div>
+    </div></td></tr>`;
+    document.getElementById('loadMore').style.display = 'none';
+    return;
+  }
+
+  const slice = FILT.slice(0, visibleRows);
+  tbody.innerHTML = slice.map(r => {
+    const c = probe !== null && probe >= r.lo && probe <= r.hi;
+    if (isDetailed) {
+      return `<tr>
+        <td><strong>${r.demarcacion}</strong></td>
+        <td><span class="ch-pill${c ? ' conflict' : ''}">${r.canal}</span></td>
+        <td><span class="fmhz">${r.frecuencia.toFixed(2)}</span><span class="funit">MHz</span></td>
+        <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c ? ' conflict' : ''}"></div></div></td>
+      </tr>`;
+    }
+    return `<tr>
+      <td>${r.ca}</td>
+      <td>${r.provincia}</td>
+      <td><strong>${r.demarcacion}</strong></td>
+      <td class="wrap">${r.ambito}</td>
+      <td><span class="ch-pill${c ? ' conflict' : ''}">${r.canal}</span></td>
+      <td><span class="fmhz">${r.frecuencia.toFixed(2)}</span><span class="funit">MHz</span></td>
+      <td><div class="rng-row"><span class="rng-txt">${r.lo} – ${r.hi} MHz</span><div class="rng-bar${c ? ' conflict' : ''}"></div></div></td>
+    </tr>`;
+  }).join('');
+
+  const btn = document.getElementById('loadMore');
+  if (FILT.length > visibleRows) {
+    btn.style.display = 'block';
+    btn.querySelector('button').textContent =
+      `Ver ${Math.min(PAGE, FILT.length - visibleRows)} más de ${FILT.length.toLocaleString('es')}`;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function loadMore() {
+  visibleRows += PAGE;
+  render(false);
+}
+
+
+// ── EXPORTAR CSV ───────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!FILT.length) return;
+
+  // Occupied channel ranges from current filter
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = Object.values(chMap).map(r => ({ lo: r.lo, hi: r.hi }));
+
+  // Build location label for filename
+  const dem    = v('fDem') || v('fProv') || v('fCA') || 'España';
+  const ambito = v('fAmb') ? `_${v('fAmb').substring(0, 20)}` : '';
+  const date   = new Date().toISOString().slice(0, 10);
+  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g, '_')}${ambito}_${date}.csv`.replace(/__+/g, '_');
+
+  // Shure Wireless Workbench scan format:
+  // Two columns only — frequency_MHz,level_dBm — no headers, no comments, 25 kHz step.
+  // Occupied channel bands → high level (−20 dBm); free spectrum → noise floor (−100 dBm).
+  const STEP     = 0.025;
+  const F_START  = 470.000;
+  const F_END    = 694.000;
+  const DBM_OCC  = -20;
+  const DBM_FREE = -100;
+
+  const rows = [];
+  for (let f = F_START; f <= F_END + 0.001; f = Math.round((f + STEP) * 1000) / 1000) {
+    const isOcc = occupied.some(ch => f >= ch.lo && f <= ch.hi);
+    rows.push(`${f.toFixed(3)},${isOcc ? DBM_OCC : DBM_FREE}`);
+  }
+
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── EXPORTAR WWB .shw ──────────────────────────────────────────────────────
+function exportSHW() {
+  if (!FILT.length) return;
+
+  // Canales ocupados
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = new Set(Object.keys(chMap).map(Number));
+
+  // Nombre de localización para el show y el fichero
+  const dem    = v('fDem') || v('fProv') || v('fCA') || 'España';
+  const date   = new Date().toISOString().slice(0, 10);
+  const showName = `TDT ${dem}`;
+  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g, '_')}_${date}.shw`.replace(/__+/g, '_');
+
+  // Generar bloques <channel> para CH21–CH71 (rango completo que usa WWB)
+  // Frecuencia: coma como separador decimal, formato "NNN,000 MHz"
+  function fmtFreq(mhz) {
+    return mhz.toFixed(3).replace('.', ',') + ' MHz';
+  }
+
+  let channels = '';
+  for (let ch = 21; ch <= 71; ch++) {
+    const lo = 306 + 8 * ch;        // frecuencia inicio canal = 306+8*CH
+    const hi = lo + 8;
+    const isOcc = occupied.has(ch);
+    channels += `                <channel>
+                    <number>${ch}</number>
+                    <call_sign/>
+                    <tv_station_country/>
+                    <tv_station_latitude/>
+                    <tv_station_longitude/>
+                    <tv_chann_start_freq>${fmtFreq(lo)}</tv_chann_start_freq>
+                    <tv_chann_end_freq>${fmtFreq(hi)}</tv_chann_end_freq>
+                    <distance>0</distance>
+                    <type>4</type>
+                    <db_source>${isOcc ? 1 : 0}</db_source>
+                    <power>0</power>
+                    <exclude>${isOcc ? 'true' : 'false'}</exclude>
+                </channel>\n`;
+  }
+
+  const now = new Date();
+  const dateStr = now.toDateString().replace(/(\w+) (\w+) (\d+) (\d+)/, '$1 $2 $3 $4');
+  const timeStr = now.toTimeString().slice(0, 8);
+
+  const shw = `<show version="1.0" source="RFTDT" date="${dateStr}" time="${timeStr}" appl_version="7.8.1.56">
+    <show_properties version="1.0">
+        <show_info>
+            <name>${showName}</name>
+            <customer/>
+        </show_info>
+        <point_of_contact_info>
+            <name/>
+            <address/>
+            <phone/>
+            <email/>
+            <remember_poc>false</remember_poc>
+        </point_of_contact_info>
+        <venue_info>
+            <name>${dem}</name>
+            <address/>
+            <phone/>
+            <email/>
+        </venue_info>
+        <notes>Generado por RF · TDT España — Fuente: CNAF / MINETUR — ${date}</notes>
+    </show_properties>
+    <inventory version="2.1">
+        <zones version="1.1">
+            <zone ordinal="0" color="#6692fc">Default</zone>
+            <zone_matrix>
+                <from zone="Default">
+                    <to zone="Default">
+                        <ch-ch>1</ch-ch>
+                        <ch-imd>1</ch-imd>
+                    </to>
+                </from>
+            </zone_matrix>
+        </zones>
+    </inventory>
+    <coordination_info>
+        <scan_data version="1.3">
+            <merged_scans/>
+            <threshold>-85</threshold>
+            <higher_threshold>-60</higher_threshold>
+        </scan_data>
+        <channel_exclusions version="1.1">
+            <location_info>
+                <search_type/>
+                <radius units="Miles">50</radius>
+                <country>Countries with 8MHz TV-Ch</country>
+                <found_count>0</found_count>
+                <found_count>0</found_count>
+                <tv_spectrum_format>8 MHz</tv_spectrum_format>
+            </location_info>
+            <channel_avoidance_info>
+${channels}            </channel_avoidance_info>
+        </channel_exclusions>
+        <band_planning version="1.0">
+            <accounted>false</accounted>
+            <country>Countries with 8MHz TV-Ch</country>
+            <user_group/>
+            <band_plan_accounted>false</band_plan_accounted>
+        </band_planning>
+    </coordination_info>
+    <CFLs version="1.0"/>
+    <plot_info>
+        <coordination_plot version="1.2">
+            <plots/>
+            <start>470,000 MHz</start>
+            <center>582,000 MHz</center>
+            <end>694,000 MHz</end>
+            <span>224,000 MHz</span>
+        </coordination_plot>
+    </plot_info>
+    <custom_user_group_list>
+        <inclusion_list version="1.0" name="Custom" active="false" uuid="51121dae-e17c-4679-9de4-3532d9e25000"/>
+    </custom_user_group_list>
+    <band_plan_group_list version="1.0"/>
+    <coordinated_data_root version="0.3" id="1297ef93-edb2-4a5f-bd95-74665169d019">
+        <mic_channels units="khz" count="0"/>
+        <compatibility_profile_settings version="1.0" count="1">
+            <profile>
+                <band>Wideband</band>
+                <series>Generic Device - IMD</series>
+                <tx_profile/>
+                <zone/>
+                <incl_group>00000000-0000-0000-0000-000000000000</incl_group>
+                <compat_profile version="0.0.0.1" imd_source="1" id="6cbbb7e8-55ab-e4bb-f5c7-1b86242f7fd2" name="Standard" synthesizable="0">
+                    <spacing freq_units="KHz">
+                        <ch_ch>800</ch_ch>
+                        <imd_2t3o>400</imd_2t3o>
+                        <imd_2t5o>0</imd_2t5o>
+                        <imd_2t7o>0</imd_2t7o>
+                        <imd_2t9o>0</imd_2t9o>
+                        <imd_3t3o>0</imd_3t3o>
+                    </spacing>
+                    <filter type="1">
+                        <filter_start>-100000</filter_start>
+                        <filter_end>100000</filter_end>
+                        <filter_center>0</filter_center>
+                    </filter>
+                </compat_profile>
+            </profile>
+        </compatibility_profile_settings>
+        <keys_coord_order version="1.1"/>
+    </coordinated_data_root>
+    <monitoring_info version="2.2">
+        <channel_order/>
+        <charger_order/>
+        <chooser_widget id="1">
+            <sort_section>2</sort_section>
+            <sort_order>0</sort_order>
+        </chooser_widget>
+        <chooser_widget id="2">
+            <sort_section>4</sort_section>
+            <sort_order>0</sort_order>
+        </chooser_widget>
+        <device_chooser_layout>24,521,24,24,24,24</device_chooser_layout>
+        <device_chooser_selection>0,1,0,0,0,0</device_chooser_selection>
+        <strip_parameters>
+            <enabled_options>CS_GraphicsChannelNameNetworkLockWidget,CS_FrequencyTvChannelWidget,CS_GraphicsRfAudioWidget,CS_TxInfoWidget,CS_GraphicsRfPowerContainer,CS_GraphicsEncryptionContainer,CS_GraphicsBatteryAudioModeWidget,CS_GraphicsCarouselContainer,CS_GraphicsChargerStripView,CS_GraphicsAccessPointStripView</enabled_options>
+        </strip_parameters>
+        <autolog_parameters>
+            <enabled_plots>22,7,1,25,3,27,28,26,8,9,10,11,29,30,13,14,24</enabled_plots>
+            <plot_view_mode>4</plot_view_mode>
+        </autolog_parameters>
+        <monitoring_pager version="1.1">
+            <view id="{c0c6b6c1-dace-45bb-b18f-c5af9809be99}" name="View 1" active="true"/>
+        </monitoring_pager>
+        <monitoring_registry version="1.1">
+            <view id="{c0c6b6c1-dace-45bb-b18f-c5af9809be99}">
+                <registry arrange_mode="0"/>
+            </view>
+        </monitoring_registry>
+    </monitoring_info>
+</show>`;
+
+  const blob = new Blob([shw], { type: 'application/xml;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── EXPORTAR SOUNDBASE .sbcoordsite ───────────────────────────────────────
+function exportSoundBase() {
+  if (!FILT.length) return;
+
+  // Canales TDT ocupados en la selección actual
+  const chMap = {};
+  FILT.forEach(r => { if (!chMap[r.canal]) chMap[r.canal] = r; });
+  const occupied = new Set(Object.keys(chMap).map(Number));
+
+  // Nombre y localización
+  const dem      = v('fDem') || v('fProv') || v('fCA') || 'España';
+  const siteName = dem;
+  const date     = new Date().toISOString().slice(0, 10);
+  const filename = `RF_TDT_${dem.replace(/[^a-zA-Z0-9]/g, '_')}_${date}.sbcoordsite`.replace(/__+/g, '_');
+
+  // Generador de IDs aleatorios estilo Meteor (17 chars alfanuméricos)
+  function randId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let id = '';
+    for (let i = 0; i < 17; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+
+  const now       = new Date().toISOString();
+  const projectId = randId();
+  const siteId    = randId();
+  const zoneId    = randId();
+  const groupId   = randId();
+  const userId    = randId();
+
+  // currentVersion placeholder — SoundBase lo recalcula al importar
+  const CV = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+
+  // ── Colección coordSite ──────────────────────────────────────────────────
+  const coordSite = {
+    _id: siteId,
+    calcSettings: {
+      thirdsBypassEnabled: 'false', thirdsBypass: '100',
+      triplesBypassEnabled: 'true', triplesBypass: '40',
+      findWhiteSpaceBetweenChannels: 'false',
+      exclusionThreshold: '-85',
+      includeActiveSpectrum: 'true',
+      IM3: 'true', IM5: 'true', IM3TX3: 'true',
+      singleFreqExclusions: []
+    },
+    cellularBlocks: {
+      guard_1:    { start: 790, stop: 791, enabled: true },
+      downlink_A: { start: 791, stop: 796, enabled: true },
+      downlink_B: { start: 796, stop: 801, enabled: true },
+      downlink_C: { start: 801, stop: 806, enabled: true },
+      downlink_D: { start: 806, stop: 811, enabled: true },
+      downlink_E: { start: 811, stop: 816, enabled: true },
+      downlink_F: { start: 816, stop: 821, enabled: true },
+      guard_2:    { start: 821, stop: 823, enabled: true },
+      uplink_A:   { start: 832, stop: 837, enabled: true },
+      uplink_B:   { start: 837, stop: 842, enabled: true },
+      uplink_C:   { start: 842, stop: 847, enabled: true },
+      uplink_D:   { start: 847, stop: 852, enabled: true },
+      uplink_E:   { start: 852, stop: 857, enabled: true },
+      uplink_F:   { start: 857, stop: 862, enabled: true }
+    },
+    country: 'ES',
+    currentVersion: CV,
+    interactions: {},
+    isLocked: false,
+    lastModified: now,
+    location: {
+      address: siteName,
+      lat: 40.4168, lon: -3.7038,   // Madrid como fallback; no crítico
+      name: siteName,
+      type: 'Point',
+      coordinates: [-3.7038, 40.4168],
+      country: 'ES'
+    },
+    lockedBy: null, lockedDateTime: null, lockedSites: [],
+    name: siteName,
+    plotSettings: {
+      freqFocusBandwidth: 3, bandPlanFocusPadding: 3,
+      plotStart: 30, plotStop: 1000, zoomIncrement: 5,
+      defaultStart: 470, defaultStop: 694,
+      minAmplitude: -120, maxAmplitude: -20
+    },
+    projectId,
+    publicationEnabled: false, publicationPassword: '',
+    publishKey: randId().slice(0, 6),
+    timezone: 'Europe/Madrid',
+    unlessRequestedBy: null,
+    unlockRequestRejected: false, unlockRequestTimeout: null,
+    unlockRequested: false
+  };
+
+  // ── Colección coordZone ──────────────────────────────────────────────────
+  const coordZone = {
+    _id: zoneId,
+    interactions: {},
+    lastModified: `{timestamp}${now}`,
+    name: 'Default Zone',
+    projectId,
+    publicationEnabled: false, publicationPassword: '',
+    publishKey: randId().slice(0, 6),
+    siteId
+  };
+
+  // ── Colección coordGroup ─────────────────────────────────────────────────
+  const coordGroup = {
+    _id: groupId,
+    color: '#718096',
+    lastModified: `{timestamp}${now}`,
+    name: 'Default Group',
+    ordinal: 1,
+    projectId,
+    publicationEnabled: false, publicationPassword: '',
+    publishKey: randId().slice(0, 6),
+    siteId,
+    zoneId
+  };
+
+  // ── CoordSiteActiveBroadcastChannels: CH21–CH61 ──────────────────────────
+  // Todos los canales de la banda (igual que el archivo de referencia).
+  // isActive = true en canales TDT ocupados → SoundBase los bloquea.
+  const broadcastEntries = [];
+
+  // Canales VHF/FM del plan español (presentes en el archivo de referencia)
+  const vhfChannels = [
+    { ch: 2,  start: 47,  stop: 54  },
+    { ch: 3,  start: 54,  stop: 61  },
+    { ch: 4,  start: 61,  stop: 68  },
+    { ch: 5,  start: 174, stop: 181 },
+    { ch: 6,  start: 181, stop: 188 },
+    { ch: 7,  start: 188, stop: 195 },
+    { ch: 8,  start: 195, stop: 202 },
+    { ch: 9,  start: 202, stop: 209 },
+    { ch: 10, start: 209, stop: 216 },
+    { ch: 11, start: 216, stop: 223 },
+    { ch: 12, start: 223, stop: 230 },
+  ];
+
+  vhfChannels.forEach(({ ch, start, stop }) => {
+    broadcastEntries.push({
+      _id: randId(),
+      automaticOrManual: 'automatic',
+      channel: ch,
+      currentVersion: CV,
+      isActive: true,
+      isPublicSafety: false,
+      lastModified: `{timestamp}${now}`,
+      projectId, siteId, start, stop
+    });
+  });
+
+  // Canales UHF CH21–CH48 (banda de microfonía española)
+  for (let ch = 21; ch <= 48; ch++) {
+    const start = 470 + (ch - 21) * 8;
+    const stop  = start + 8;
+    const isOcc = occupied.has(ch);
+    broadcastEntries.push({
+      _id: randId(),
+      automaticOrManual: 'automatic',
+      channel: ch,
+      currentVersion: CV,
+      isActive: isOcc,   // true = bloqueado como canal TDT activo
+      isPublicSafety: false,
+      lastModified: `{timestamp}${now}`,
+      projectId, siteId, start, stop
+    });
+  }
+
+  // Canales UHF CH49–CH61 (fuera de banda española pero presentes en ref.)
+  for (let ch = 49; ch <= 61; ch++) {
+    const start = 470 + (ch - 21) * 8;
+    const stop  = start + 8;
+    broadcastEntries.push({
+      _id: randId(),
+      automaticOrManual: 'automatic',
+      channel: ch,
+      currentVersion: CV,
+      isActive: true,
+      isPublicSafety: false,
+      lastModified: `{timestamp}${now}`,
+      projectId, siteId, start, stop
+    });
+  }
+
+  // ── CoordUserSettings ────────────────────────────────────────────────────
+  const coordUserSettings = {
+    _id: randId(),
+    candidates: [],
+    collapsedGroups: [],
+    currentVersion: CV,
+    lastModified: `{timestamp}${now}`,
+    projectId, siteId,
+    userId
+  };
+
+  // ── Ensamblar el array final ─────────────────────────────────────────────
+  const totalDocs = 1 + 1 + 1 + broadcastEntries.length + 1; // site+zone+group+broadcast+userSettings
+
+  const docs = [
+    { type: 'meta', value: { created: now, version: '1.0.1', totalDocs } },
+    { type: 'collection', collectionName: 'coordSite',  value: coordSite  },
+    { type: 'collection', collectionName: 'coordZone',  value: coordZone  },
+    { type: 'collection', collectionName: 'coordGroup', value: coordGroup },
+    ...broadcastEntries.map(v => ({ type: 'collection', collectionName: 'CoordSiteActiveBroadcastChannels', value: v })),
+    { type: 'collection', collectionName: 'CoordUserSettings', value: coordUserSettings }
+  ];
+
+  const json = JSON.stringify(docs);
+
+  // Comprimir con pako (gzip) — SoundBase requiere gzip
+  // pako está disponible via CDN; si no está cargado, descargamos JSON plano con aviso
+  if (typeof pako !== 'undefined') {
+    const compressed = pako.gzip(json);
+    const blob = new Blob([compressed], { type: 'application/gzip' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    // Fallback: JSON sin comprimir con extensión .json para que el usuario lo comprima
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = filename.replace('.sbcoordsite', '_NOCOMPRESS.json');
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('pako no disponible: se ha descargado el JSON sin comprimir. Renómbralo a .sbcoordsite y comprime con gzip antes de importar.');
+  }
+}
+
+function geoLocate() {
+  const btn = document.getElementById('geoBtn');
+  const st  = document.getElementById('geoStatus');
+  if (!navigator.geolocation) { st.textContent='No disponible'; st.style.color='var(--red)'; return; }
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="animation:spin .8s linear infinite"><path d="M14 8A6 6 0 1 1 8 2"/></svg> Buscando…`;
+  navigator.geolocation.getCurrentPosition(
+    pos => geoReverse(pos.coords.latitude, pos.coords.longitude),
+    err => {
+      btn.disabled = false;
+      btn.innerHTML = geoBtnHTML();
+      st.textContent = err.code===1 ? 'Permiso denegado' : 'Error';
+      st.style.color = 'var(--red)';
+    }, { timeout:8000, maximumAge:60000 }
+  );
+}
+function geoBtnHTML() {
+  return `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg> Mi ubicación`;
+}
+function geoReverse(lat, lon) {
+  const btn = document.getElementById('geoBtn');
+  const st  = document.getElementById('geoStatus');
+  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es&zoom=10`)
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false; btn.innerHTML = geoBtnHTML();
+      const addr = data.address || {};
+
+      // Collect all candidate strings from Nominatim address object
+      const caRaw   = addr.state || addr.region || '';
+      const provRaw = addr.province || addr.state_district || addr.county || '';
+
+      const csvCA   = GEO_CA[caRaw]   || geoNormMatch(caRaw,   GEO_CA);
+      const csvProv = GEO_PROV[provRaw] || geoNormMatch(provRaw, GEO_PROV)
+                   || geoNormMatch(caRaw,  GEO_PROV);  // fallback: single-province CAs
+
+      if (csvCA) {
+        document.getElementById('fCA').value = csvCA;
+        document.getElementById('fCA').dispatchEvent(new Event('change'));
+        if (csvProv) {
+          setTimeout(() => {
+            const fp   = document.getElementById('fProv');
+            const opts = [...fp.options].map(o => o.value);
+            const best = opts.find(o => o === csvProv) || opts.find(o => norm(o) === norm(csvProv));
+            if (best) { fp.value = best; fp.dispatchEvent(new Event('change')); }
+            st.textContent = '📍 ' + (best || csvCA);
+            st.style.color = 'var(--green)';
+          }, 100);
+        } else {
+          st.textContent = '📍 ' + csvCA;
+          st.style.color = 'var(--green)';
+        }
+      } else {
+        st.textContent = 'No reconocido — selecciona manualmente';
+        st.style.color = 'var(--amber)';
+      }
+    })
+    .catch(() => {
+      btn.disabled = false; btn.innerHTML = geoBtnHTML();
+      st.textContent = 'Error de conexión'; st.style.color = 'var(--red)';
+    });
+}
+
+// Hardcoded Nominatim → CSV lookup tables (covers all known variations)
+const GEO_CA = {
+  'Andalucía':'Andalucía','Aragón':'Aragón',
+  'Asturias':'Asturias','Asturias, Principado de':'Asturias','Principado de Asturias':'Asturias',
+  'Illes Balears':'Illes Balears','Islas Baleares':'Illes Balears',
+  'Canarias':'Islas Canarias','Islas Canarias':'Islas Canarias',
+  'Cantabria':'Cantabria',
+  'Castilla-La Mancha':'Castilla-La Mancha','Castilla La Mancha':'Castilla-La Mancha',
+  'Castilla y León':'Castilla y León','Castilla y Leon':'Castilla y León',
+  'Cataluña':'Cataluña','Catalunya':'Cataluña','Catalonia':'Cataluña',
+  'Ceuta':'Ceuta y Melilla','Melilla':'Ceuta y Melilla','Ceuta y Melilla':'Ceuta y Melilla',
+  'Comunidad de Madrid':'Comunidad de Madrid','Madrid':'Comunidad de Madrid',
+  'Comunidad Foral de Navarra':'Navarra','Navarra':'Navarra','Foral Community of Navarre':'Navarra',
+  'Comunitat Valenciana':'Comunitat Valenciana','Comunidad Valenciana':'Comunitat Valenciana',
+  'Extremadura':'Extremadura',
+  'Galicia':'Galicia',
+  'La Rioja':'La Rioja','Rioja':'La Rioja',
+  'País Vasco':'País Vasco / Euskadi','Euskadi':'País Vasco / Euskadi','Basque Country':'País Vasco / Euskadi',
+  'Región de Murcia':'Región de Murcia','Murcia':'Región de Murcia',
+};
+
+const GEO_PROV = {
+  // Andalucía
+  'Almería':'Almería','Cádiz':'Cádiz','Córdoba':'Córdoba','Granada':'Granada',
+  'Huelva':'Huelva','Jaén':'Jaén','Málaga':'Málaga','Sevilla':'Sevilla',
+  // Aragón
+  'Huesca':'Huesca','Teruel':'Teruel','Zaragoza':'Zaragoza',
+  // Asturias
+  'Asturias':'Asturias',
+  // Baleares
+  'Illes Balears':'Baleares','Islas Baleares':'Baleares','Baleares':'Baleares',
+  // Canarias
+  'Las Palmas':'Las Palmas','Santa Cruz de Tenerife':'Santa Cruz de Tenerife',
+  // Cantabria
+  'Cantabria':'Cantabria',
+  // Castilla-La Mancha
+  'Albacete':'Albacete','Ciudad Real':'Ciudad Real','Cuenca':'Cuenca',
+  'Guadalajara':'Guadalajara','Toledo':'Toledo',
+  // Castilla y León
+  'Ávila':'Ávila','Burgos':'Burgos','León':'León','Palencia':'Palencia',
+  'Salamanca':'Salamanca','Segovia':'Segovia','Soria':'Soria',
+  'Valladolid':'Valladolid','Zamora':'Zamora',
+  // Cataluña
+  'Barcelona':'Barcelona','Girona':'Girona','Lleida':'Lleida','Tarragona':'Tarragona',
+  // Ceuta y Melilla
+  'Ceuta':'Ceuta','Melilla':'Melilla',
+  // Madrid
+  'Madrid':'Madrid',
+  // Navarra
+  'Navarra':'Navarra','Nafarroa':'Navarra',
+  // Comunitat Valenciana
+  'Alicante':'Alicante','Alacant':'Alicante','Castellón':'Castellón',
+  'Castelló':'Castellón','Valencia':'Valencia','València':'Valencia',
+  // Extremadura
+  'Badajoz':'Badajoz','Cáceres':'Cáceres',
+  // Galicia
+  'A Coruña':'A Coruña','La Coruña':'A Coruña','Lugo':'Lugo','Ourense':'Ourense',
+  'Orense':'Ourense','Pontevedra':'Pontevedra',
+  // La Rioja
+  'La Rioja':'La Rioja',
+  // País Vasco
+  'Álava':'Álava','Araba':'Álava','Araba/Álava':'Álava',
+  'Vizcaya':'Vizcaya','Bizkaia':'Vizcaya',
+  'Guipúzcoa':'Guipúzcoa','Gipuzkoa':'Guipúzcoa',
+  // Murcia
+  'Murcia':'Murcia',
+};
+
+function geoNormMatch(str, dict) {
+  if (!str) return null;
+  const n = norm(str);
+  const key = Object.keys(dict).find(k => norm(k) === n)
+           || Object.keys(dict).find(k => norm(k).includes(n) || n.includes(norm(k)));
+  return key ? dict[key] : null;
+}
+
+function norm(s) {
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim();
+}
+
+// ── MAPA INTERACTIVO ───────────────────────────────────────────────────────
+let mapLeaflet = null, mapInited = false, mapGeoLayer = null, mapMarkersLayer = null;
+let mapUpdating = false;
+let mapStep = 0;  // 0=none 1=CA 2=prov 3=dem 4=amb
+let mapSelCA = '', mapSelProv = '', mapSelDem = '', mapSelAmb = '';
+
+const PROV_NORM = {
+  'A Coruña':'A Coruña','Álava':'Álava','Albacete':'Albacete','Alicante':'Alicante',
+  'Almería':'Almería','Asturias':'Asturias','Ávila':'Ávila','Badajoz':'Badajoz',
+  'Islas Baleares':'Baleares','Illes Balears':'Baleares','Baleares':'Baleares',
+  'Barcelona':'Barcelona','Burgos':'Burgos','Cáceres':'Cáceres','Cádiz':'Cádiz',
+  'Cantabria':'Cantabria','Castellón':'Castellón','Castellón/Castelló':'Castellón',
+  'Castelló':'Castellón','Ciudad Real':'Ciudad Real','Córdoba':'Córdoba',
+  'Cuenca':'Cuenca','Girona':'Girona','Granada':'Granada','Guadalajara':'Guadalajara',
+  'Guipúzcoa':'Guipúzcoa','Gipuzkoa':'Guipúzcoa','Huelva':'Huelva','Huesca':'Huesca',
+  'Jaén':'Jaén','La Rioja':'La Rioja','Las Palmas':'Las Palmas','León':'León',
+  'Lleida':'Lleida','Lugo':'Lugo','Madrid':'Madrid','Málaga':'Málaga',
+  'Melilla':'Melilla','Ceuta':'Ceuta','Murcia':'Murcia','Navarra':'Navarra',
+  'Ourense':'Ourense','Palencia':'Palencia','Pontevedra':'Pontevedra',
+  'Salamanca':'Salamanca','Santa Cruz de Tenerife':'Santa Cruz de Tenerife',
+  'Segovia':'Segovia','Sevilla':'Sevilla','Soria':'Soria','Tarragona':'Tarragona',
+  'Teruel':'Teruel','Toledo':'Toledo','Valencia':'Valencia','Valladolid':'Valladolid',
+  'Vizcaya':'Vizcaya','Bizkaia':'Vizcaya','Zamora':'Zamora','Zaragoza':'Zaragoza',
+};
+
+const sOff  = { fillColor:'#c8dfc8', fillOpacity:.5,  color:'#7aad7a', weight:1   };
+const sHov  = { fillColor:'#8dc4a8', fillOpacity:.85, color:'#165c3a', weight:1.5 };
+const sCA   = { fillColor:'#8dc4a8', fillOpacity:.65, color:'#165c3a', weight:1.5 };
+const sProv = { fillColor:'#165c3a', fillOpacity:.82, color:'#0d3d22', weight:2   };
+const sDim  = { fillColor:'#d8d5ce', fillOpacity:.35, color:'#b0aca4', weight:.7  };
+
+function toggleMap() {
+  const sec = document.getElementById('mapSection');
+  const btn = document.getElementById('mapToggle');
+  const open = sec.style.display === 'none' || sec.style.display === '';
+  sec.style.display = open ? 'block' : 'none';
+  btn.classList.toggle('active', open);
+  if (open && !mapInited) {
+    setTimeout(initLeafletMap, 50);  // slight delay ensures div is visible before init
+  } else if (open && mapLeaflet) {
+    setTimeout(() => mapLeaflet.invalidateSize(), 200);
+  }
+}
+
+function initLeafletMap() {
+  mapInited = true;
+  mapLeaflet = L.map('map', {
+    center:[40.2,-3.5], zoom:5, zoomControl:true, attributionControl:true,
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom:18, subdomains:'abcd', attribution:'© <a href="https://carto.com">CARTO</a>',
+  }).addTo(mapLeaflet);
+
+  // Load Spain provinces GeoJSON — try two sources
+  tryLoad([
+    'https://cdn.jsdelivr.net/gh/codeforamerica/click_that_hood@master/public/data/spain-provinces.geojson',
+    'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/spain-provinces.geojson',
+  ], 0);
+}
+
+function tryLoad(urls, i) {
+  if (i >= urls.length) {
+    document.getElementById('mapSelBox').textContent = 'No se pudo cargar el mapa — usa los desplegables.';
+    return;
+  }
+  fetch(urls[i])
+    .then(r => { if (!r.ok) throw 0; return r.json(); })
+    .then(geojson => {
+      mapGeoLayer = L.geoJSON(geojson, {
+        style: () => ({ ...sOff }),
+        onEachFeature(feat, layer) {
+          const raw = feat.properties.name || '';
+          layer._cp = PROV_NORM[raw] || mapResolve(raw);
+          layer._cc = layer._cp ? mapCA(layer._cp) : '';
+          layer.on({
+            mouseover(e) { mapHov(e.target, true);  },
+            mouseout(e)  { mapHov(e.target, false); },
+            click(e)     { L.DomEvent.stopPropagation(e); mapClic(e.target); },
+          });
+          layer.bindTooltip(raw, { sticky:true, className:'map-tooltip', offset:[0,-4] });
+        },
+      }).addTo(mapLeaflet);
+      mapLeaflet.invalidateSize();
+    })
+    .catch(() => tryLoad(urls, i + 1));
+}
+
+function mapCA(csvProv) {
+  if (!ALL.length) return '';
+  const r = ALL.find(x => x.provincia === csvProv);
+  return r ? r.ca : '';
+}
+function mapResolve(str) {
+  const n = norm(str);
+  const k = Object.keys(PROV_NORM).find(k => norm(k) === n)
+         || Object.keys(PROV_NORM).find(k => norm(k).includes(n) || n.includes(norm(k)));
+  return k ? PROV_NORM[k] : null;
+}
+// Devuelve los bounds de todas las capas que pertenecen a una CA
+function mapBoundsCA(ca) {
+  const bounds = L.latLngBounds([]);
+  mapGeoLayer.eachLayer(l => { if (l._cc === ca) bounds.extend(l.getBounds()); });
+  return bounds.isValid() ? bounds : null;
+}
+// Devuelve los bounds de la provincia seleccionada
+function mapBoundsProv(prov) {
+  const bounds = L.latLngBounds([]);
+  mapGeoLayer.eachLayer(l => { if (l._cp === prov) bounds.extend(l.getBounds()); });
+  return bounds.isValid() ? bounds : null;
+}
+
+// ── COORDENADAS DE DEMARCACIONES (orientativas, Google Maps) ──────────────
+const DEM_COORDS = {
+  'A CORUÑA':[43.371,-8.396],'As Pontes de García Rodriguez':[43.459,-7.851],'Carballo':[43.213,-8.692],
+  'Ferrol':[43.484,-8.228],'Ribeira':[42.556,-8.993],'Santiago de Compostela':[42.878,-8.544],'Vimianzo':[43.112,-9.032],
+  'ALBACETE':[38.994,-1.857],'Alcaraz':[38.659,-2.481],'Almansa':[38.868,-1.090],
+  'Elche de la Sierra':[38.448,-2.050],'Hellín':[38.517,-1.700],'La Roda':[39.210,-2.153],'Villarrobledo':[39.268,-2.604],
+  'ALICANTE':[38.345,-0.490],'Alcoy':[38.699,-0.474],'Benidorm':[38.541,-0.131],
+  'Dénia':[38.841,0.106],'Elche':[38.262,-0.701],'Elda':[38.477,-0.796],'Orihuela-Torrevieja':[38.085,-0.944],
+  'ALMERÍA':[36.838,-2.460],'Albox':[37.388,-2.150],'El Ejido':[36.776,-2.810],'Huércal-Overa':[37.388,-1.948],'Níjar':[36.955,-2.202],
+  'Avilés':[43.556,-5.925],'Cangas del Narcea':[43.175,-6.538],'Gijón':[43.535,-5.662],
+  'Infiesto-Piloña':[43.357,-5.361],'Llanes':[43.420,-4.755],'Luarca-Valdés':[43.544,-6.531],'Mieres':[43.249,-5.776],'OVIEDO':[43.362,-5.849],
+  'Almendralejo':[38.687,-6.409],'Azuaga':[38.261,-5.671],'BADAJOZ':[38.879,-6.971],
+  'Castuera':[38.713,-5.544],'Don Benito':[38.956,-5.861],'Herrera del Duque':[39.155,-5.037],
+  'Mérida':[38.917,-6.342],'Navalvillar de Pela':[39.090,-5.480],'Zafra':[38.423,-6.417],
+  'Ibiza-Formentera':[38.909,1.432],'Inca':[39.720,2.912],'MALLORCA':[39.569,2.650],
+  'Manacor':[39.568,3.212],'Menorca':[39.948,4.116],'PALMA':[39.569,2.650],'Pollença':[39.880,3.013],'Sóller':[39.766,2.714],
+  'BARCELONA':[41.385,2.173],'Cornellà de Llobregat':[41.351,2.072],'Granollers':[41.608,2.287],
+  'Igualada':[41.579,1.618],'Manresa':[41.729,1.826],'Mataró':[41.537,2.446],
+  'Sabadell':[41.543,2.109],'Vic':[41.930,2.254],'Vilanova i la Geltrú':[41.224,1.726],
+  'Aranda de Duero':[41.670,-3.691],'BURGOS':[42.344,-3.696],'Briviesca':[42.542,-3.315],
+  'Medina de Pomar':[42.927,-3.488],'Miranda de Ebro':[42.688,-2.944],
+  'Castro-Urdiales':[43.382,-3.214],'Potes':[43.153,-4.621],'Reinosa':[43.001,-4.137],
+  'SANTANDER':[43.463,-3.810],'Selaya':[43.289,-3.826],'Torrelavega':[43.352,-4.044],
+  'CASTELLÓN':[39.987,-0.050],'La Vall Uixó-Segorbe':[39.823,-0.411],'Morella':[40.621,-0.093],'Vinaròs':[40.471,0.474],
+  'Alcázar de San Juan':[39.393,-3.209],'Almadén':[38.775,-4.831],'CIUDAD REAL':[38.986,-3.929],
+  'Manzanares':[39.003,-3.372],'Puertollano':[38.686,-4.108],'Tomelloso':[39.157,-3.023],'Valdepeñas':[38.763,-3.384],
+  'CUENCA':[40.070,-2.137],'Las Pedroñeras':[39.444,-2.667],'Quintanar del Rey':[39.353,-1.931],'Tarancón':[40.014,-3.007],
+  'Coria':[39.981,-6.534],'CÁCERES':[39.476,-6.372],'Jaraiz de la Vega':[40.063,-5.758],
+  'Miajadas':[39.146,-5.897],'Navalmoral de la Mata':[39.893,-5.543],
+  'Plasencia':[40.030,-6.089],'Trujillo':[39.459,-5.878],'Valencia de Alcántara':[39.415,-7.239],
+  'Algeciras':[36.130,-5.454],'Arcos de la Frontera':[36.747,-5.810],'Chiclana de la Frontera':[36.423,-6.148],
+  'CÁDIZ':[36.527,-6.289],'Jerez de la Frontera':[36.687,-6.136],'Medina Sidonia':[36.459,-5.921],'Olvera':[36.933,-5.262],'Ubrique':[36.681,-5.450],
+  'Baena':[37.617,-4.322],'CÓRDOBA':[37.888,-4.779],'Hinojosa del Duque':[38.501,-5.139],
+  'Lucena':[37.409,-4.486],'Montilla':[37.584,-4.638],'Montoro':[38.013,-4.375],
+  'Palma del Río':[37.700,-5.282],'Peñarroya-Pueblonuevo':[38.298,-5.268],
+  'Pozoblanco':[38.378,-4.849],'Priego de Córdoba':[37.438,-4.196],'Puente Genil':[37.393,-4.776],
+  'Blanes':[41.675,2.791],'Figueres':[42.267,2.961],'GIRONA':[41.983,2.824],'Olot':[42.182,2.490],'Palafrugell':[41.919,3.163],
+  'Almuñécar':[36.733,-3.691],'Baza':[37.490,-2.765],'GRANADA':[37.177,-3.599],
+  'Guadix':[37.299,-3.133],'Huéscar':[37.810,-2.540],'Iznalloz':[37.390,-3.528],'Loja':[37.167,-4.150],'Motril':[36.745,-3.518],
+  'Azuqueca de Henares':[40.562,-3.263],'GUADALAJARA':[40.632,-3.166],
+  'Beasain':[43.051,-2.192],'Eibar':[43.185,-2.472],'Irún':[43.340,-1.789],
+  'Mondragón':[43.065,-2.490],'SAN SEBASTIÁN-DONOSTIA':[43.322,-1.983],'Tolosa':[43.131,-2.079],'Zarautz':[43.284,-2.169],
+  'Almonte':[37.265,-6.527],'Aracena':[37.894,-6.560],'HUELVA':[37.261,-6.948],'Lepe':[37.254,-7.205],
+  'Barbastro':[42.036,0.125],'Fraga':[41.521,0.350],'HUESCA':[42.136,-0.409],'Jaca':[42.568,-0.549],'Monzón':[41.912,0.189],
+  'Alcalá la Real':[37.461,-3.922],'Andújar':[38.040,-4.051],'Cazorla':[37.918,-2.998],
+  'JAÉN':[37.779,-3.787],'Linares':[38.094,-3.636],'Villacarrillo':[38.118,-3.002],'Úbeda':[38.013,-3.370],
+  'Calahorra':[42.302,-1.965],'Haro':[42.578,-2.849],'LOGROÑO':[42.466,-2.445],
+  'Fuerteventura':[28.358,-14.053],'GRAN CANARIA':[28.124,-15.430],'LAS PALMAS DE GRAN CANARIA':[28.124,-15.430],
+  'Lanzarote':[29.045,-13.590],'Mogán':[27.895,-15.726],'Telde':[27.993,-15.419],
+  'Astorga':[42.457,-6.056],'LEÓN':[42.598,-5.571],'Ponferrada':[42.546,-6.598],
+  'Balaguer':[41.790,0.808],'LLEIDA':[41.617,0.622],"La Seu d\'Urgell":[42.360,1.456],'Vielha e Mijaran':[42.702,0.793],
+  'Chantada':[42.607,-7.771],'LUGO':[43.009,-7.556],'Monforte de Lemos':[42.521,-7.514],'Villalba':[43.299,-7.678],'Viveiro':[43.661,-7.594],
+  'Alcalá de Henares':[40.482,-3.363],'Alcobendas':[40.548,-3.643],'Aranjuez':[40.032,-3.603],
+  'Collado Villalba':[40.635,-4.003],'Fuenlabrada':[40.284,-3.800],'MADRID':[40.417,-3.703],
+  'Móstoles':[40.322,-3.864],'Pozuelo de Alarcón':[40.433,-3.813],
+  'San Martín de Valdeiglesias':[40.365,-4.398],'Soto del Real':[40.738,-3.769],
+  'Caravaca de la Cruz':[38.109,-1.861],'Cartagena':[37.605,-0.986],'Cieza':[38.240,-1.418],
+  'Lorca':[37.671,-1.699],'MURCIA':[37.984,-1.130],'Molina de Segura':[38.052,-1.211],
+  'Torre-Pacheco':[37.743,-0.956],'Yecla':[38.614,-1.115],
+  'Antequera':[37.019,-4.560],'Estepona':[36.427,-5.146],'Fuengirola':[36.540,-4.625],
+  'Marbella':[36.511,-4.882],'MÁLAGA':[36.721,-4.422],'Nerja':[36.744,-3.872],
+  'Ronda':[36.746,-5.162],'Vélez-Málaga':[36.782,-4.103],'Álora':[36.820,-4.700],
+  'Estella':[42.672,-2.032],'PAMPLONA':[42.812,-1.645],'Sangüesa':[42.570,-1.282],'Tafalla':[42.529,-1.675],'Tudela':[42.063,-1.606],
+  'O Barco de Valdeorras':[42.415,-6.981],'O Carballiño':[42.432,-8.073],'OURENSE':[42.336,-7.864],'Verín':[41.939,-7.439],
+  'Aguilar de Campoo':[42.791,-4.258],'PALENCIA':[42.010,-4.534],
+  'Lalín':[42.660,-8.113],'PONTEVEDRA':[42.431,-8.645],'Ponteareas':[42.175,-8.497],'Vigo':[42.232,-8.712],'Vilagarcía de Arousa':[42.594,-8.768],
+  'Béjar':[40.387,-5.764],'Ciudad Rodrigo':[40.597,-6.534],'SALAMANCA':[40.965,-5.664],
+  'Arona':[28.099,-16.681],'El Hierro':[27.740,-18.003],'La Gomera':[28.092,-17.109],
+  'La Orotava':[28.390,-16.523],'La Palma':[28.683,-17.764],
+  'SANTA CRUZ DE TENERIFE':[28.464,-16.252],'TENERIFE':[28.291,-16.629],
+  'Dos Hermanas':[37.284,-5.920],'Estepa':[37.293,-4.879],'Lebrija':[36.921,-6.080],
+  'Lora del Río':[37.651,-5.521],'Morón de la Frontera':[37.123,-5.453],
+  'SEVILLA':[37.389,-5.984],'Utrera':[37.185,-5.780],'Écija':[37.542,-5.082],
+  'Burgo de Osma':[41.589,-3.070],'SORIA':[41.766,-2.465],
+  'Reus':[41.155,1.107],'TARRAGONA':[41.119,1.245],'Tortosa':[40.812,0.521],
+  'Alcañiz':[41.050,-0.130],'Andorra':[40.974,-0.522],'Calamocha':[40.924,-1.295],'TERUEL':[40.344,-1.106],
+  'Illescas':[40.122,-3.848],'Madridejos':[39.468,-3.535],'Quintanar de la Orden':[39.597,-3.044],
+  'TOLEDO':[39.857,-4.024],'Talavera de la Reina':[39.962,-4.831],'Torrijos':[39.981,-4.281],
+  'Alzira':[39.150,-0.436],'Gandía':[38.967,-0.177],'Ontinyent-Xàtiva':[38.820,-0.607],
+  'Sagunto':[39.683,-0.272],'Torrent':[39.438,-0.465],'Utiel-Requena':[39.567,-1.210],'VALENCIA':[39.470,-0.376],
+  'Medina del Campo':[41.309,-4.913],'VALLADOLID':[41.652,-4.724],
+  'BILBAO':[43.263,-2.935],'Barakaldo':[43.296,-2.988],'Bermeo':[43.421,-2.723],
+  'Durango':[43.170,-2.633],'Getxo':[43.356,-3.009],'Mungia':[43.354,-2.847],
+  'Benavente':[42.001,-5.677],'ZAMORA':[41.503,-5.745],
+  'Alagón':[41.768,-1.129],'Calatayud':[41.356,-1.643],'Caspe':[41.234,-0.040],
+  'Ejea de los Caballeros':[42.127,-1.137],'La Almunia de Doña Godina':[41.480,-1.391],
+  'Tarazona':[41.906,-1.727],'ZARAGOZA':[41.649,-0.887],
+  'Llodio':[43.142,-2.979],'VITORIA-GASTEIZ':[42.851,-2.672],
+};
+
+// ── MARKERS DE DEMARCACIÓN ────────────────────────────────────────────────
+function showDemMarkers(prov) {
+  clearDemMarkers();
+  const dems = uniq('demarcacion', ALL.filter(r => r.provincia === prov));
+  const markers = [];
+  dems.forEach(dem => {
+    const coords = DEM_COORDS[dem];
+    if (!coords) return;
+    const isSel = dem === mapSelDem;
+    const m = L.circleMarker(coords, {
+      radius: isSel ? 9 : 7,
+      fillColor: isSel ? '#165c3a' : '#ffffff',
+      fillOpacity: 1,
+      color: '#165c3a',
+      weight: 2.5,
+    });
+    m.bindTooltip('<strong>' + dem + '</strong>', {
+      permanent: false, direction: 'top', offset: [0, -8], className: 'map-tooltip',
+    });
+    m.on('click', () => mapDem(null, dem));
+    m.on('mouseover', function() { this.setStyle({ radius: 10, fillColor: '#8dc4a8', weight: 3 }); });
+    m.on('mouseout', function() {
+      const sel = dem === mapSelDem;
+      this.setStyle({ radius: sel ? 9 : 7, fillColor: sel ? '#165c3a' : '#ffffff', weight: 2.5 });
+    });
+    markers.push(m);
+  });
+  if (markers.length) mapMarkersLayer = L.layerGroup(markers).addTo(mapLeaflet);
+}
+function clearDemMarkers() {
+  if (mapMarkersLayer) { mapLeaflet.removeLayer(mapMarkersLayer); mapMarkersLayer = null; }
+}
+function refreshMarkerStyles() {
+  if (mapSelProv) showDemMarkers(mapSelProv);
+}
+
+function mapHov(layer, on) {
+  if (!on) { mapPaint(); return; }
+  if (mapStep === 0 || (mapStep === 1 && layer._cc === mapSelCA)) {
+    layer.setStyle({ ...sHov }); layer.bringToFront();
+  }
+}
+function mapClic(layer) {
+  if (!layer._cp || !layer._cc) return;
+  if (mapStep === 0 || (mapStep >= 2 && layer._cc !== mapSelCA)) {
+    // Step 1 — select CA + zoom to CA
+    mapSelCA = layer._cc; mapSelProv = ''; mapSelDem = ''; mapSelAmb = ''; mapStep = 1;
+    clearDemMarkers();
+    mapPaint();
+    const b = mapBoundsCA(mapSelCA);
+    if (b) mapLeaflet.flyToBounds(b, { padding: [24, 24], maxZoom: 9, duration: 0.7 });
+    mapUpdating = true;
+    const fCA = document.getElementById('fCA');
+    fCA.value = mapSelCA; fCA.dispatchEvent(new Event('change'));
+    mapUpdating = false;
+    mapInfo();
+  } else if (mapStep === 1 && layer._cc === mapSelCA) {
+    // Step 2 — select province + zoom to province + markers
+    mapSelProv = layer._cp; mapSelDem = ''; mapSelAmb = ''; mapStep = 2;
+    mapPaint();
+    const b = mapBoundsProv(mapSelProv);
+    if (b) mapLeaflet.flyToBounds(b, { padding: [32, 32], maxZoom: 11, duration: 0.6 });
+    mapUpdating = true;
+    const fP = document.getElementById('fProv');
+    const m = [...fP.options].map(o => o.value).find(o => o === mapSelProv || norm(o) === norm(mapSelProv));
+    if (m) { fP.value = m; fP.dispatchEvent(new Event('change')); }
+    setTimeout(() => {
+      mapUpdating = false;
+      showDemMarkers(mapSelProv);
+      mapInfo();
+    }, 200);
+  }
+}
+function mapPaint() {
+  if (!mapGeoLayer) return;
+  mapGeoLayer.eachLayer(l => {
+    if      (mapStep === 0)          l.setStyle({ ...sOff });
+    else if (mapStep === 1)          l.setStyle(l._cc === mapSelCA ? { ...sCA } : { ...sDim });
+    else if (l._cp === mapSelProv)   l.setStyle({ ...sProv });
+    else if (l._cc === mapSelCA)     l.setStyle({ ...sCA });
+    else                             l.setStyle({ ...sDim });
+  });
+}
+function mapInfo() {
+  ['mapStep1','mapStep2','mapStep3','mapStep4'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('done', mapStep > i);
+  });
+  const box = document.getElementById('mapSelBox');
+
+  if (mapStep === 1) {
+    const provs = uniq('provincia', ALL.filter(r => r.ca === mapSelCA));
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px">${mapSelCA}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${provs.length} provincia${provs.length!==1?'s':''} · haz clic en el mapa</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${provs.map(p => `<span style="font-size:11px;background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green);border-radius:4px;padding:2px 7px;font-weight:500">${p}</span>`).join('')}
+      </div>`;
+
+  } else if (mapStep === 2) {
+    const dems = uniq('demarcacion', ALL.filter(r => r.provincia === mapSelProv));
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:1px">${mapSelProv}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${mapSelCA}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Demarcación</div>
+      <div class="map-side-scroll" style="display:flex;flex-direction:column;gap:3px">
+        ${dems.map(d => {
+          const nAmbs = uniq('ambito', ALL.filter(r => r.provincia === mapSelProv && r.demarcacion === d)).length;
+          return `<div class="map-list-item${d===mapSelDem?' selected':''}" onclick="mapDem(this,'${d.replace(/'/g,"\\'")}')">
+            <span style="flex:1">${d}</span>
+            <span style="font-size:10px;color:var(--ink3);font-family:var(--mono);margin-left:4px">${nAmbs} ámbito${nAmbs!==1?'s':''}</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+
+  } else if (mapStep === 3) {
+    const ambs = uniq('ambito', ALL.filter(r => r.provincia === mapSelProv && r.demarcacion === mapSelDem));
+    if (ambs.length === 1) { mapAmb(null, ambs[0]); return; }
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:1px">${mapSelDem}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">${mapSelProv} · ${mapSelCA}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Ámbito de cobertura</div>
+      <div class="map-side-scroll" style="display:flex;flex-direction:column;gap:3px">
+        ${ambs.map(a => `<div class="map-list-item${a===mapSelAmb?' selected':''}" onclick="mapAmb(this,'${a.replace(/'/g,"\\'")}')">
+          ${a}
+        </div>`).join('')}
+      </div>`;
+
+  } else if (mapStep === 4) {
+    const nChs = uniq('canal', ALL.filter(r => r.provincia === mapSelProv && r.demarcacion === mapSelDem && r.ambito === mapSelAmb)).length;
+    box.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:1px">${mapSelDem}</div>
+      <div style="font-size:11px;color:var(--ink3)">${mapSelProv} · ${mapSelCA}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:10px">${mapSelAmb}</div>
+      <div style="background:var(--green-bg);border:1px solid var(--green-bd);border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3 3 7-6"/></svg>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--green)">Selección completa</div>
+          <div style="font-size:11px;color:var(--green);font-family:var(--mono)">${nChs} canal${nChs!==1?'es':''} ocupado${nChs!==1?'s':''}</div>
+        </div>
+      </div>`;
+  }
+}
+function mapDem(el, dem) {
+  mapSelDem = dem; mapSelAmb = ''; mapStep = 3;
+  document.querySelectorAll('#mapSelBox .map-list-item').forEach(i => i.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  refreshMarkerStyles();
+  mapUpdating = true;
+  setTimeout(() => {
+    const fd = document.getElementById('fDem');
+    const m = [...fd.options].map(o => o.value).find(o => o === dem || norm(o) === norm(dem));
+    if (m) { fd.value = m; fd.dispatchEvent(new Event('change')); }
+    setTimeout(() => { mapUpdating = false; mapInfo(); }, 100);
+  }, 60);
+}
+function mapAmb(el, amb) {
+  mapSelAmb = amb; mapStep = 4;
+  document.querySelectorAll('#mapSelBox .map-list-item').forEach(i => i.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  mapUpdating = true;
+  setTimeout(() => {
+    const fa = document.getElementById('fAmb');
+    const m = [...fa.options].map(o => o.value).find(o => o === amb || norm(o) === norm(amb));
+    if (m) { fa.value = m; fa.dispatchEvent(new Event('change')); }
+    setTimeout(() => { mapUpdating = false; mapInfo(); }, 100);
+  }, 60);
+}
+function resetMapSel() {
+  mapStep = 0; mapSelCA = ''; mapSelProv = ''; mapSelDem = ''; mapSelAmb = '';
+  clearDemMarkers();
+  mapPaint();
+  document.getElementById('mapSelBox').textContent = 'Haz clic en el mapa para comenzar';
+  ['mapStep1','mapStep2','mapStep3','mapStep4'].forEach(id => {
+    const e = document.getElementById(id); if (e) e.classList.remove('done');
+  });
+  if (mapLeaflet) mapLeaflet.flyTo([40.2, -3.5], 5, { duration: 0.7 });
+  resetF();
+}
+
+
+</script>
+</body>
+</html>
