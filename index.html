@@ -53,6 +53,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -763,6 +764,22 @@ thead th { transition: color 150ms ease; }
   clip: rect(0,0,0,0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ── Touch targets WCAG 2.5.5: mínimo 44×44px en dispositivos de toque ── */
+@media (pointer: coarse) {
+  .expand-btn,
+  .map-toggle-btn,
+  .geo-btn,
+  .btn-limpiar-filtros,
+  .btn-reset-map {
+    min-height: 44px;
+  }
+  /* iOS hace zoom automático al enfocar un campo con font-size < 16px */
+  .fc-inp,
+  select {
+    font-size: 16px !important;
+  }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
